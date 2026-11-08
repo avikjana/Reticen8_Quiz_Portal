@@ -43,6 +43,8 @@ const difficultyTheme = {
 export function CourseCard({ course, index }) {
   const Icon = iconMap[course.icon] || Shield
   const theme = difficultyTheme[course.difficulty] || difficultyTheme.Beginner
+  const topicsList = course.topics || course.skills || []
+  const modulesCount = course.modulesCount || course.modules || (course.curriculum ? course.curriculum.length : 0)
 
   return (
     <motion.article
@@ -60,7 +62,7 @@ export function CourseCard({ course, index }) {
       <div className="p-6 pb-4 flex items-start justify-between gap-4">
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform"
-          style={{ background: course.bgColor }}
+          style={{ background: course.bgColor || '#F0FDF4' }}
         >
           <Icon size={24} style={{ color: theme.accent }} />
         </div>
@@ -78,16 +80,16 @@ export function CourseCard({ course, index }) {
           {course.title}
         </h3>
         <p className="mt-2.5 text-sm text-slate-500 leading-relaxed">
-          {course.description}
+          {course.shortDesc || course.description}
         </p>
 
         {/* Modules & Key Focus Areas */}
         <div className="mt-5 pt-4 border-t border-slate-100 flex-1">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
-            Key Modules
+            Key Modules &amp; Skills
           </p>
           <ul className="space-y-2">
-            {course.topics.map((topic) => (
+            {topicsList.slice(0, 4).map((topic) => (
               <li key={topic} className="flex items-center gap-2 text-xs font-medium text-slate-600">
                 <Check size={14} className="text-[#16A34A] flex-shrink-0" />
                 <span className="truncate">{topic}</span>
@@ -101,7 +103,7 @@ export function CourseCard({ course, index }) {
       <div className="px-6 py-4 mt-6 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
           <BookOpen size={14} className="text-slate-400" />
-          <span>{course.modules} Modules</span>
+          <span>{modulesCount} Modules</span>
         </div>
         <Link
           to={`/courses/${course.id}`}

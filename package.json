@@ -1,26 +1,22 @@
 {
-  "name": "reticen8-academy",
+  "name": "reticen8-academy-workspace",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "description": "Reticen8 Academy — Dedicated Frontend & Backend Workspace",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "npm run dev --prefix frontend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run start --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "build:frontend": "npm run build --prefix frontend"
   },
-  "dependencies": {
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router-dom": "^6.30.6",
-    "framer-motion": "^14.0.0",
-    "lucide-react": "^1.52.0"
-  },
-  "devDependencies": {
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^4.7.0",
-    "tailwindcss": "^4.3.3",
-    "@tailwindcss/vite": "^4.3.3",
-    "vite": "^5.4.21"
-  }
+  "keywords": [
+    "reticen8",
+    "academy",
+    "cybersecurity",
+    "frontend",
+    "backend"
+  ],
+  "author": "Reticen8 Technologies",
+  "license": "ISC"
 }

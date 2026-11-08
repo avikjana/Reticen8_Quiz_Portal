@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
@@ -17,36 +17,47 @@ import {
   Sparkles,
   ArrowRight,
   User,
+  CheckCircle2
 } from 'lucide-react'
 
 const exploreMenu = [
   {
     category: 'Cybersecurity Disciplines',
     items: [
-      { name: 'Next-Generation Firewalls (NGFW)', desc: 'Enterprise traffic filtering & NAT', path: '/paths' },
-      { name: 'Threat Prevention & IPS', desc: 'Signature & anomaly threat detection', path: '/paths' },
-      { name: 'Secure VPN Architectures', desc: 'IPsec, SSL-VPN & zero-trust access', path: '/paths' },
-      { name: 'Security Operations & NOC', desc: 'Monitoring, SIEM & incident response', path: '/paths' },
+      { name: 'Next-Generation Firewalls (NGFW)', desc: 'Enterprise traffic filtering & NAT', path: '/courses?category=Firewall+Administration' },
+      { name: 'Threat Prevention & IPS', desc: 'Signature & anomaly threat detection', path: '/courses?category=Threat+Defense' },
+      { name: 'Secure VPN Architectures', desc: 'IPsec, SSL-VPN & zero-trust access', path: '/courses?category=Architecture+%26+Cloud' },
+      { name: 'Security Operations & NOC', desc: 'Monitoring, SIEM & incident response', path: '/courses?category=Network+Security' },
     ],
   },
   {
     category: 'Programs & Credentials',
     items: [
-      { name: 'Reticen8 Associate (RCFA)', desc: 'Foundational firewall certification', path: '/certifications' },
-      { name: 'Reticen8 Professional (RCFP)', desc: 'Advanced configuration & security', path: '/certifications' },
-      { name: 'Reticen8 Architect (RCSA)', desc: 'Multi-site enterprise security design', path: '/certifications' },
+      { name: 'Reticen8 Associate (RCFA)', desc: 'Foundational firewall certification', path: '/certifications#rcfa' },
+      { name: 'Reticen8 Professional (RCFP)', desc: 'Advanced configuration & security', path: '/certifications#rcfp' },
+      { name: 'Reticen8 Architect (RCSA)', desc: 'Multi-site enterprise security design', path: '/certifications#rcsa' },
       { name: 'Hands-on Lab Simulator', desc: 'Interactive live configuration sandbox', path: '/labs' },
     ],
   },
 ]
 
 export default function Navbar() {
+  const navigate = useNavigate()
   const [exploreOpen, setExploreOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [searchFilter, setSearchFilter] = useState('Learner')
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const exploreRef = useRef(null)
+  const userMenuRef = useRef(null)
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
+    navigate(`/courses?search=${encodeURIComponent(searchQuery.trim())}`)
+    setMobileMenuOpen(false)
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,6 +71,9 @@ export default function Navbar() {
     const handleClickOutside = (e) => {
       if (exploreRef.current && !exploreRef.current.contains(e.target)) {
         setExploreOpen(false)
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -151,13 +165,13 @@ export default function Navbar() {
                     </div>
 
                     <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-slate-500">
-                      <span>Looking for institutional partnerships?</span>
+                      <span>Looking for enterprise certifications?</span>
                       <Link
-                        to="/about"
+                        to="/certifications"
                         onClick={() => setExploreOpen(false)}
                         className="text-[#16A34A] font-semibold hover:underline flex items-center gap-1"
                       >
-                        Partner with Reticen8 →
+                        View Credentials &amp; Blueprints →
                       </Link>
                     </div>
                   </motion.div>
@@ -168,7 +182,7 @@ export default function Navbar() {
 
           {/* Center: Search Field (Cisco-style) */}
           <div className="hidden lg:flex flex-1 max-w-lg items-center">
-            <div className="relative w-full flex items-center">
+            <form onSubmit={handleSearchSubmit} className="relative w-full flex items-center">
               <Search size={17} className="absolute left-3.5 text-slate-400 pointer-events-none" />
               <input
                 type="search"
@@ -179,14 +193,13 @@ export default function Navbar() {
               />
               <div className="absolute right-1.5 flex items-center">
                 <button
-                  type="button"
-                  className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-full hover:bg-slate-50 transition-colors shadow-2xs"
+                  type="submit"
+                  className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] rounded-full transition-colors shadow-2xs"
                 >
-                  <span>{searchFilter}</span>
-                  <ChevronDown size={11} className="text-slate-400" />
+                  <span>Search</span>
                 </button>
               </div>
-            </div>
+            </form>
           </div>
 
           {/* Right: Actions & User Navigation */}
@@ -228,9 +241,12 @@ export default function Navbar() {
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white" />
             </button>
 
-            {/* User Profile avatar pill (Cisco style) */}
-            <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-200">
-              <div className="flex items-center gap-2 p-1 pl-1.5 pr-3 rounded-full bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer">
+            {/* User Profile avatar pill with interactive modal/dropdown */}
+            <div className="relative hidden sm:block" ref={userMenuRef}>
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center gap-2 p-1 pl-1.5 pr-3 rounded-full bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors"
+              >
                 <div className="w-7 h-7 rounded-full bg-emerald-100 text-[#16A34A] flex items-center justify-center font-bold text-xs">
                   A
                 </div>
@@ -238,7 +254,46 @@ export default function Navbar() {
                   <span className="text-xs font-bold text-slate-800">Avik</span>
                   <span className="text-[10px] text-slate-500 font-medium">Engineer</span>
                 </div>
-              </div>
+                <ChevronDown size={11} className="text-slate-400 ml-0.5" />
+              </button>
+
+              {/* User Dropdown */}
+              <AnimatePresence>
+                {userMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 text-slate-800 text-xs"
+                  >
+                    <div className="pb-3 border-b border-slate-100">
+                      <span className="font-bold text-sm text-slate-900 block">Avik Jana</span>
+                      <span className="text-slate-500 text-[11px]">avik@reticen8-academy.com</span>
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-emerald-100 text-[#15803D] font-bold text-[10px]">
+                        Active Pro Learner
+                      </span>
+                    </div>
+
+                    <div className="py-2 space-y-1">
+                      <Link to="/courses" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+                        <BookOpen size={14} className="text-[#16A34A]" /> My Enrolled Courses (3)
+                      </Link>
+                      <Link to="/certifications" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+                        <Award size={14} className="text-[#16A34A]" /> My Certifications &amp; Badges
+                      </Link>
+                      <Link to="/labs" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
+                        <Sparkles size={14} className="text-[#16A34A]" /> Active Sandbox Labs
+                      </Link>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100">
+                      <button onClick={() => setUserMenuOpen(false)} className="w-full text-left p-1.5 text-slate-400 hover:text-slate-600 font-medium">
+                        Sign Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Mobile Hamburger Toggle */}
@@ -263,14 +318,16 @@ export default function Navbar() {
             className="lg:hidden border-t border-slate-200 bg-white px-4 py-6 shadow-xl overflow-hidden"
           >
             {/* Mobile search */}
-            <div className="relative mb-5">
+            <form onSubmit={handleSearchSubmit} className="relative mb-5">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search courses, articles..."
                 className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 bg-slate-50 text-sm focus:outline-none focus:border-[#16A34A]"
               />
-            </div>
+            </form>
 
             <nav className="space-y-1">
               {[
@@ -278,7 +335,7 @@ export default function Navbar() {
                 { label: 'Learning Paths', href: '/paths', icon: GraduationCap },
                 { label: 'Certifications', href: '/certifications', icon: Award },
                 { label: 'Practical Labs', href: '/labs', icon: Sparkles },
-                { label: 'My Learning Profile', href: '/about', icon: User },
+                { label: 'My Learning Profile', href: '/courses', icon: User },
               ].map((link) => {
                 const Icon = link.icon
                 return (
@@ -297,18 +354,18 @@ export default function Navbar() {
 
             <div className="mt-6 pt-5 border-t border-slate-200 flex gap-3">
               <Link
-                to="/register"
+                to="/courses"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex-1 py-2.5 px-4 text-center text-sm font-semibold text-white bg-[#16A34A] rounded-xl hover:bg-[#15803D]"
               >
-                Get Started
+                Browse Catalog
               </Link>
               <Link
-                to="/courses"
+                to="/certifications"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex-1 py-2.5 px-4 text-center text-sm font-semibold text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200"
               >
-                Browse Catalog
+                Certifications
               </Link>
             </div>
           </motion.div>
