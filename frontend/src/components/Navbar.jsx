@@ -17,8 +17,15 @@ import {
   Sparkles,
   ArrowRight,
   User,
-  CheckCircle2
+  CheckCircle2,
+  LogIn,
+  Briefcase,
+  Users,
+  LogOut,
+  RefreshCw,
 } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import LoginModal from './LoginModal'
 
 const exploreMenu = [
   {
@@ -43,6 +50,7 @@ const exploreMenu = [
 
 export default function Navbar() {
   const navigate = useNavigate()
+  const { user, logout, openLoginModal, switchRole } = useAuth()
   const [exploreOpen, setExploreOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [searchFilter, setSearchFilter] = useState('Learner')
@@ -79,6 +87,37 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // Dynamic user theme based on category
+  const roleTheme = {
+    Administrator: {
+      avatarBg: 'bg-purple-100 text-purple-700',
+      tagText: 'text-purple-700 font-bold',
+      tagBadge: 'bg-purple-100 text-purple-800 border-purple-200',
+      label: 'Admin',
+      icon: Shield,
+    },
+    Employee: {
+      avatarBg: 'bg-emerald-100 text-[#16A34A]',
+      tagText: 'text-[#16A34A] font-bold',
+      tagBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      label: 'Engineer',
+      icon: Briefcase,
+    },
+    Partner: {
+      avatarBg: 'bg-blue-100 text-blue-700',
+      tagText: 'text-blue-700 font-bold',
+      tagBadge: 'bg-blue-100 text-blue-800 border-blue-200',
+      label: 'Partner',
+      icon: Users,
+    },
+  }[user?.role || 'Employee'] || {
+    avatarBg: 'bg-emerald-100 text-[#16A34A]',
+    tagText: 'text-[#16A34A] font-bold',
+    tagBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    label: 'Engineer',
+    icon: Briefcase,
+  }
 
   return (
     <header
@@ -242,59 +281,159 @@ export default function Navbar() {
             </button>
 
             {/* User Profile avatar pill with interactive modal/dropdown */}
-            <div className="relative hidden sm:block" ref={userMenuRef}>
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 p-1 pl-1.5 pr-3 rounded-full bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors"
-              >
-                <div className="w-7 h-7 rounded-full bg-emerald-100 text-[#16A34A] flex items-center justify-center font-bold text-xs">
-                  A
-                </div>
-                <div className="flex flex-col text-left leading-none">
-                  <span className="text-xs font-bold text-slate-800">Avik</span>
-                  <span className="text-[10px] text-slate-500 font-medium">Engineer</span>
-                </div>
-                <ChevronDown size={11} className="text-slate-400 ml-0.5" />
-              </button>
+            {user ? (
+              <div className="relative hidden sm:block" ref={userMenuRef}>
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 p-1 pl-1.5 pr-3 rounded-full bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors shadow-2xs"
+                  title={`Logged in as ${user.name} (${user.role})`}
+                >
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs ${roleTheme.avatarBg}`}>
+                    {user.name ? user.name[0].toUpperCase() : 'A'}
+                  </div>
+                  <div className="flex flex-col text-left leading-none">
+                    <span className="text-xs font-bold text-slate-800">
+                      {user.name ? user.name.split(' ')[0] : 'Avik'}
+                    </span>
+                    <span className={`text-[10px] font-semibold ${roleTheme.tagText}`}>
+                      {roleTheme.label}
+                    </span>
+                  </div>
+                  <ChevronDown size={11} className="text-slate-400 ml-0.5" />
+                </button>
 
-              {/* User Dropdown */}
-              <AnimatePresence>
-                {userMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 6 }}
-                    className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 text-slate-800 text-xs"
-                  >
-                    <div className="pb-3 border-b border-slate-100">
-                      <span className="font-bold text-sm text-slate-900 block">Avik Jana</span>
-                      <span className="text-slate-500 text-[11px]">avik@reticen8-academy.com</span>
-                      <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-emerald-100 text-[#15803D] font-bold text-[10px]">
-                        Active Pro Learner
-                      </span>
-                    </div>
+                {/* User Dropdown */}
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 text-slate-800 text-xs"
+                    >
+                      {/* User Info Header */}
+                      <div className="pb-3 border-b border-slate-100">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-sm text-slate-900 block truncate">
+                            {user.name}
+                          </span>
+                          <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] border ${roleTheme.tagBadge}`}>
+                            {user.role}
+                          </span>
+                        </div>
+                        <span className="text-slate-500 text-[11px] block truncate">
+                          {user.email}
+                        </span>
+                        <span className="text-slate-400 text-[10px] block mt-0.5">
+                          {user.roleTitle || user.department}
+                        </span>
+                      </div>
 
-                    <div className="py-2 space-y-1">
-                      <Link to="/courses" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
-                        <BookOpen size={14} className="text-[#16A34A]" /> My Enrolled Courses (3)
-                      </Link>
-                      <Link to="/certifications" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
-                        <Award size={14} className="text-[#16A34A]" /> My Certifications &amp; Badges
-                      </Link>
-                      <Link to="/labs" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium">
-                        <Sparkles size={14} className="text-[#16A34A]" /> Active Sandbox Labs
-                      </Link>
-                    </div>
+                      {/* Quick 3-Category Switcher */}
+                      <div className="py-2.5 border-b border-slate-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            Role / Category
+                          </span>
+                          <button
+                            onClick={() => {
+                              setUserMenuOpen(false)
+                              openLoginModal(user.role)
+                            }}
+                            className="text-[10px] font-semibold text-[#16A34A] hover:underline flex items-center gap-1"
+                          >
+                            <LogIn size={11} /> Open Login Form
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {[
+                            { role: 'Administrator', short: 'Admin', icon: Shield, activeClass: 'bg-purple-100 text-purple-800 border-purple-300' },
+                            { role: 'Employee', short: 'Engineer', icon: Briefcase, activeClass: 'bg-emerald-100 text-[#15803D] border-emerald-300' },
+                            { role: 'Partner', short: 'Partner', icon: Users, activeClass: 'bg-blue-100 text-blue-800 border-blue-300' },
+                          ].map((cat) => {
+                            const isCurrent = user.role === cat.role
+                            const CatIcon = cat.icon
+                            return (
+                              <button
+                                key={cat.role}
+                                onClick={() => {
+                                  switchRole(cat.role)
+                                  setUserMenuOpen(false)
+                                }}
+                                className={`flex flex-col items-center justify-center p-2 rounded-xl border text-[10px] font-semibold transition-all ${
+                                  isCurrent
+                                    ? `${cat.activeClass} shadow-xs font-bold`
+                                    : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                                }`}
+                              >
+                                <CatIcon size={13} className="mb-0.5" />
+                                <span>{cat.short}</span>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
 
-                    <div className="pt-2 border-t border-slate-100">
-                      <button onClick={() => setUserMenuOpen(false)} className="w-full text-left p-1.5 text-slate-400 hover:text-slate-600 font-medium">
-                        Sign Out
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                      {/* Navigation Links */}
+                      <div className="py-2 space-y-1">
+                        <Link
+                          to="/courses"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+                        >
+                          <BookOpen size={14} className="text-[#16A34A]" /> My Enrolled Courses
+                        </Link>
+                        <Link
+                          to="/certifications"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+                        >
+                          <Award size={14} className="text-[#16A34A]" /> My Certifications &amp; Badges
+                        </Link>
+                        <Link
+                          to="/labs"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+                        >
+                          <Sparkles size={14} className="text-[#16A34A]" /> Active Sandbox Labs
+                        </Link>
+                      </div>
+
+                      {/* Sign Out & Portal */}
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false)
+                            logout()
+                          }}
+                          className="flex items-center gap-1.5 p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg font-medium transition-colors"
+                        >
+                          <LogOut size={13} /> Sign Out
+                        </button>
+                        <Link
+                          to="/login"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="text-slate-400 hover:text-slate-600 text-[11px]"
+                        >
+                          Full Login Page →
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2">
+                <button
+                  onClick={() => openLoginModal('Employee')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-300 hover:border-slate-400 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                >
+                  <LogIn size={13} className="text-[#16A34A]" />
+                  <span>Sign In</span>
+                </button>
+              </div>
+            )}
 
             {/* Mobile Hamburger Toggle */}
             <button
@@ -328,6 +467,51 @@ export default function Navbar() {
                 className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 bg-slate-50 text-sm focus:outline-none focus:border-[#16A34A]"
               />
             </form>
+
+            {/* Current Mobile User Role Pill */}
+            {user ? (
+              <div className="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${roleTheme.avatarBg}`}>
+                      {user.name ? user.name[0].toUpperCase() : 'A'}
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-800">{user.name}</div>
+                      <div className="text-[10px] text-slate-500">{user.email}</div>
+                    </div>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] border ${roleTheme.tagBadge}`}>
+                    {user.role}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5 mt-2">
+                  {['Administrator', 'Employee', 'Partner'].map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => switchRole(role)}
+                      className={`py-1 text-[10px] font-semibold rounded border ${
+                        user.role === role ? 'bg-white border-[#16A34A] text-[#16A34A]' : 'border-slate-200 text-slate-500'
+                      }`}
+                    >
+                      {role === 'Administrator' ? 'Admin' : role === 'Employee' ? 'Engineer' : 'Partner'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="mb-4">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    openLoginModal('Employee')
+                  }}
+                  className="w-full py-2.5 px-4 text-center text-sm font-semibold text-white bg-[#16A34A] rounded-xl flex items-center justify-center gap-2"
+                >
+                  <LogIn size={15} /> Sign In to Academy
+                </button>
+              </div>
+            )}
 
             <nav className="space-y-1">
               {[
@@ -371,6 +555,9 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 3-Category Login Modal */}
+      <LoginModal />
     </header>
   )
 }

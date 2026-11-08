@@ -25,6 +25,7 @@ const courses = readJsonFile('courses.json')
 const certifications = readJsonFile('certifications.json')
 const statistics = readJsonFile('statistics.json')
 const credentials = readJsonFile('credentials.json')
+const users = readJsonFile('users.json')
 
 // Set CORS & JSON headers
 const setHeaders = (res, statusCode = 200) => {
@@ -53,6 +54,9 @@ const getRequestBody = (req) => {
   })
 }
 
+// In-memory active sessions map (token -> user)
+const activeSessions = new Map()
+
 // Router dispatcher
 const server = http.createServer(async (req, res) => {
   const urlObj = new URL(req.url, `http://${req.headers.host}`)
@@ -72,6 +76,120 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/health' && method === 'GET') {
     setHeaders(res, 200)
     res.end(JSON.stringify({ status: 'OK', uptime: process.uptime(), timestamp: new Date().toISOString() }))
+    return
+  }
+
+  // --- AUTHENTICATION ENDPOINTS (Administrator, Employee, Partner) ---
+
+  // GET /api/auth/roles - Available categories info
+  if (pathname === '/api/auth/roles' && method === 'GET') {
+    setHeaders(res, 200)
+    res.end(JSON.stringify({
+      success: true,
+      roles: [
+        {
+          id: 'Administrator',
+          label: 'Administrator',
+          description: 'Full enterprise control, audit logging, system settings, and user provisioning.',
+          badge: '🛡️',
+          color: 'purple'
+        },
+        {
+          id: 'Employee',
+          label: 'Employee',
+          description: 'Internal security operations, firewall sandbox labs, and technical training.',
+          badge: '💼',
+          color: 'emerald'
+        },
+        {
+          id: 'Partner',
+          label: 'Partner',
+          description: 'Authorized training partner portal, organization seat management, and co-branded credentials.',
+          badge: '🤝',
+          color: 'blue'
+        }
+      ]
+    }))
+    return
+  }
+
+  // POST /api/auth/login - Role-based authentication
+  if (pathname === '/api/auth/login' && method === 'POST') {
+    const body = await getRequestBody(req)
+    const email = (body.email || '').trim().toLowerCase()
+    const password = (body.password || '').trim()
+    const role = (body.role || '').trim() // 'Administrator' | 'Employee' | 'Partner'
+
+    if (!email || !password || !role) {
+      setHeaders(res, 400)
+      res.end(JSON.stringify({
+        success: false,
+        error: 'Email, password, and category selection (Administrator, Employee, or Partner) are required.'
+      }))
+      return
+    }
+
+    // Match user by email & role
+    const matchedUser = users.find(
+      (u) => u.email.toLowerCase() === email && u.role.toLowerCase() === role.toLowerCase()
+    )
+
+    if (!matchedUser) {
+      setHeaders(res, 401)
+      res.end(JSON.stringify({
+        success: false,
+        error: `No ${role} account found matching this email address.`
+      }))
+      return
+    }
+
+    if (matchedUser.password !== password) {
+      setHeaders(res, 401)
+      res.end(JSON.stringify({
+        success: false,
+        error: 'Incorrect password for this account.'
+      }))
+      return
+    }
+
+    // Successful login - generate token & session
+    const token = `r8_auth_${matchedUser.id}_${Date.now()}`
+    const { password: _, ...userSafe } = matchedUser
+    activeSessions.set(token, userSafe)
+
+    setHeaders(res, 200)
+    res.end(JSON.stringify({
+      success: true,
+      message: `Authenticated successfully as ${matchedUser.role}`,
+      token,
+      user: userSafe
+    }))
+    return
+  }
+
+  // GET /api/auth/me - Current user session check
+  if (pathname === '/api/auth/me' && method === 'GET') {
+    const authHeader = req.headers['authorization'] || ''
+    const token = authHeader.replace('Bearer ', '').trim() || urlObj.searchParams.get('token')
+
+    if (token && activeSessions.has(token)) {
+      setHeaders(res, 200)
+      res.end(JSON.stringify({ success: true, user: activeSessions.get(token) }))
+    } else {
+      setHeaders(res, 401)
+      res.end(JSON.stringify({ success: false, error: 'Unauthorized or session expired' }))
+    }
+    return
+  }
+
+  // POST /api/auth/logout - Clear session
+  if (pathname === '/api/auth/logout' && method === 'POST') {
+    const authHeader = req.headers['authorization'] || ''
+    const token = authHeader.replace('Bearer ', '').trim()
+    if (token) activeSessions.delete(token)
+
+    setHeaders(res, 200)
+    res.end(JSON.stringify({ success: true, message: 'Logged out successfully' }))
     return
   }
 
@@ -222,12 +340,9 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n🚀 Reticen8 Academy REST API Server running at http://localhost:${PORT}`)
-  console.log(`📡 Endpoints available:`)
-  console.log(`   - GET  /api/health`)
-  console.log(`   - GET  /api/statistics`)
-  console.log(`   - GET  /api/courses`)
-  console.log(`   - GET  /api/courses/:id`)
-  console.log(`   - GET  /api/certifications`)
-  console.log(`   - POST /api/verify`)
-  console.log(`   - POST /api/terminal/exec\n`)
+  console.log(`🔐 Auth Endpoints:`)
+  console.log(`   - POST /api/auth/login   (Administrator, Employee, Partner)`)
+  console.log(`   - GET  /api/auth/me`)
+  console.log(`   - POST /api/auth/logout`)
+  console.log(`   - GET  /api/auth/roles\n`)
 })
