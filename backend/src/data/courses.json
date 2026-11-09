@@ -2,143 +2,97 @@
   {
     "id": "network-security-fundamentals",
     "title": "Network Security Fundamentals",
-    "shortDesc": "Build a solid foundation in TCP/IP, OSI model, routing protocols, and defensive security architectures.",
-    "description": "Designed for aspiring cybersecurity engineers, this course introduces the fundamental principles of enterprise network security. You will learn packet analysis, subnetting, stateful inspection fundamentals, access control lists (ACLs), and basic vulnerability mitigation.",
+    "shortDesc": "Foundational principles of enterprise network security, routing security, and firewall perimeter defense.",
+    "description": "Build a solid foundation in enterprise network security principles. Course design and technical syllabus to be configured.",
     "difficulty": "Beginner",
     "difficultyColor": "green",
     "category": "Network Security",
-    "duration": "14 Hours",
-    "estimatedWeeks": "3 Weeks",
-    "modulesCount": 6,
-    "lessonsCount": 28,
+    "duration": "TBD",
+    "estimatedWeeks": "Self-paced",
+    "modulesCount": 0,
+    "lessonsCount": 0,
     "rating": 4.8,
-    "studentsCount": 3840,
+    "studentsCount": 1240,
     "certificationCode": "RCFA",
     "certificationTitle": "Reticen8 Certified Firewall Associate",
     "badge": "🛡️",
-    "instructor": {
-      "name": "Dr. Sarah Chen, CISSP",
-      "role": "Principal Security Architect",
-      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&h=150&q=80"
-    },
     "skills": [
-      "TCP/IP & OSI Layer Defense",
-      "Subnetting & VLAN Segmentation",
-      "Stateful Packet Inspection",
-      "ACL & Security Policy Design",
-      "Wireshark Traffic Analysis"
+      "Network Security Fundamentals",
+      "Perimeter Defense",
+      "Security Policy Architecture"
     ],
-    "curriculum": [
-      {
-        "id": "mod-1",
-        "title": "Module 1: Foundations of Enterprise Networking",
-        "duration": "2h 15m",
-        "lessons": [
-          { "id": "l-1", "title": "1.1 The Enterprise Perimeter Architecture", "type": "video", "duration": "18m", "completed": true },
-          { "id": "l-2", "title": "1.2 OSI Model vs TCP/IP in Security Context", "type": "video", "duration": "24m", "completed": true },
-          { "id": "l-3", "title": "1.3 Hands-On: Packet Capture & Header Decoding", "type": "lab", "duration": "35m", "completed": true },
-          { "id": "l-4", "title": "1.4 Knowledge Check: Core Protocols", "type": "quiz", "duration": "15m", "completed": true }
-        ]
-      },
-      {
-        "id": "mod-2",
-        "title": "Module 2: Network Segmentation & VLAN Isolation",
-        "duration": "2h 45m",
-        "lessons": [
-          { "id": "l-5", "title": "2.1 Zone-Based Defense Concepts", "type": "video", "duration": "22m", "completed": true },
-          { "id": "l-6", "title": "2.2 802.1Q Trunking & Security Implications", "type": "video", "duration": "28m", "completed": false },
-          { "id": "l-7", "title": "2.3 Lab: Configuring DMZ and Secure Subnets", "type": "lab", "duration": "45m", "completed": false },
-          { "id": "l-8", "title": "2.4 Assessment: DMZ Breach Defense", "type": "quiz", "duration": "20m", "completed": false }
-        ]
-      }
-    ]
+    "curriculum": []
   },
   {
     "id": "reticen8-ngfw-professional",
     "title": "Reticen8 NGFW Professional",
-    "shortDesc": "Master Reticen8 next-generation firewall deployment, deep-packet inspection, and application control.",
-    "description": "The core certification course for deploying and administrating Reticen8 enterprise security appliances. Covers initial bootstrap, hardware & VM interfaces, zero-trust security policies, TLS inspection, user identification, and high-availability pairing.",
+    "shortDesc": "Next-generation firewall deployment, interface configuration, NAT policies, and high-availability setups.",
+    "description": "Comprehensive configuration and administration of Reticen8 Next-Generation Firewalls. Course design and technical syllabus to be configured.",
     "difficulty": "Intermediate",
     "difficultyColor": "blue",
     "category": "Firewall Administration",
-    "duration": "22 Hours",
-    "estimatedWeeks": "4 Weeks",
-    "modulesCount": 8,
-    "lessonsCount": 36,
+    "duration": "TBD",
+    "estimatedWeeks": "Self-paced",
+    "modulesCount": 0,
+    "lessonsCount": 0,
     "rating": 4.9,
-    "studentsCount": 2950,
+    "studentsCount": 980,
     "certificationCode": "RCFP",
     "certificationTitle": "Reticen8 Certified Firewall Professional",
-    "badge": "🔐",
-    "instructor": {
-      "name": "Marcus Vance, CCIE Security",
-      "role": "Lead Firewall Consultant",
-      "avatar": "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=150&h=150&q=80"
-    },
+    "badge": "🔒",
     "skills": [
-      "Reticen8 OS CLI & WebUI Command",
-      "Layer 7 Application Identification (App-ID)",
-      "SSL/TLS Full Decryption & Inspection",
-      "Active-Passive High Availability (HA)",
-      "Zone-Based Security Policies"
-    ]
+      "NGFW Architecture",
+      "Security Policies & NAT",
+      "High Availability"
+    ],
+    "curriculum": []
   },
   {
     "id": "advanced-firewall-security",
-    "title": "Advanced Firewall Security & IPS",
-    "shortDesc": "Deep dive into zero-day malware sandboxing, heuristic IPS, automated quarantine, and enterprise VPNs.",
-    "description": "An advanced operational course focusing on intrusion prevention systems (IPS), DNS security sinkholing, dynamic blocklists, and encrypted remote access.",
+    "title": "Advanced Firewall Security",
+    "shortDesc": "Threat prevention, IPS inspection, deep packet inspection, and SSL/IPsec VPN architectures.",
+    "description": "Deep dive into advanced threat mitigation, IPS engine tuning, and multi-site encrypted tunnels. Course design and technical syllabus to be configured.",
     "difficulty": "Advanced",
-    "difficultyColor": "orange",
+    "difficultyColor": "amber",
     "category": "Threat Defense",
-    "duration": "28 Hours",
-    "estimatedWeeks": "5 Weeks",
-    "modulesCount": 7,
-    "lessonsCount": 38,
-    "rating": 4.95,
-    "studentsCount": 1820,
-    "certificationCode": "RCSA",
-    "certificationTitle": "Reticen8 Certified Security Architect",
-    "badge": "🏗️",
-    "instructor": {
-      "name": "Elena Rostova, CISM",
-      "role": "Director of Threat Research",
-      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&h=150&q=80"
-    },
+    "duration": "TBD",
+    "estimatedWeeks": "Self-paced",
+    "modulesCount": 0,
+    "lessonsCount": 0,
+    "rating": 4.9,
+    "studentsCount": 750,
+    "certificationCode": "RCFP",
+    "certificationTitle": "Reticen8 Certified Firewall Professional",
+    "badge": "⚡",
     "skills": [
-      "Intrusion Prevention System (IPS) Custom Signatures",
-      "Dynamic Threat Intelligence & Sinkholing",
-      "IPsec Site-to-Site & SSL VPN Portals",
-      "Automated Incident Response & SIEM Forwarding"
-    ]
+      "Threat Prevention & IPS",
+      "SSL/IPsec VPN",
+      "Advanced Traffic Inspection"
+    ],
+    "curriculum": []
   },
   {
-    "id": "security-architecture",
-    "title": "Enterprise Security Architecture & SD-WAN",
-    "shortDesc": "Architect resilient multi-site mesh networks, secure cloud transit hubs, and SD-WAN routing.",
-    "description": "The pinnacle technical curriculum for Enterprise Architects. Learn to design fault-tolerant security fabrics spanning on-prem data centers, AWS/Azure transit gateways, and distributed branch offices with dynamic SLA path selection.",
+    "id": "enterprise-security-architecture",
+    "title": "Enterprise Security Architecture",
+    "shortDesc": "Multi-site enterprise firewall architecture, SD-WAN integration, and zero-trust framework design.",
+    "description": "Architecting resilient security infrastructures for distributed enterprise networks. Course design and technical syllabus to be configured.",
     "difficulty": "Expert",
     "difficultyColor": "purple",
     "category": "Architecture & Cloud",
-    "duration": "32 Hours",
-    "estimatedWeeks": "6 Weeks",
-    "modulesCount": 8,
-    "lessonsCount": 42,
+    "duration": "TBD",
+    "estimatedWeeks": "Self-paced",
+    "modulesCount": 0,
+    "lessonsCount": 0,
     "rating": 5.0,
-    "studentsCount": 1140,
-    "certificationCode": "RCFE",
-    "certificationTitle": "Reticen8 Certified Firewall Expert",
-    "badge": "⭐",
-    "instructor": {
-      "name": "David O’Connor, CCIE Security Emeritus",
-      "role": "Chief Technical Fellow",
-      "avatar": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=150&h=150&q=80"
-    },
+    "studentsCount": 430,
+    "certificationCode": "RCSA",
+    "certificationTitle": "Reticen8 Certified Security Architect",
+    "badge": "🏛️",
     "skills": [
-      "Multi-Cloud Security Hub & Spoke Design",
-      "Software-Defined WAN (SD-WAN) Policies",
-      "BGP Routing over IPsec Meshes",
-      "Disaster Recovery & Active-Active Clustering"
-    ]
+      "Enterprise Architecture",
+      "SD-WAN Security",
+      "Zero-Trust Security Design"
+    ],
+    "curriculum": []
   }
 ]

@@ -378,25 +378,32 @@ export default function Navbar() {
                       {/* Navigation Links */}
                       <div className="py-2 space-y-1">
                         <Link
+                          to={user.role === 'Administrator' ? '/admin' : user.role === 'Partner' ? '/partner' : '/employee'}
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 p-2 rounded-lg bg-emerald-50/60 hover:bg-emerald-50 text-slate-900 font-bold"
+                        >
+                          <Shield size={14} className="text-[#16A34A]" />
+                          <span>
+                            {user.role === 'Administrator'
+                              ? 'Admin Dashboard'
+                              : user.role === 'Partner'
+                              ? 'Partner Portal'
+                              : 'Employee Dashboard'}
+                          </span>
+                        </Link>
+                        <Link
                           to="/courses"
                           onClick={() => setUserMenuOpen(false)}
                           className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
                         >
-                          <BookOpen size={14} className="text-[#16A34A]" /> My Enrolled Courses
+                          <BookOpen size={14} className="text-[#16A34A]" /> Course Catalog
                         </Link>
                         <Link
                           to="/certifications"
                           onClick={() => setUserMenuOpen(false)}
                           className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
                         >
-                          <Award size={14} className="text-[#16A34A]" /> My Certifications &amp; Badges
-                        </Link>
-                        <Link
-                          to="/labs"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
-                        >
-                          <Sparkles size={14} className="text-[#16A34A]" /> Active Sandbox Labs
+                          <Award size={14} className="text-[#16A34A]" /> Certifications &amp; Badges
                         </Link>
                       </div>
 

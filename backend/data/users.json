@@ -1,0 +1,41 @@
+[
+  {
+    "id": "usr-admin-01",
+    "name": "Avik Jana",
+    "email": "admin@reticen8.com",
+    "password": "AdminPassword123!",
+    "role": "Administrator",
+    "roleTitle": "Enterprise Systems Administrator",
+    "avatar": "A",
+    "department": "Global Information Security",
+    "permissions": ["all", "system_admin", "user_management", "audit_logs", "lab_provisioning"],
+    "badgeColor": "purple",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "usr-emp-02",
+    "name": "Avik Jana",
+    "email": "employee@reticen8.com",
+    "password": "EmployeePassword123!",
+    "role": "Employee",
+    "roleTitle": "Lead Security Engineer",
+    "avatar": "A",
+    "department": "Security Operations Center (SOC)",
+    "permissions": ["engineer_labs", "internal_curriculum", "firewall_sandbox", "exam_vouchers"],
+    "badgeColor": "emerald",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "usr-partner-03",
+    "name": "Avik Jana",
+    "email": "partner@reticen8.com",
+    "password": "PartnerPassword123!",
+    "role": "Partner",
+    "roleTitle": "Authorized Training Partner",
+    "avatar": "A",
+    "department": "Partner Engineering Ecosystem",
+    "permissions": ["partner_portal", "seat_allocation", "discounted_vouchers", "co_branding"],
+    "badgeColor": "blue",
+    "status": "ACTIVE"
+  }
+]

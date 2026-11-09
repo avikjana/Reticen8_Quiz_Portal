@@ -2,11 +2,11 @@
   "name": "reticen8-academy-backend",
   "version": "1.0.0",
   "description": "Enterprise REST API backend for Reticen8 Academy cybersecurity training platform",
-  "main": "server.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
   },
   "keywords": [
     "reticen8",

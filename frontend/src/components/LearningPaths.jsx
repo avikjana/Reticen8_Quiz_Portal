@@ -3,7 +3,7 @@ import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Compass } from 'lucide-react'
 import { CourseCard } from './CourseCard'
-import { learningPaths } from '../data/courses'
+import { coursesData as learningPaths } from '../data/courses'
 
 export default function LearningPaths() {
   const ref = useRef(null)
