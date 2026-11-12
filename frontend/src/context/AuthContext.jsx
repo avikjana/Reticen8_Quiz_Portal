@@ -43,18 +43,17 @@ const DEMO_ACCOUNTS = {
 }
 
 export function AuthProvider({ children }) {
-  // Default to Employee (Avik - Engineer) initially as requested
   const [user, setUser] = useState(() => {
     try {
       const saved = localStorage.getItem('r8_user')
-      return saved ? JSON.parse(saved) : DEMO_ACCOUNTS.Employee
+      return saved ? JSON.parse(saved) : null
     } catch {
-      return DEMO_ACCOUNTS.Employee
+      return null
     }
   })
 
   const [token, setToken] = useState(() => {
-    return localStorage.getItem('r8_token') || 'r8_auth_default'
+    return localStorage.getItem('r8_token') || null
   })
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)

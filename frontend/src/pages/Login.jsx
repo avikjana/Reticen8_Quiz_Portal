@@ -232,17 +232,25 @@ export default function Login() {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-slate-700">Password</label>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail(activeCategory.demoEmail)
-                  setPassword(activeCategory.demoPass)
-                }}
-                className="text-[11px] font-bold text-[#16A34A] hover:underline flex items-center gap-1"
-              >
-                <KeyRound size={12} />
-                <span>Fill Demo Password</span>
-              </button>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/forgot-password"
+                  className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail(activeCategory.demoEmail)
+                    setPassword(activeCategory.demoPass)
+                  }}
+                  className="text-[11px] font-bold text-[#16A34A] hover:underline flex items-center gap-1"
+                >
+                  <KeyRound size={12} />
+                  <span>Fill Demo Password</span>
+                </button>
+              </div>
             </div>
             <div className="relative">
               <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -286,9 +294,17 @@ export default function Login() {
           </div>
         </form>
 
-        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-          <span>Backend Port: 5000</span>
-          <span className="font-mono text-emerald-600 font-bold">API Online</span>
+        {/* Card Footer: Sign Up & Help */}
+        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+          <div>
+            <span>New to Reticen8 Academy? </span>
+            <Link to="/signup" className="font-bold text-[#16A34A] hover:underline">
+              Create an Account (Sign Up)
+            </Link>
+          </div>
+          <Link to="/forgot-password" className="text-slate-500 hover:text-slate-800 hover:underline">
+            Forgot Password?
+          </Link>
         </div>
       </div>
     </div>

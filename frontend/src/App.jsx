@@ -10,6 +10,7 @@ import CourseDetail from './pages/CourseDetail'
 import LearningPlayer from './pages/LearningPlayer'
 import Certifications from './pages/Certifications'
 import Login from './pages/Login'
+import SignUp from './pages/SignUp'
 import ForgotPassword from './components/Auth/ForgotPassword'
 
 // Role-Based Portals
@@ -46,6 +47,8 @@ function App() {
           <Route path="/certifications/:id" element={<Certifications />} />
           <Route path="/labs" element={<LearningPlayer />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/register" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Administrator Routes */}

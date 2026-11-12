@@ -407,7 +407,38 @@ export default function Navbar() {
                         </Link>
                       </div>
 
-                      {/* Sign Out & Portal */}
+                      {/* Account Options: Login, Signup, Forgot Password */}
+                      <div className="py-2 border-t border-slate-100 space-y-1">
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-0.5">
+                          Authentication Options
+                        </div>
+                        <Link
+                          to="/login"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+                        >
+                          <LogIn size={13} className="text-[#16A34A]" />
+                          <span>Login / Switch Account</span>
+                        </Link>
+                        <Link
+                          to="/signup"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+                        >
+                          <Users size={13} className="text-blue-600" />
+                          <span>Sign Up / Create Account</span>
+                        </Link>
+                        <Link
+                          to="/forgot-password"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+                        >
+                          <HelpCircle size={13} className="text-amber-500" />
+                          <span>Forgot Password?</span>
+                        </Link>
+                      </div>
+
+                      {/* Sign Out */}
                       <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                         <button
                           onClick={() => {
@@ -418,27 +449,28 @@ export default function Navbar() {
                         >
                           <LogOut size={13} /> Sign Out
                         </button>
-                        <Link
-                          to="/login"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="text-slate-400 hover:text-slate-600 text-[11px]"
-                        >
-                          Full Login Page →
-                        </Link>
+                        <span className="text-[10px] text-slate-400">Reticen8 Auth</span>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             ) : (
-              <div className="hidden sm:flex items-center gap-2">
-                <button
-                  onClick={() => openLoginModal('Employee')}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-300 hover:border-slate-400 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              <div className="hidden sm:flex items-center gap-2.5">
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-slate-300 hover:border-slate-400 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                 >
                   <LogIn size={13} className="text-[#16A34A]" />
-                  <span>Sign In</span>
-                </button>
+                  <span>Login</span>
+                </Link>
+                <Link
+                  to="/signup"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold transition-colors shadow-2xs"
+                >
+                  <span>Sign Up</span>
+                  <ArrowRight size={12} />
+                </Link>
               </div>
             )}
 
@@ -505,18 +537,54 @@ export default function Navbar() {
                     </button>
                   ))}
                 </div>
+                <div className="mt-3 pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
+                  <Link
+                    to="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[#16A34A] font-bold hover:underline"
+                  >
+                    + Register Account
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      logout()
+                    }}
+                    className="text-rose-600 font-semibold hover:underline"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className="mb-4">
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    openLoginModal('Employee')
-                  }}
-                  className="w-full py-2.5 px-4 text-center text-sm font-semibold text-white bg-[#16A34A] rounded-xl flex items-center justify-center gap-2"
-                >
-                  <LogIn size={15} /> Sign In to Academy
-                </button>
+              <div className="mb-4 space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2.5 px-3 text-center text-xs font-bold text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200 flex items-center justify-center gap-1.5"
+                  >
+                    <LogIn size={14} className="text-[#16A34A]" />
+                    <span>Login</span>
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2.5 px-3 text-center text-xs font-bold text-white bg-[#16A34A] rounded-xl hover:bg-[#15803D] flex items-center justify-center gap-1.5 shadow-2xs"
+                  >
+                    <span>Sign Up</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+                <div className="text-center">
+                  <Link
+                    to="/forgot-password"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[11px] text-slate-500 hover:text-slate-800 hover:underline"
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
               </div>
             )}
 

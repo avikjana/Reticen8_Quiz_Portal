@@ -252,17 +252,26 @@ export default function LoginModal() {
               <label className="text-xs font-bold text-slate-700">
                 Password
               </label>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail(activeCategory.demoEmail)
-                  setPassword(activeCategory.demoPass)
-                }}
-                className="text-[11px] font-bold text-[#16A34A] hover:underline flex items-center gap-1"
-              >
-                <KeyRound size={12} />
-                <span>Fill Demo Password</span>
-              </button>
+              <div className="flex items-center gap-3">
+                <a
+                  href="/forgot-password"
+                  onClick={() => closeLoginModal()}
+                  className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 hover:underline"
+                >
+                  Forgot Password?
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail(activeCategory.demoEmail)
+                    setPassword(activeCategory.demoPass)
+                  }}
+                  className="text-[11px] font-bold text-[#16A34A] hover:underline flex items-center gap-1"
+                >
+                  <KeyRound size={12} />
+                  <span>Fill Demo Password</span>
+                </button>
+              </div>
             </div>
             <div className="relative">
               <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -318,9 +327,22 @@ export default function LoginModal() {
 
         {/* Modal Footer */}
         <div className="px-7 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-          <span>Need institutional access?</span>
-          <a href="mailto:admin@reticen8.com" className="font-semibold text-slate-700 hover:underline">
-            Contact Security Ops
+          <div>
+            <span>Don't have an account? </span>
+            <a
+              href="/signup"
+              onClick={() => closeLoginModal()}
+              className="font-bold text-[#16A34A] hover:underline"
+            >
+              Sign Up
+            </a>
+          </div>
+          <a
+            href="/forgot-password"
+            onClick={() => closeLoginModal()}
+            className="text-slate-500 hover:text-slate-800 hover:underline"
+          >
+            Reset Password
           </a>
         </div>
       </motion.div>
