@@ -1,15 +1,34 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import AuthLayout from './AuthLayout'
-import { KeyRound, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { KeyRound, Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react'
+import authService from '../../services/authService'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitted(true)
+    if (loading) return
+    setError('')
+    setLoading(true)
+    try {
+      await authService.forgotPassword(email)
+      // The API always responds the same way (so it can't reveal which emails
+      // are registered), so we always show the confirmation.
+      setSubmitted(true)
+    } catch (err) {
+      setError(
+        err.message === 'Failed to fetch'
+          ? 'Cannot reach the server. Please try again in a moment.'
+          : err.message || 'Something went wrong. Please try again.'
+      )
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -41,6 +60,12 @@ export default function ForgotPassword() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+            {error && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-2 text-xs text-rose-700 font-medium" role="alert">
+                <AlertCircle size={15} className="flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">Work Email</label>
               <div className="relative">
@@ -58,9 +83,10 @@ export default function ForgotPassword() {
 
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-action-600 hover:bg-action-700 text-white font-bold rounded-xl text-xs transition-colors shadow-sm"
+              disabled={loading}
+              className="w-full py-3 px-4 bg-action-600 hover:bg-action-700 text-white font-bold rounded-xl text-xs transition-colors shadow-sm disabled:opacity-60"
             >
-              Send Password Reset Instructions
+              {loading ? 'Sending…' : 'Send Password Reset Instructions'}
             </button>
           </form>
         )}

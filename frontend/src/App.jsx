@@ -2,6 +2,8 @@ import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/Common/ProtectedRoute'
+import ErrorBoundary from './components/ErrorBoundary'
+import { usePageTitle } from './hooks/usePageTitle'
 
 // Public Pages
 import Home from './pages/Home'
@@ -12,6 +14,7 @@ const Certifications = lazy(() => import('./pages/Certifications'))
 const Login = lazy(() => import('./pages/Login'))
 const SignUp = lazy(() => import('./pages/SignUp'))
 const ForgotPassword = lazy(() => import('./components/Auth/ForgotPassword'))
+const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'))
 
 // Role-Based Portals
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'))
@@ -31,6 +34,32 @@ function ScrollToTop() {
   return null
 }
 
+// Per-route <title> for the static pages. Detail pages (course, certifications)
+// set their own more specific title, so they're intentionally absent here.
+const ROUTE_TITLES = {
+  '/': null,
+  '/courses': 'Course Catalog',
+  '/paths': 'Learning Paths',
+  '/login': 'Sign In',
+  '/signup': 'Create Account',
+  '/forgot-password': 'Reset Password',
+  '/reset-password': 'Reset Password',
+  '/labs': 'Hands-on Labs',
+  '/admin': 'Admin Dashboard',
+  '/admin/users': 'Manage Users',
+  '/admin/courses': 'Manage Courses',
+  '/employee': 'Employee Dashboard',
+  '/partner': 'Partner Portal',
+}
+const SELF_TITLED = ['/courses/', '/certifications', '/learn/']
+
+function RouteTitle() {
+  const { pathname } = useLocation()
+  const ownsTitle = SELF_TITLED.some((p) => pathname.startsWith(p))
+  usePageTitle(ownsTitle ? false : ROUTE_TITLES[pathname] ?? null)
+  return null
+}
+
 function PageLoader() {
   return (
     <div className="min-h-dvh flex items-center justify-center bg-white" role="status" aria-label="Loading">
@@ -44,6 +73,8 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <ScrollToTop />
+        <RouteTitle />
+        <ErrorBoundary>
         <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public Routes (members-only pages are wrapped in ProtectedRoute) */}
@@ -59,6 +90,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/register" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Administrator Routes */}
           <Route
@@ -110,6 +142,7 @@ function App() {
           <Route path="*" element={<Home />} />
         </Routes>
         </Suspense>
+        </ErrorBoundary>
       </BrowserRouter>
     </AuthProvider>
   )

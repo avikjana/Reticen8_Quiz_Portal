@@ -30,3 +30,8 @@ dist-ssr
 
 # Vite cache
 .vite
+
+# SQLite database (generated; seeded from backend/src/data/*.json)
+backend/src/data/*.db
+backend/src/data/*.db-wal
+backend/src/data/*.db-shm

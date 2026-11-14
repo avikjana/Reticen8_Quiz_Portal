@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import useFocusTrap from '../hooks/useFocusTrap'
 import {
   Lock,
   Mail,
@@ -28,6 +29,16 @@ export default function LoginModal() {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+
+  const trapRef = useFocusTrap(isLoginModalOpen)
+
+  // Close on Escape while the modal is open
+  useEffect(() => {
+    if (!isLoginModalOpen) return
+    const onKey = (e) => e.key === 'Escape' && closeLoginModal()
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [isLoginModalOpen, closeLoginModal])
 
   // Sync category when opened with specific parameter
   useEffect(() => {
@@ -81,13 +92,22 @@ export default function LoginModal() {
   if (!isLoginModalOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+      onClick={closeLoginModal}
+    >
       <motion.div
+        ref={trapRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Sign in"
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ duration: 0.2 }}
-        className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden relative"
+        className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden relative outline-none"
       >
         {/* Close Button */}
         <button

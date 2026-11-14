@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, LayoutGrid, ArrowRight } from 'lucide-react'
@@ -27,10 +28,20 @@ const exploreMenu = [
 // "Explore" button with the two-column mega menu (tablet and up)
 export default function ExploreMenu() {
   const { open, setOpen, ref } = useDismissable()
+  const buttonRef = useRef(null)
+
+  // Escape closes the menu and returns focus to the button (keyboard users)
+  const handleMenuKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      setOpen(false)
+      buttonRef.current?.focus()
+    }
+  }
 
   return (
     <div className="relative hidden md:block" ref={ref}>
       <button
+        ref={buttonRef}
         onClick={() => setOpen(!open)}
         className={`flex items-center gap-2 px-3.5 py-2 rounded-full border text-sm font-semibold transition-all ${
           open
@@ -38,6 +49,8 @@ export default function ExploreMenu() {
             : 'border-slate-200 bg-white/70 text-slate-700 hover:border-slate-300 hover:bg-white hover:shadow-[var(--shadow-soft)]'
         }`}
         aria-expanded={open}
+        aria-haspopup="menu"
+        aria-controls="explore-menu"
       >
         <LayoutGrid size={16} className="text-brand-600" />
         <span>Explore</span>
@@ -51,6 +64,8 @@ export default function ExploreMenu() {
       <AnimatePresence>
         {open && (
           <motion.div
+            id="explore-menu"
+            onKeyDown={handleMenuKeyDown}
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}

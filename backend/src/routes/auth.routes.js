@@ -14,6 +14,14 @@ export const handleAuthRoutes = async (req, res, pathname, method) => {
     return await AuthController.googleLogin(req, res)
   }
 
+  if (pathname === '/api/auth/forgot-password' && method === 'POST') {
+    return await AuthController.forgotPassword(req, res)
+  }
+
+  if (pathname === '/api/auth/reset-password' && method === 'POST') {
+    return await AuthController.resetPassword(req, res)
+  }
+
   if (pathname === '/api/auth/roles' && method === 'GET') {
     return await AuthController.getRoles(req, res)
   }

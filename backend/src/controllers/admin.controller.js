@@ -1,8 +1,9 @@
-import { validatePasswordStrength } from '../utils/password.js'
 import UserModel from '../models/user.model.js'
 import CourseModel from '../models/course.model.js'
 import db from '../db/index.js'
 import AppError from '../utils/AppError.js'
+import { validate } from '../middlewares/validate.middleware.js'
+import { adminCreateUserSchema } from '../validation/schemas.js'
 
 export class AdminController {
   static async getOverview(req, res) {
@@ -44,17 +45,11 @@ export class AdminController {
   }
 
   static async createUser(req, res) {
-    const { name, email, password, role, roleTitle, department } = req.body || {}
-    if (!name || !email || !password) {
-      throw new AppError('Name, email, and password are required', 400)
-    }
-
-    const weak = validatePasswordStrength(password)
-    if (weak) throw new AppError(weak, 400)
+    const { name, email, password, role, roleTitle, department } = validate(adminCreateUserSchema, req.body)
 
     const existing = UserModel.findByEmail(email)
     if (existing) {
-      throw new AppError('User already exists', 409)
+      throw new AppError('A user with this email already exists.', 409)
     }
 
     const created = await UserModel.create({ name, email, password, role, roleTitle, department })

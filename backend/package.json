@@ -5,8 +5,9 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node --env-file-if-exists=.env src/index.js",
-    "dev": "node --env-file-if-exists=.env --watch src/index.js"
+    "start": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env src/index.js",
+    "dev": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env --watch src/index.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
   },
   "keywords": [
     "reticen8",
@@ -21,6 +22,7 @@
     "node": ">=22.9"
   },
   "dependencies": {
-    "google-auth-library": "^10.9.1"
+    "google-auth-library": "^10.9.1",
+    "zod": "^3.25.76"
   }
 }

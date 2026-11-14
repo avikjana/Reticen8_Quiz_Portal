@@ -1,4 +1,5 @@
 import http from 'node:http'
+import { logRequest } from './utils/logger.js'
 import handleAuthRoutes from './routes/auth.routes.js'
 import handleAdminRoutes from './routes/admin.routes.js'
 import handleEmployeeRoutes from './routes/employee.routes.js'
@@ -58,6 +59,8 @@ export const createApp = () => {
 
     const origin = req.headers.origin
     res.corsOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]
+
+    logRequest(req, res)
 
     // Handle CORS preflight
     if (method === 'OPTIONS') {

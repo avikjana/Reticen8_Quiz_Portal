@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -10,6 +10,8 @@ import Footer from '../components/Footer'
 import useApi from '../hooks/useApi'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { usePageTitle } from '../hooks/usePageTitle'
+import useFocusTrap from '../hooks/useFocusTrap'
 import { ErrorState, PageSpinner } from '../components/ui/DataState'
 
 // Loads the members-only certification guide, then renders the page
@@ -41,12 +43,22 @@ export default function Certifications() {
 }
 
 function CertificationsView({ certificationsData }) {
+  usePageTitle('Certification Guide')
   const { user } = useAuth()
   const [verifying, setVerifying] = useState(false)
   const [verifyError, setVerifyError] = useState('')
   const [verifyId, setVerifyId] = useState('')
   const [verificationResult, setVerificationResult] = useState(null)
   const [showCertModal, setShowCertModal] = useState(false)
+
+  const certModalRef = useFocusTrap(showCertModal)
+  // Close the certificate dialog on Escape
+  useEffect(() => {
+    if (!showCertModal) return
+    const onKey = (e) => e.key === 'Escape' && setShowCertModal(false)
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [showCertModal])
 
   // Looks the credential up in the backend registry — unknown IDs are rejected
   const handleVerify = async (e) => {
@@ -383,12 +395,21 @@ function CertificationsView({ certificationsData }) {
       {/* Verified Certificate Modal */}
       <AnimatePresence>
         {showCertModal && verificationResult && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+            onClick={() => setShowCertModal(false)}
+          >
             <motion.div
+              ref={certModalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={verificationResult.sample ? 'Sample certificate' : 'Verified credential'}
+              tabIndex={-1}
+              onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl max-w-xl w-full p-8 shadow-2xl relative border-4 border-emerald-600/30 text-slate-900"
+              className="bg-white rounded-3xl max-w-xl w-full p-8 shadow-2xl relative border-4 border-emerald-600/30 text-slate-900 outline-none"
             >
               <button
                 onClick={() => setShowCertModal(false)}

@@ -8,6 +8,7 @@ import Navbar from '../components/Navbar'
 import AnnouncementBar from '../components/AnnouncementBar'
 import Footer from '../components/Footer'
 import useApi from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { ErrorState, NotFoundState, PageSpinner } from '../components/ui/DataState'
 
 // Loads the course from the API, then renders it. Unknown IDs get a proper
@@ -52,6 +53,7 @@ export default function CourseDetail() {
 
 function CourseDetailView({ course }) {
   const [activeTab, setActiveTab] = useState('overview')
+  usePageTitle(course.title)
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">

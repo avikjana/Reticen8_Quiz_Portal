@@ -72,10 +72,27 @@ Seed accounts for local development (the login form pre-fills these in dev build
 | Employee | `employee@reticen8.com` | `EmployeePassword123!` |
 | Partner | `partner@reticen8.com` | `PartnerPassword123!` |
 
+## Storage
+
+Data lives in a single SQLite database (`backend/src/data/reticen8.db`, generated
+and git-ignored). It's seeded on first run from the committed `*.json` files in
+that folder, which remain the canonical seed data. Writes are per-row and
+transactional, so concurrent requests don't clobber each other.
+
+## Tests
+
+- Backend: `npm test --prefix backend` (Node's built-in test runner — auth,
+  course visibility, credential verification, admin user management, and unit
+  tests for hashing / JWT / reset tokens).
+- Frontend: `npm test --prefix frontend` (Vitest).
+- Both, as CI runs them: `npm test` from the repo root.
+- CI runs lint + build + tests on every push and PR (`.github/workflows/ci.yml`).
+
 ## Not built yet
 
 - Course lessons, labs and quizzes (the learning pages are placeholders)
-- Password reset emails (the Forgot Password form does not send anything)
+- Real email delivery — password reset works end to end, but with no mail
+  provider configured the reset link is logged to the server console instead of
+  emailed (wire a provider in `backend/src/utils/email.js`)
 - Real enrollment and partner seat data (Employee and Partner dashboards return sample data)
-- A real database (data is stored in JSON files; fine for one server, not for concurrent writes at scale)
-- Automated tests
+- Error reporting to a monitoring service (errors currently log to the console)

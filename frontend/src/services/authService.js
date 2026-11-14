@@ -13,6 +13,14 @@ export const authService = {
     return await api.post('/auth/google', { credential, role })
   },
 
+  forgotPassword: async (email) => {
+    return await api.post('/auth/forgot-password', { email })
+  },
+
+  resetPassword: async ({ token, password }) => {
+    return await api.post('/auth/reset-password', { token, password })
+  },
+
   getMe: async () => {
     return await api.get('/auth/me')
   },
