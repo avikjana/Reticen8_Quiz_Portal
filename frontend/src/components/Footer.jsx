@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Shield, Mail } from 'lucide-react'
+import Logo from './ui/Logo'
+import { Mail } from 'lucide-react'
 
 function TwitterIcon({ size = 16, className = '' }) {
   return (
@@ -73,25 +74,13 @@ export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="bg-[#0B1120] text-slate-400 border-t border-slate-800/80">
+    <footer className="theme-fixed bg-[#0B1120] text-slate-400 border-t border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
 
           {/* Col 1: Brand & Bio */}
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
-            <Link to="/" className="inline-flex items-center gap-2.5 mb-4 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#16A34A] to-[#15803D] flex items-center justify-center text-white shadow-xs">
-                <Shield size={20} className="stroke-[2.5]" />
-              </div>
-              <div className="flex flex-col leading-tight">
-                <span className="text-sm font-black tracking-wide text-white uppercase">
-                  Reticen8
-                </span>
-                <span className="text-[9px] font-bold tracking-[0.2em] text-[#16A34A] uppercase -mt-0.5">
-                  Academy
-                </span>
-              </div>
-            </Link>
+            <Logo tone="light" className="mb-4" />
 
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm mb-6">
               Reticen8 Academy provides enterprise-grade cybersecurity education, hands-on firewall laboratory training, and industry credentials for modern network defenders.
@@ -108,7 +97,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={item.label}
-                    className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-[#16A34A] hover:text-white flex items-center justify-center text-slate-400 transition-colors"
+                    className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-brand-600 hover:text-white flex items-center justify-center text-slate-400 transition-colors"
                   >
                     <Icon size={16} />
                   </a>

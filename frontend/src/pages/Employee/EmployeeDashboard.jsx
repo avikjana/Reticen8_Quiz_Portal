@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Briefcase, BookOpen, Award, CheckCircle2, AlertCircle, ArrowRight, Clock } from 'lucide-react'
+import { Briefcase, AlertCircle, ArrowRight } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import api from '../../services/api'
-import { coursesData } from '../../data/courses'
+import useApi from '../../hooks/useApi'
+import { ErrorState, PageSpinner } from '../../components/ui/DataState'
 
 export default function EmployeeDashboard() {
   const { user } = useAuth()
-  const [courses] = useState(coursesData)
+  const { data, loading, error, reload } = useApi('/courses')
+  const courses = data || []
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -23,7 +23,7 @@ export default function EmployeeDashboard() {
               Employee &amp; Engineer Learning Portal
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Welcome back, {user?.name || 'Avik'}
+              Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
             </h1>
             <p className="text-xs text-slate-500 mt-1">
               Internal Technical Training &amp; Firewall Engineering Competencies
@@ -34,7 +34,7 @@ export default function EmployeeDashboard() {
         {/* Status card */}
         <div className="mb-8 p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-[#16A34A] flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-brand-600 flex items-center justify-center shrink-0">
               <Briefcase size={20} />
             </div>
             <div>
@@ -52,6 +52,9 @@ export default function EmployeeDashboard() {
         <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">
           Assigned Enterprise Courses
         </h2>
+
+        {loading && <PageSpinner />}
+        {error && <ErrorState error={error} onRetry={reload} className="mb-8" />}
 
         <div className="grid sm:grid-cols-2 gap-6 mb-10">
           {courses.slice(0, 2).map((course) => (
@@ -80,7 +83,7 @@ export default function EmployeeDashboard() {
                 <span className="text-xs text-slate-400">Self-Paced</span>
                 <Link
                   to={`/courses/${course.id}`}
-                  className="text-xs font-bold text-[#16A34A] hover:underline flex items-center gap-1"
+                  className="text-xs font-bold text-brand-600 hover:underline flex items-center gap-1"
                 >
                   <span>Course Details</span>
                   <ArrowRight size={13} />

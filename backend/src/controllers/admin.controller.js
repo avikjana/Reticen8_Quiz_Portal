@@ -69,6 +69,19 @@ export class AdminController {
     if (!id) {
       throw new AppError('User ID is required', 400)
     }
+    if (id === req.user.id) {
+      throw new AppError("You can't delete your own account.", 400)
+    }
+    const target = UserModel.findById(id)
+    if (!target) {
+      throw new AppError('User not found', 404)
+    }
+    if (target.role === 'Administrator') {
+      const admins = UserModel.getAll().filter((u) => u.role === 'Administrator')
+      if (admins.length <= 1) {
+        throw new AppError("You can't delete the last administrator.", 400)
+      }
+    }
     const success = UserModel.delete(id)
     return {
       success,

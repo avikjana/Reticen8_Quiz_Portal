@@ -86,13 +86,13 @@ export default function FeatureGrid() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-10 sm:mb-16"
         >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-[#15803D] text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
             <Sparkles size={14} />
             <span>Platform Capabilities</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
             Everything You Need to{' '}
-            <span className="text-[#16A34A]">Master Cybersecurity</span>
+            <span className="text-brand-600">Master Cybersecurity</span>
           </h2>
           <p className="mt-4 text-base text-slate-500 leading-relaxed font-normal">
             A comprehensive professional learning platform built from the ground up for cybersecurity engineers, partner organizations, and security teams.

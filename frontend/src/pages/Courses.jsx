@@ -1,15 +1,15 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
-  Search, Filter, SlidersHorizontal, BookOpen, Clock, Users,
-  Star, ArrowRight, Check, X, LayoutGrid, List, Sparkles,
-  Shield, Award, GraduationCap, ChevronRight
+  Search, Filter, BookOpen, Clock, Star, ArrowRight, X, LayoutGrid, List, Award, GraduationCap, ChevronRight
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import AnnouncementBar from '../components/AnnouncementBar'
 import Footer from '../components/Footer'
-import { coursesData } from '../data/courses'
+import useApi from '../hooks/useApi'
+import { useAuth } from '../context/AuthContext'
+import { CardSkeletons, ErrorState } from '../components/ui/DataState'
 
 const categories = [
   'All Categories',
@@ -32,8 +32,23 @@ export default function Courses() {
   const [searchParams, setSearchParams] = useSearchParams()
   const initialSearch = searchParams.get('search') || ''
 
+  const paramCategory = searchParams.get('category')
+  const initialCategory = categories.includes(paramCategory) ? paramCategory : 'All Categories'
+
+  const { user } = useAuth()
+  // The API returns only the courses this account's role is allowed to take
+  const { data, loading, error, reload } = useApi('/courses')
+  const coursesData = useMemo(() => data || [], [data])
+
   const [searchQuery, setSearchQuery] = useState(initialSearch)
-  const [selectedCategory, setSelectedCategory] = useState('All Categories')
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory)
+
+  // Keep filters in sync when the URL changes while this page is open
+  // (navbar search, Explore menu category links)
+  useEffect(() => {
+    setSearchQuery(initialSearch)
+    setSelectedCategory(initialCategory)
+  }, [initialSearch, initialCategory])
   const [selectedDifficulty, setSelectedDifficulty] = useState('All Difficulties')
   const [sortBy, setSortBy] = useState('popular')
   const [viewMode, setViewMode] = useState('grid') // 'grid' | 'list'
@@ -62,7 +77,7 @@ export default function Courses() {
         if (sortBy === 'duration-desc') return parseInt(b.duration) - parseInt(a.duration)
         return 0
       })
-  }, [searchQuery, selectedCategory, selectedDifficulty, sortBy])
+  }, [coursesData, searchQuery, selectedCategory, selectedDifficulty, sortBy])
 
   const clearFilters = () => {
     setSearchQuery('')
@@ -87,13 +102,13 @@ export default function Courses() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-4">
-            <Link to="/" className="hover:text-[#16A34A] transition-colors">Home</Link>
+            <Link to="/" className="hover:text-brand-600 transition-colors">Home</Link>
             <ChevronRight size={13} className="text-slate-400" />
             <span className="text-slate-900 font-semibold">Explore Courses</span>
           </nav>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/70 text-[#15803D] text-xs font-bold uppercase tracking-wider mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/70 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
               <GraduationCap size={14} />
               <span>Technical Training Catalog</span>
             </div>
@@ -114,7 +129,7 @@ export default function Courses() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by topic, keyword, or firewall feature (e.g. App-ID, NAT, IPS, VPN)..."
-                className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 transition-all shadow-xs"
+                className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 transition-all shadow-xs"
               />
               {searchQuery && (
                 <button
@@ -130,7 +145,7 @@ export default function Courses() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full h-12 px-3.5 rounded-xl border border-slate-300 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 shadow-xs cursor-pointer"
+                className="w-full h-12 px-3.5 rounded-xl border border-slate-300 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 shadow-xs cursor-pointer"
               >
                 {sortOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -176,7 +191,7 @@ export default function Courses() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedCategory === cat
-                    ? 'bg-[#16A34A] text-white shadow-xs'
+                    ? 'bg-action-600 text-white shadow-xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80'
                 }`}
               >
@@ -196,13 +211,13 @@ export default function Courses() {
             <div className="bg-white rounded-3xl ring-1 ring-slate-200/80 p-4 sm:p-5 shadow-[var(--shadow-soft)] lg:sticky lg:top-24 space-y-4 lg:space-y-6">
               <div className="flex items-center justify-between pb-3 lg:pb-3.5 border-b border-slate-100">
                 <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-                  <Filter size={16} className="text-[#16A34A]" />
+                  <Filter size={16} className="text-brand-600" />
                   <span>Filter Courses</span>
                 </div>
                 {hasActiveFilters && (
                   <button
                     onClick={clearFilters}
-                    className="text-xs font-semibold text-[#16A34A] hover:underline"
+                    className="text-xs font-semibold text-brand-600 hover:underline"
                   >
                     Clear All
                   </button>
@@ -220,7 +235,7 @@ export default function Courses() {
                       key={diff}
                       className={`flex flex-shrink-0 items-center gap-2 lg:gap-2.5 text-sm cursor-pointer select-none whitespace-nowrap rounded-full px-3 py-1.5 ring-1 lg:rounded-none lg:p-0 lg:ring-0 transition-colors ${
                         selectedDifficulty === diff
-                          ? 'bg-emerald-50 ring-emerald-300 text-[#15803D] font-semibold lg:bg-transparent lg:text-slate-900'
+                          ? 'bg-emerald-50 ring-emerald-300 text-brand-700 font-semibold lg:bg-transparent lg:text-slate-900'
                           : 'ring-slate-200 text-slate-700 hover:text-slate-900'
                       }`}
                     >
@@ -229,7 +244,7 @@ export default function Courses() {
                         name="difficulty"
                         checked={selectedDifficulty === diff}
                         onChange={() => setSelectedDifficulty(diff)}
-                        className="w-4 h-4 accent-[#16A34A] max-lg:sr-only"
+                        className="w-4 h-4 accent-brand-600 max-lg:sr-only"
                       />
                       <span>{diff}</span>
                     </label>
@@ -238,7 +253,7 @@ export default function Courses() {
               </div>
 
               {/* Certifications Shortcut Banner */}
-              <div className="hidden lg:block p-4 rounded-2xl bg-gradient-to-br from-emerald-900 to-slate-900 text-white">
+              <div className="theme-fixed hidden lg:block p-4 rounded-2xl bg-gradient-to-br from-emerald-900 to-slate-900 text-white">
                 <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
                   <Award size={15} />
                   <span>Exam Blueprints</span>
@@ -263,6 +278,9 @@ export default function Courses() {
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <span className="text-sm font-semibold text-slate-700">
                 Showing <strong className="text-slate-900">{filteredCourses.length}</strong> {filteredCourses.length === 1 ? 'course' : 'courses'}
+                {user && user.role !== 'Administrator' && (
+                  <span className="font-normal text-slate-500"> available to {user.role} accounts</span>
+                )}
               </span>
 
               {hasActiveFilters && (
@@ -290,7 +308,11 @@ export default function Courses() {
             </div>
 
             {/* Empty State */}
-            {filteredCourses.length === 0 ? (
+            {loading ? (
+              <CardSkeletons count={4} className="grid grid-cols-1 md:grid-cols-2 gap-6" />
+            ) : error ? (
+              <ErrorState error={error} onRetry={reload} title="We couldn't load the course catalog" />
+            ) : filteredCourses.length === 0 ? (
               <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-xs">
                 <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400 mb-4">
                   <Search size={28} />
@@ -301,7 +323,7 @@ export default function Courses() {
                 </p>
                 <button
                   onClick={clearFilters}
-                  className="mt-5 px-6 py-2.5 rounded-full text-xs font-bold text-white bg-[#16A34A] hover:bg-[#15803D] transition-colors"
+                  className="mt-5 px-6 py-2.5 rounded-full text-xs font-bold text-white bg-action-600 hover:bg-action-700 transition-colors"
                 >
                   Reset All Filters
                 </button>
@@ -337,7 +359,7 @@ export default function Courses() {
                     </div>
 
                     <div className="px-6 flex-1 flex flex-col">
-                      <h3 className="text-lg font-bold text-slate-900 hover:text-[#16A34A] transition-colors leading-snug">
+                      <h3 className="text-lg font-bold text-slate-900 hover:text-brand-600 transition-colors leading-snug">
                         <Link to={`/courses/${course.id}`}>{course.title}</Link>
                       </h3>
                       <p className="mt-2 text-xs sm:text-sm text-slate-500 line-clamp-2 leading-relaxed">
@@ -378,7 +400,7 @@ export default function Courses() {
                       </div>
                       <Link
                         to={`/courses/${course.id}`}
-                        className="inline-flex items-center gap-1 font-bold text-[#16A34A] hover:text-emerald-800"
+                        className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-emerald-800"
                       >
                         <span>View Syllabus</span>
                         <ArrowRight size={13} />
@@ -413,7 +435,7 @@ export default function Courses() {
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-slate-900 hover:text-[#16A34A] transition-colors">
+                      <h3 className="text-lg font-bold text-slate-900 hover:text-brand-600 transition-colors">
                         <Link to={`/courses/${course.id}`}>{course.title}</Link>
                       </h3>
                       <p className="mt-1 text-sm text-slate-500 line-clamp-1">
@@ -443,7 +465,7 @@ export default function Courses() {
                       </Link>
                       <Link
                         to={`/learn/${course.id}`}
-                        className="px-5 py-2.5 rounded-xl bg-[#16A34A] text-white text-xs font-bold hover:bg-[#15803D] shadow-xs transition-colors flex items-center gap-1.5"
+                        className="px-5 py-2.5 rounded-xl bg-action-600 text-white text-xs font-bold hover:bg-action-700 shadow-xs transition-colors flex items-center gap-1.5"
                       >
                         <span>Start Learning</span>
                         <ArrowRight size={13} />

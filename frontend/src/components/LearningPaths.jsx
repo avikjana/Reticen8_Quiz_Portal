@@ -3,14 +3,17 @@ import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Compass } from 'lucide-react'
 import { CourseCard } from './CourseCard'
-import { coursesData as learningPaths } from '../data/courses'
+import useApi from '../hooks/useApi'
+import { CardSkeletons, ErrorState } from './ui/DataState'
 
 export default function LearningPaths() {
   const ref = useRef(null)
+  const { data, loading, error, reload } = useApi('/courses')
+  const learningPaths = (data || []).slice(0, 4)
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-gradient-to-b from-[#F8FAFC] to-white" id="learning-paths">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-gradient-to-b from-slate-50 to-white" id="learning-paths">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
@@ -20,7 +23,7 @@ export default function LearningPaths() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-10 sm:mb-14"
         >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-[#15803D] text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
             <Compass size={14} />
             <span>Structured Curriculum</span>
           </div>
@@ -33,11 +36,17 @@ export default function LearningPaths() {
         </motion.div>
 
         {/* 4 Cards Grid */}
-        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6">
-          {learningPaths.map((course, i) => (
-            <CourseCard key={course.id} course={course} index={i} />
-          ))}
-        </div>
+        {loading ? (
+          <CardSkeletons />
+        ) : error ? (
+          <ErrorState error={error} onRetry={reload} title="We couldn't load the courses" />
+        ) : (
+          <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6">
+            {learningPaths.map((course, i) => (
+              <CourseCard key={course.id} course={course} index={i} />
+            ))}
+          </div>
+        )}
 
         {/* View All Button */}
         <motion.div
@@ -48,7 +57,7 @@ export default function LearningPaths() {
         >
           <Link
             to="/courses"
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-full text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:border-[#16A34A] hover:text-[#16A34A] hover:shadow-md transition-all"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:border-brand-600 hover:text-brand-600 hover:shadow-md transition-all"
           >
             <span>View All Courses &amp; Modules</span>
             <ArrowRight size={15} />

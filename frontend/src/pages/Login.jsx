@@ -1,10 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import {
-  Shield,
-  Briefcase,
-  Users,
   Lock,
   Mail,
   Eye,
@@ -13,58 +9,22 @@ import {
   CheckCircle2,
   AlertCircle,
   KeyRound,
-  ArrowLeft,
 } from 'lucide-react'
-import { useAuth, dashboardPathFor } from '../context/AuthContext'
+import { ROLE_CATEGORIES, getRole } from '../config/roles'
+import Logo from '../components/ui/Logo'
+import { useAuth, pathAfterAuth, describeGatedPage } from '../context/AuthContext'
+import AuthLayout from '../components/Auth/AuthLayout'
 import GoogleSignInButton, { OrDivider } from '../components/Auth/GoogleSignInButton'
 
-const categories = [
-  {
-    id: 'Administrator',
-    label: 'Administrator',
-    roleTag: 'System & Security Admin',
-    desc: 'Full enterprise control, audit logs, and user provisioning.',
-    icon: Shield,
-    color: 'purple',
-    badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
-    btnClass: 'bg-purple-600 hover:bg-purple-700',
-    ringClass: 'focus:ring-purple-500/20 focus:border-purple-600',
-    demoEmail: import.meta.env.DEV ? 'admin@reticen8.com' : '',
-    demoPass: import.meta.env.DEV ? 'AdminPassword123!' : '',
-  },
-  {
-    id: 'Employee',
-    label: 'Employee',
-    roleTag: 'Security Engineer',
-    desc: 'Internal firewall labs, threat defense curriculum, and sandboxes.',
-    icon: Briefcase,
-    color: 'emerald',
-    badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    btnClass: 'bg-[#16A34A] hover:bg-[#15803D]',
-    ringClass: 'focus:ring-[#16A34A]/20 focus:border-[#16A34A]',
-    demoEmail: import.meta.env.DEV ? 'employee@reticen8.com' : '',
-    demoPass: import.meta.env.DEV ? 'EmployeePassword123!' : '',
-  },
-  {
-    id: 'Partner',
-    label: 'Partner',
-    roleTag: 'Authorized Training Partner',
-    desc: 'Partner academy portal, seat management, and co-branded credentials.',
-    icon: Users,
-    color: 'blue',
-    badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
-    btnClass: 'bg-blue-600 hover:bg-blue-700',
-    ringClass: 'focus:ring-blue-500/20 focus:border-blue-600',
-    demoEmail: import.meta.env.DEV ? 'partner@reticen8.com' : '',
-    demoPass: import.meta.env.DEV ? 'PartnerPassword123!' : '',
-  },
-]
+const categories = ROLE_CATEGORIES
 
 export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   // Send users back to the protected page they tried to open, else their dashboard
-  const goAfterLogin = (u) => navigate(location.state?.from?.pathname || dashboardPathFor(u.role), { replace: true })
+  const from = location.state?.from
+  const gatedPage = describeGatedPage(from)
+  const goAfterLogin = (u) => navigate(pathAfterAuth(from, u.role), { replace: true })
   const { login } = useAuth()
 
   const [selectedCategory, setSelectedCategory] = useState('Employee')
@@ -75,7 +35,7 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
 
-  const activeCategory = categories.find((c) => c.id === selectedCategory) || categories[1]
+  const activeCategory = categories.find((c) => c.id === selectedCategory) || getRole()
   const IconComponent = activeCategory.icon
 
   const handleCategorySwitch = (catId) => {
@@ -111,32 +71,15 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] max-w-[90vw] h-[400px] bg-emerald-600/10 blur-[150px] rounded-full pointer-events-none" />
-
-      {/* Back to Home Link */}
-      <div className="max-w-md w-full mx-auto mb-6">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft size={14} />
-          <span>Back to Reticen8 Academy</span>
-        </Link>
-      </div>
-
-      <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden text-slate-900 relative">
+    <AuthLayout
+      eyebrow="Welcome back"
+      title="Build your skills. Build your future."
+      subtitle="Sign in to pick up where you left off — courses, hands-on firewall labs and certification guides are all waiting for you."
+    >
+      <div className="w-full max-w-md mx-auto lg:mr-0 bg-white rounded-3xl shadow-[var(--shadow-lift)] ring-1 ring-slate-200/80 overflow-hidden text-slate-900 relative">
         {/* Header */}
         <div className="p-8 pb-5 bg-gradient-to-b from-slate-50 to-white border-b border-slate-100">
-          <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#16A34A] to-[#15803D] flex items-center justify-center text-white shadow-xs">
-              <Shield size={20} className="stroke-[2.5]" />
-            </div>
-            <span className="text-xs font-black tracking-widest text-slate-900 uppercase">
-              Reticen8 Identity Portal
-            </span>
-          </div>
+          <Logo size="sm" label="Identity Portal" asLink={false} className="mb-3" />
 
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">
             Sign In to Your Account
@@ -144,6 +87,15 @@ export default function Login() {
           <p className="text-xs text-slate-500 mt-1">
             Choose your organization category to access role-specific training and lab resources.
           </p>
+
+          {gatedPage && (
+            <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2.5 text-xs text-amber-800" role="status">
+              <Lock size={15} className="text-amber-600 flex-shrink-0 mt-0.5" />
+              <span>
+                <strong className="font-bold">Members only.</strong> Please sign in or create a free account to view {gatedPage}. You'll be taken straight there afterwards.
+              </span>
+            </div>
+          )}
 
           {/* 3 Categories Tab Switcher */}
           <div className="mt-5 grid grid-cols-3 gap-2 p-1 bg-slate-100 rounded-2xl border border-slate-200/80">
@@ -168,7 +120,7 @@ export default function Login() {
                         ? cat.color === 'purple'
                           ? 'text-purple-600'
                           : cat.color === 'emerald'
-                          ? 'text-[#16A34A]'
+                          ? 'text-brand-600'
                           : 'text-blue-600'
                         : 'text-slate-400'
                     }
@@ -248,7 +200,7 @@ export default function Login() {
                     setEmail(activeCategory.demoEmail)
                     setPassword(activeCategory.demoPass)
                   }}
-                  className="text-[11px] font-bold text-[#16A34A] hover:underline flex items-center gap-1"
+                  className="text-[11px] font-bold text-brand-600 hover:underline flex items-center gap-1"
                 >
                   <KeyRound size={12} />
                   <span>Fill Demo Password</span>
@@ -314,18 +266,15 @@ export default function Login() {
         </div>
 
         {/* Card Footer: Sign Up & Help */}
-        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-slate-600">
           <div>
             <span>New to Reticen8 Academy? </span>
-            <Link to="/signup" className="font-bold text-[#16A34A] hover:underline">
-              Create an Account (Sign Up)
+            <Link to="/signup" state={{ from }} className="font-bold text-brand-600 hover:underline">
+              Create a free account
             </Link>
           </div>
-          <Link to="/forgot-password" className="text-slate-500 hover:text-slate-800 hover:underline">
-            Forgot Password?
-          </Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   )
 }

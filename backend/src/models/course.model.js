@@ -9,6 +9,22 @@ export class CourseModel {
     return db.findById('courses', id)
   }
 
+  // Which roles may see a course is set per course by its `audience` list in
+  // courses.json (e.g. ["Employee", "Partner"]). Administrators see everything,
+  // and a course with no `audience` is open to every role.
+  static isVisibleTo(course, role) {
+    if (role === 'Administrator') return true
+    if (!Array.isArray(course.audience) || course.audience.length === 0) return true
+    return course.audience.includes(role)
+  }
+
+  // Courses for a signed-in role. Signed-out visitors (no role) see the whole
+  // public catalog.
+  static getVisibleTo(role) {
+    const all = db.read('courses')
+    return role ? all.filter((c) => CourseModel.isVisibleTo(c, role)) : all
+  }
+
   static create(courseData) {
     const newCourse = {
       id: courseData.id || `course-${Date.now().toString(36)}`,

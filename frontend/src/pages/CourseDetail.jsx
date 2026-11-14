@@ -7,13 +7,50 @@ import {
 import Navbar from '../components/Navbar'
 import AnnouncementBar from '../components/AnnouncementBar'
 import Footer from '../components/Footer'
-import { coursesData } from '../data/courses'
+import useApi from '../hooks/useApi'
+import { ErrorState, NotFoundState, PageSpinner } from '../components/ui/DataState'
 
+// Loads the course from the API, then renders it. Unknown IDs get a proper
+// "not found" page instead of silently showing a different course.
 export default function CourseDetail() {
   const { id } = useParams()
+  const { data: course, loading, error, reload } = useApi(`/courses/${encodeURIComponent(id)}`)
 
-  // Find course or default to first
-  const course = coursesData.find((c) => c.id === id) || coursesData[0]
+  if (course) return <CourseDetailView course={course} />
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <AnnouncementBar />
+      <Navbar />
+      <main className="flex-1">
+        {loading ? (
+          <PageSpinner />
+        ) : error?.status === 403 ? (
+          <NotFoundState
+            title="Course not available"
+            message={error.message}
+            backTo="/courses"
+            backLabel="See your courses"
+          />
+        ) : error?.status === 404 ? (
+          <NotFoundState
+            title="Course not found"
+            message="This course doesn't exist or may have been removed."
+            backTo="/courses"
+            backLabel="Browse all courses"
+          />
+        ) : (
+          <div className="max-w-md mx-auto px-4 py-16">
+            <ErrorState error={error} onRetry={reload} title="We couldn't load this course" />
+          </div>
+        )}
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+function CourseDetailView({ course }) {
   const [activeTab, setActiveTab] = useState('overview')
 
   return (
@@ -22,7 +59,7 @@ export default function CourseDetail() {
       <Navbar />
 
       {/* Course Hero Banner */}
-      <section className="bg-slate-900 text-white pt-10 pb-16 relative overflow-hidden">
+      <section className="theme-fixed bg-slate-900 text-white pt-10 pb-16 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] max-w-[90vw] h-[350px] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -90,7 +127,7 @@ export default function CourseDetail() {
                   Available for registered Reticen8 Academy students, authorized engineers, and enterprise partners.
                 </p>
                 <div className="space-y-3">
-                  <button className="w-full py-3 px-4 bg-[#16A34A] hover:bg-[#15803D] text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
+                  <button className="w-full py-3 px-4 bg-action-600 hover:bg-action-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
                     Enroll in Course
                   </button>
                   <Link
@@ -116,7 +153,7 @@ export default function CourseDetail() {
                 onClick={() => setActiveTab('overview')}
                 className={`pb-3.5 text-sm font-bold border-b-2 transition-colors ${
                   activeTab === 'overview'
-                    ? 'border-[#16A34A] text-[#16A34A]'
+                    ? 'border-brand-600 text-brand-600'
                     : 'border-transparent text-slate-500 hover:text-slate-800'
                 }`}
               >
@@ -126,7 +163,7 @@ export default function CourseDetail() {
                 onClick={() => setActiveTab('curriculum')}
                 className={`pb-3.5 text-sm font-bold border-b-2 transition-colors ${
                   activeTab === 'curriculum'
-                    ? 'border-[#16A34A] text-[#16A34A]'
+                    ? 'border-brand-600 text-brand-600'
                     : 'border-transparent text-slate-500 hover:text-slate-800'
                 }`}
               >
@@ -142,7 +179,7 @@ export default function CourseDetail() {
                   <div className="grid sm:grid-cols-2 gap-3.5">
                     {course.skills && course.skills.map((skill, idx) => (
                       <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-700">
-                        <CheckCircle2 size={16} className="text-[#16A34A] shrink-0 mt-0.5" />
+                        <CheckCircle2 size={16} className="text-brand-600 shrink-0 mt-0.5" />
                         <span>{skill}</span>
                       </div>
                     ))}
@@ -161,7 +198,7 @@ export default function CourseDetail() {
             {/* TAB: Curriculum (Clean State - Ready for User's Course Design) */}
             {activeTab === 'curriculum' && (
               <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center shadow-xs">
-                <div className="w-12 h-12 rounded-full bg-emerald-50 text-[#16A34A] flex items-center justify-center mx-auto mb-4">
+                <div className="w-12 h-12 rounded-full bg-emerald-50 text-brand-600 flex items-center justify-center mx-auto mb-4">
                   <Sparkles size={24} />
                 </div>
                 <h3 className="text-base font-bold text-slate-900 mb-2">
@@ -195,7 +232,7 @@ export default function CourseDetail() {
               </div>
               <Link
                 to="/certifications"
-                className="mt-4 block text-center text-xs font-bold text-[#16A34A] hover:underline"
+                className="mt-4 block text-center text-xs font-bold text-brand-600 hover:underline"
               >
                 View Certification Details →
               </Link>

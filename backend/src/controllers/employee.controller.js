@@ -3,7 +3,7 @@ import CourseModel from '../models/course.model.js'
 export class EmployeeController {
   static async getDashboard(req, res) {
     const user = req.user
-    const courses = CourseModel.getAll()
+    const courses = CourseModel.getVisibleTo(req.user.role)
 
     return {
       success: true,
@@ -33,7 +33,7 @@ export class EmployeeController {
   }
 
   static async getEnrollments(req, res) {
-    const courses = CourseModel.getAll()
+    const courses = CourseModel.getVisibleTo(req.user.role)
     return {
       success: true,
       enrollments: courses.slice(0, 2),

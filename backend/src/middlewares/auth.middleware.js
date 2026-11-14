@@ -43,6 +43,17 @@ export const authenticate = async (req, res, next) => {
   if (next) next()
 }
 
+// For public routes that show more or less depending on who is asking:
+// sets req.user when a valid token is sent, otherwise carries on as a visitor.
+export const authenticateOptional = async (req, res) => {
+  if (!getBearerToken(req)) return
+  try {
+    await authenticate(req, res)
+  } catch {
+    req.user = undefined
+  }
+}
+
 export const requireRole = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user) {

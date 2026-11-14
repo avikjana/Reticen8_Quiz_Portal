@@ -34,7 +34,7 @@ function ScrollToTop() {
 function PageLoader() {
   return (
     <div className="min-h-dvh flex items-center justify-center bg-white" role="status" aria-label="Loading">
-      <span className="w-10 h-10 rounded-full border-[3px] border-emerald-100 border-t-[#16A34A] animate-spin" />
+      <span className="w-10 h-10 rounded-full border-[3px] border-emerald-100 border-t-brand-600 animate-spin" />
     </div>
   )
 }
@@ -46,15 +46,15 @@ function App() {
         <ScrollToTop />
         <Suspense fallback={<PageLoader />}>
         <Routes>
-          {/* Public Routes */}
+          {/* Public Routes (members-only pages are wrapped in ProtectedRoute) */}
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/paths" element={<Courses />} />
-          <Route path="/courses/:id" element={<CourseDetail />} />
-          <Route path="/learn/:id" element={<LearningPlayer />} />
-          <Route path="/certifications" element={<Certifications />} />
-          <Route path="/certifications/:id" element={<Certifications />} />
-          <Route path="/labs" element={<LearningPlayer />} />
+          <Route path="/courses/:id" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
+          <Route path="/learn/:id" element={<ProtectedRoute><LearningPlayer /></ProtectedRoute>} />
+          <Route path="/certifications" element={<ProtectedRoute><Certifications /></ProtectedRoute>} />
+          <Route path="/certifications/:id" element={<ProtectedRoute><Certifications /></ProtectedRoute>} />
+          <Route path="/labs" element={<ProtectedRoute><LearningPlayer /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/register" element={<SignUp />} />

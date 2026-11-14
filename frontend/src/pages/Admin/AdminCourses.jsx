@@ -1,12 +1,13 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, ArrowLeft, AlertCircle, Sparkles } from 'lucide-react'
+import { ArrowLeft, AlertCircle, Sparkles } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import { coursesData } from '../../data/courses'
+import useApi from '../../hooks/useApi'
+import { ErrorState, PageSpinner } from '../../components/ui/DataState'
 
 export default function AdminCourses() {
-  const [courses] = useState(coursesData)
+  const { data, loading, error, reload } = useApi('/courses')
+  const courses = data || []
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -25,7 +26,7 @@ export default function AdminCourses() {
 
         <div className="mb-8 p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-[#16A34A] flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-brand-600 flex items-center justify-center font-bold">
               <Sparkles size={20} />
             </div>
             <div>
@@ -36,6 +37,9 @@ export default function AdminCourses() {
             </div>
           </div>
         </div>
+
+        {loading && <PageSpinner />}
+        {error && <ErrorState error={error} onRetry={reload} className="mb-8" />}
 
         <div className="grid gap-4">
           {courses.map((course) => (

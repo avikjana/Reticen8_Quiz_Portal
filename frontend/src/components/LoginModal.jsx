@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
-  Shield,
-  Briefcase,
-  Users,
   Lock,
   Mail,
   Eye,
@@ -12,53 +9,14 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
   KeyRound,
 } from 'lucide-react'
+import { ROLE_CATEGORIES, getRole } from '../config/roles'
+import Logo from './ui/Logo'
 import { useAuth } from '../context/AuthContext'
 import GoogleSignInButton, { OrDivider } from './Auth/GoogleSignInButton'
 
-const categories = [
-  {
-    id: 'Administrator',
-    label: 'Administrator',
-    roleTag: 'System & Security Admin',
-    desc: 'Full enterprise control, audit logs, and user provisioning.',
-    icon: Shield,
-    color: 'purple',
-    badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
-    btnClass: 'bg-purple-600 hover:bg-purple-700',
-    ringClass: 'focus:ring-purple-500/20 focus:border-purple-600',
-    demoEmail: import.meta.env.DEV ? 'admin@reticen8.com' : '',
-    demoPass: import.meta.env.DEV ? 'AdminPassword123!' : '',
-  },
-  {
-    id: 'Employee',
-    label: 'Employee',
-    roleTag: 'Security Engineer',
-    desc: 'Internal firewall labs, threat defense curriculum, and sandboxes.',
-    icon: Briefcase,
-    color: 'emerald',
-    badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    btnClass: 'bg-[#16A34A] hover:bg-[#15803D]',
-    ringClass: 'focus:ring-[#16A34A]/20 focus:border-[#16A34A]',
-    demoEmail: import.meta.env.DEV ? 'employee@reticen8.com' : '',
-    demoPass: import.meta.env.DEV ? 'EmployeePassword123!' : '',
-  },
-  {
-    id: 'Partner',
-    label: 'Partner',
-    roleTag: 'Authorized Training Partner',
-    desc: 'Partner academy portal, seat management, and co-branded credentials.',
-    icon: Users,
-    color: 'blue',
-    badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
-    btnClass: 'bg-blue-600 hover:bg-blue-700',
-    ringClass: 'focus:ring-blue-500/20 focus:border-blue-600',
-    demoEmail: import.meta.env.DEV ? 'partner@reticen8.com' : '',
-    demoPass: import.meta.env.DEV ? 'PartnerPassword123!' : '',
-  },
-]
+const categories = ROLE_CATEGORIES
 
 export default function LoginModal() {
   const { isLoginModalOpen, closeLoginModal, login, loginModalDefaultCategory } = useAuth()
@@ -75,7 +33,7 @@ export default function LoginModal() {
   useEffect(() => {
     if (loginModalDefaultCategory) {
       setSelectedCategory(loginModalDefaultCategory)
-      const currentCat = categories.find((c) => c.id === loginModalDefaultCategory) || categories[1]
+      const currentCat = categories.find((c) => c.id === loginModalDefaultCategory) || getRole()
       setEmail(currentCat.demoEmail)
       setPassword(currentCat.demoPass)
     }
@@ -92,7 +50,7 @@ export default function LoginModal() {
     }
   }
 
-  const activeCategory = categories.find((c) => c.id === selectedCategory) || categories[1]
+  const activeCategory = categories.find((c) => c.id === selectedCategory) || getRole()
   const IconComponent = activeCategory.icon
 
   const handleSubmit = async (e) => {
@@ -123,7 +81,7 @@ export default function LoginModal() {
   if (!isLoginModalOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -142,14 +100,7 @@ export default function LoginModal() {
 
         {/* Modal Header */}
         <div className="p-7 pb-5 bg-gradient-to-b from-slate-50 to-white border-b border-slate-100">
-          <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#16A34A] to-[#15803D] flex items-center justify-center text-white shadow-xs">
-              <Shield size={18} className="stroke-[2.5]" />
-            </div>
-            <span className="text-xs font-black tracking-widest text-slate-900 uppercase">
-              Reticen8 Academy Identity Access
-            </span>
-          </div>
+          <Logo size="sm" label="Identity Access" asLink={false} className="mb-3" />
 
           <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             Sign In to Your Workspace
@@ -181,7 +132,7 @@ export default function LoginModal() {
                         ? cat.color === 'purple'
                           ? 'text-purple-600'
                           : cat.color === 'emerald'
-                          ? 'text-[#16A34A]'
+                          ? 'text-brand-600'
                           : 'text-blue-600'
                         : 'text-slate-400'
                     }
@@ -268,7 +219,7 @@ export default function LoginModal() {
                     setEmail(activeCategory.demoEmail)
                     setPassword(activeCategory.demoPass)
                   }}
-                  className="text-[11px] font-bold text-[#16A34A] hover:underline flex items-center gap-1"
+                  className="text-[11px] font-bold text-brand-600 hover:underline flex items-center gap-1"
                 >
                   <KeyRound size={12} />
                   <span>Fill Demo Password</span>
@@ -349,7 +300,7 @@ export default function LoginModal() {
             <a
               href="/signup"
               onClick={() => closeLoginModal()}
-              className="font-bold text-[#16A34A] hover:underline"
+              className="font-bold text-brand-600 hover:underline"
             >
               Sign Up
             </a>

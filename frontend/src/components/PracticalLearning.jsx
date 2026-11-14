@@ -6,11 +6,6 @@ import {
   Terminal,
   Bug,
   FlaskConical,
-  ShieldCheck,
-  CheckCircle2,
-  Activity,
-  Layers,
-  Lock,
 } from 'lucide-react'
 
 const features = [
@@ -46,7 +41,7 @@ export default function PracticalLearning() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-[#F8FAFC]" id="practical-learning">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-slate-50" id="practical-learning">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
@@ -56,7 +51,7 @@ export default function PracticalLearning() {
               initial={{ opacity: 0, x: -20 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="bg-[#0B1120] rounded-2xl shadow-2xl border border-slate-800 overflow-hidden"
+              className="theme-fixed bg-[#0B1120] rounded-2xl shadow-2xl border border-slate-800 overflow-hidden"
             >
               {/* Window Header */}
               <div className="flex items-center justify-between px-5 py-3.5 bg-[#101828] border-b border-slate-800">
@@ -80,7 +75,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('policy')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'policy'
-                      ? 'border-[#16A34A] text-emerald-400'
+                      ? 'border-brand-600 text-emerald-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -90,7 +85,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('threats')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'threats'
-                      ? 'border-[#16A34A] text-emerald-400'
+                      ? 'border-brand-600 text-emerald-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -100,7 +95,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('topology')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'topology'
-                      ? 'border-[#16A34A] text-emerald-400'
+                      ? 'border-brand-600 text-emerald-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -199,13 +194,13 @@ export default function PracticalLearning() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-[#15803D] text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
                 <FlaskConical size={14} />
                 <span>Hands-On Virtual Labs</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 Go Beyond Theory.{' '}
-                <span className="text-[#16A34A]">Learn Through Practice.</span>
+                <span className="text-brand-600">Learn Through Practice.</span>
               </h2>
               <p className="mt-4 text-base text-slate-600 leading-relaxed font-normal">
                 Experience real-world enterprise firewall configuration scenarios and develop the muscle memory required to deploy, manage, and troubleshoot mission-critical security infrastructure.
@@ -249,7 +244,7 @@ export default function PracticalLearning() {
             >
               <Link
                 to="/labs"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] shadow-md shadow-emerald-700/20 transition-all group"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-action-600 hover:bg-action-700 shadow-md shadow-blue-950/30 transition-all group"
               >
                 <span>Explore Practical Training</span>
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

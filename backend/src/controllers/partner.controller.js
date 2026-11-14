@@ -3,7 +3,7 @@ import CourseModel from '../models/course.model.js'
 export class PartnerController {
   static async getDashboard(req, res) {
     const user = req.user
-    const courses = CourseModel.getAll()
+    const courses = CourseModel.getVisibleTo(user.role)
 
     return {
       success: true,

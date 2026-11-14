@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'
 
 const announcements = [
@@ -34,7 +33,7 @@ export default function AnnouncementBar() {
   }
 
   return (
-    <div className="relative bg-gradient-to-r from-[#0F5132] via-[#146C43] to-[#198754] text-white text-xs sm:text-[13px] py-2 px-4">
+    <div className="theme-fixed relative bg-gradient-to-r from-[#0F5132] via-[#146C43] to-[#198754] text-white text-xs sm:text-[13px] py-2 px-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
         {/* Left message with badge */}
         <div className="flex items-center gap-2.5 min-w-0 flex-1">

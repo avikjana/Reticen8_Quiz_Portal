@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   Shield,
   Globe2,
-  Award,
   Sparkles,
 } from 'lucide-react'
 
@@ -53,7 +52,7 @@ export default function PartnerSection() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-[#F8FAFC]" id="partners">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-slate-50" id="partners">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
@@ -64,13 +63,13 @@ export default function PartnerSection() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-[#15803D] text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
                 <Globe2 size={14} />
                 <span>Global Ecosystem</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 Empowering Our{' '}
-                <span className="text-[#16A34A]">Partner Ecosystem</span>
+                <span className="text-brand-600">Partner Ecosystem</span>
               </h2>
               <p className="mt-4 text-base text-slate-600 leading-relaxed font-normal">
                 Equip your engineering teams with the knowledge and practical expertise needed to deploy, configure, and manage Reticen8 cybersecurity solutions effectively for enterprise clients.
@@ -81,7 +80,7 @@ export default function PartnerSection() {
             <ul className="mt-8 grid sm:grid-cols-2 gap-3.5">
               {benefits.map((b) => (
                 <li key={b} className="flex items-start gap-2.5">
-                  <CheckCircle2 size={17} className="text-[#16A34A] mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 size={17} className="text-brand-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm font-medium text-slate-700">{b}</span>
                 </li>
               ))}
@@ -91,7 +90,7 @@ export default function PartnerSection() {
             <div className="mt-10 flex flex-wrap items-center gap-3.5">
               <Link
                 to="/partners"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] shadow-md shadow-emerald-700/20 transition-all group"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-white bg-action-600 hover:bg-action-700 shadow-md shadow-blue-950/30 transition-all group"
               >
                 <Building2 size={16} />
                 <span>Partner Training</span>
@@ -119,7 +118,7 @@ export default function PartnerSection() {
                   className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all flex items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tier.color} flex items-center justify-center text-white shadow-sm flex-shrink-0`}>
+                    <div className={`theme-fixed w-12 h-12 rounded-xl bg-gradient-to-br ${tier.color} flex items-center justify-center text-white shadow-sm flex-shrink-0`}>
                       <Shield size={22} />
                     </div>
                     <div>
@@ -146,7 +145,7 @@ export default function PartnerSection() {
 
               {/* Verified Trust Statement */}
               <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200/60 flex items-center gap-3">
-                <Sparkles size={18} className="text-[#16A34A] flex-shrink-0" />
+                <Sparkles size={18} className="text-brand-600 flex-shrink-0" />
                 <p className="text-xs text-emerald-900 leading-relaxed font-medium">
                   Reticen8 partner credentials are cryptographically verifiable and backed by our continuous enterprise syllabus.
                 </p>

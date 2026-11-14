@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { dashboardPathFor } from '../config/roles'
 import authService from '../services/authService'
+import { clearApiCache } from '../hooks/useApi'
 
 const AuthContext = createContext(null)
 
@@ -15,8 +17,21 @@ const readStoredUser = () => {
   }
 }
 
-export const dashboardPathFor = (role) =>
-  role === 'Administrator' ? '/admin' : role === 'Partner' ? '/partner' : '/employee'
+export { dashboardPathFor }
+
+// Where to go after login/sign-up: back to the members-only page the visitor
+// tried to open (keeping ?query and #hash), otherwise their dashboard.
+export const pathAfterAuth = (from, role) =>
+  from?.pathname ? `${from.pathname}${from.search || ''}${from.hash || ''}` : dashboardPathFor(role)
+
+// Friendly description of the gated page for the "please sign in" notice
+export const describeGatedPage = (from) => {
+  const p = from?.pathname || ''
+  if (p.startsWith('/certifications')) return 'the certification guide'
+  if (p.startsWith('/courses/') || p.startsWith('/learn/')) return 'this course'
+  if (p.startsWith('/labs')) return 'the hands-on labs'
+  return p ? 'this page' : null
+}
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null)
@@ -36,6 +51,9 @@ export function AuthProvider({ children }) {
   }, [token])
 
   const clearSession = useCallback(() => {
+    // Remove the token right away so re-fetches after logout go out as a visitor
+    localStorage.removeItem(TOKEN_KEY)
+    clearApiCache()
     setUser(null)
     setToken(null)
   }, [])
@@ -68,6 +86,9 @@ export function AuthProvider({ children }) {
   }, [clearSession])
 
   const startSession = (data) => {
+    clearApiCache()
+    // Store the token immediately so API calls made right after login carry it
+    localStorage.setItem(TOKEN_KEY, data.token)
     setToken(data.token)
     setUser(data.user)
     setIsLoginModalOpen(false)

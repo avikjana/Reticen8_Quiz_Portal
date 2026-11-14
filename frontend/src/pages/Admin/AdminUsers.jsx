@@ -1,35 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Shield, Users, ArrowLeft, Plus, CheckCircle2, Trash2, Mail, Briefcase } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Mail } from 'lucide-react'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import api from '../../services/api'
+import useApi from '../../hooks/useApi'
+import { ErrorState, PageSpinner } from '../../components/ui/DataState'
 
 export default function AdminUsers() {
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
+  // No fallback data: if the API fails the page says so instead of showing fake users
+  const { data, loading, error, reload } = useApi('/admin/users', { cacheResult: false })
+  const users = data?.users || []
   const [roleFilter, setRoleFilter] = useState('All')
-
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const res = await api.get('/admin/users')
-        if (res.success) {
-          setUsers(res.users)
-        }
-      } catch (err) {
-        // Fallback demo users
-        setUsers([
-          { id: 'usr-admin-01', name: 'Avik Jana', email: 'admin@reticen8.com', role: 'Administrator', department: 'Global Information Security' },
-          { id: 'usr-emp-02', name: 'Avik Jana', email: 'employee@reticen8.com', role: 'Employee', department: 'Security Operations Center (SOC)' },
-          { id: 'usr-partner-03', name: 'Avik Jana', email: 'partner@reticen8.com', role: 'Partner', department: 'Partner Engineering Ecosystem' },
-        ])
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchUsers()
-  }, [])
 
   const filteredUsers = roleFilter === 'All'
     ? users
@@ -55,7 +36,7 @@ export default function AdminUsers() {
                 onClick={() => setRoleFilter(role)}
                 className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
                   roleFilter === role
-                    ? 'bg-[#16A34A] text-white shadow-2xs'
+                    ? 'bg-action-600 text-white shadow-2xs'
                     : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
                 }`}
               >
@@ -65,7 +46,10 @@ export default function AdminUsers() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+        {loading && <PageSpinner />}
+        {error && <ErrorState error={error} onRetry={reload} className="mb-8" />}
+
+        <div className={`bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs ${loading || error ? 'hidden' : ''}`}>
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <h2 className="text-base font-bold text-slate-900">Registered Academy Users</h2>
             <span className="text-xs text-slate-500 font-medium">{filteredUsers.length} accounts</span>

@@ -78,7 +78,7 @@ function PhotoCard({ src, alt, caption, className, fallbackColor = 'from-emerald
   const [error, setError] = useState(false)
 
   return (
-    <div className={`group relative overflow-hidden bg-slate-100 shadow-[var(--shadow-lift)] ring-1 ring-slate-900/5 ${className}`}>
+    <div className={`theme-fixed group relative overflow-hidden bg-slate-100 shadow-[var(--shadow-lift)] ring-1 ring-slate-900/5 ${className}`}>
       {/* Real image */}
       {!error && (
         <img
@@ -139,7 +139,7 @@ export default function HeroSection() {
             <span className="text-slate-400 hidden sm:inline">•</span>
             <span className="text-slate-600">
               See why 12,000+ engineers began their journey with our{' '}
-              <Link to="/courses" className="text-[#16A34A] font-semibold underline underline-offset-2 hover:text-emerald-700">
+              <Link to="/courses" className="text-brand-600 font-semibold underline underline-offset-2 hover:text-emerald-700">
                 free Intro to Network Security course
               </Link>
             </span>
@@ -189,14 +189,14 @@ export default function HeroSection() {
             >
               <Link
                 to="/register"
-                className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-[#16A34A] to-emerald-500 hover:from-[#15803D] hover:to-[#16A34A] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-[var(--shadow-glow)] transition-all duration-200"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-action-600 to-action-500 hover:from-action-700 hover:to-action-600 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-[var(--shadow-glow)] transition-all duration-200"
               >
                 <span>Start Learning</span>
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/courses"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-slate-800 bg-white/80 backdrop-blur ring-1 ring-slate-200 hover:ring-emerald-300 hover:text-[#16A34A] hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)] active:scale-[0.98] transition-all duration-200"
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-slate-800 bg-white/80 backdrop-blur ring-1 ring-slate-200 hover:ring-emerald-300 hover:text-brand-600 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)] active:scale-[0.98] transition-all duration-200"
               >
                 Explore Subjects
               </Link>
@@ -210,15 +210,15 @@ export default function HeroSection() {
               className="mt-8 pt-6 border-t border-slate-200/70 flex flex-wrap items-center gap-y-2 gap-x-5 sm:gap-x-6 text-xs text-slate-500 font-medium"
             >
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={15} className="text-[#16A34A]" />
+                <CheckCircle2 size={15} className="text-brand-600" />
                 Professional Training
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={15} className="text-[#16A34A]" />
+                <CheckCircle2 size={15} className="text-brand-600" />
                 Practical Learning
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={15} className="text-[#16A34A]" />
+                <CheckCircle2 size={15} className="text-brand-600" />
                 Industry-Focused Certification
               </span>
             </motion.div>

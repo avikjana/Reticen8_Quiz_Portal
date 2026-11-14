@@ -96,7 +96,7 @@ export default function GoogleSignInButton({ role = 'Employee', onSuccess, onErr
         <div ref={containerRef} className={`w-full flex justify-center ${busy ? 'opacity-50 pointer-events-none' : ''}`} />
         {busy && (
           <span className="absolute inset-0 flex items-center justify-center" role="status" aria-label="Signing in with Google">
-            <span className="w-5 h-5 border-2 border-slate-300 border-t-[#16A34A] rounded-full animate-spin" />
+            <span className="w-5 h-5 border-2 border-slate-300 border-t-brand-600 rounded-full animate-spin" />
           </span>
         )}
       </div>

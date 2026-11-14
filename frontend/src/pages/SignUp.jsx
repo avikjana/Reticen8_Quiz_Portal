@@ -1,10 +1,6 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import {
-  Shield,
-  Briefcase,
-  Users,
   Lock,
   Mail,
   User,
@@ -14,55 +10,23 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  ArrowLeft,
-  KeyRound,
   UserPlus
 } from 'lucide-react'
-import { useAuth, dashboardPathFor } from '../context/AuthContext'
+import { SIGNUP_CATEGORIES } from '../config/roles'
+import { useAuth, pathAfterAuth, describeGatedPage } from '../context/AuthContext'
+import AuthLayout from '../components/Auth/AuthLayout'
 import GoogleSignInButton, { OrDivider } from '../components/Auth/GoogleSignInButton'
 
-const allCategories = [
-  {
-    id: 'Administrator',
-    label: 'Administrator',
-    roleTag: 'System & Security Admin',
-    desc: 'Full enterprise control, audit logs, and user provisioning.',
-    icon: Shield,
-    color: 'purple',
-    badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
-    btnClass: 'bg-purple-600 hover:bg-purple-700',
-    ringClass: 'focus:ring-purple-500/20 focus:border-purple-600',
-  },
-  {
-    id: 'Employee',
-    label: 'Employee',
-    roleTag: 'Security Engineer',
-    desc: 'Internal firewall labs, threat defense curriculum, and sandboxes.',
-    icon: Briefcase,
-    color: 'emerald',
-    badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    btnClass: 'bg-[#16A34A] hover:bg-[#15803D]',
-    ringClass: 'focus:ring-[#16A34A]/20 focus:border-[#16A34A]',
-  },
-  {
-    id: 'Partner',
-    label: 'Partner',
-    roleTag: 'Authorized Training Partner',
-    desc: 'Partner academy portal, seat management, and co-branded credentials.',
-    icon: Users,
-    color: 'blue',
-    badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
-    btnClass: 'bg-blue-600 hover:bg-blue-700',
-    ringClass: 'focus:ring-blue-500/20 focus:border-blue-600',
-  },
-]
 
 // Administrator accounts can only be created by an existing admin, so they
 // aren't offered on the public sign-up form.
-const categories = allCategories.filter((c) => c.id !== 'Administrator')
+const categories = SIGNUP_CATEGORIES
 
 export default function SignUp() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = location.state?.from
+  const gatedPage = describeGatedPage(from)
   const { register } = useAuth()
 
   const [selectedCategory, setSelectedCategory] = useState('Employee')
@@ -91,17 +55,12 @@ export default function SignUp() {
         password,
         role: selectedCategory,
         department: department || 'Cybersecurity Division',
-        roleTitle:
-          selectedCategory === 'Administrator'
-            ? 'Enterprise Systems Administrator'
-            : selectedCategory === 'Partner'
-            ? 'Authorized Training Partner'
-            : 'Security Operations Engineer',
+        roleTitle: activeCategory.signupRoleTitle,
       })
 
       if (res.success) {
         setSuccessMsg(`Account created successfully for ${res.user.name}! Logging you in...`)
-        setTimeout(() => navigate(dashboardPathFor(res.user.role), { replace: true }), 900)
+        setTimeout(() => navigate(pathAfterAuth(from, res.user.role), { replace: true }), 900)
       } else {
         setErrorMsg(res.error || 'Registration failed. Please try again.')
       }
@@ -113,34 +72,19 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] max-w-[90vw] h-[400px] bg-emerald-600/10 blur-[140px] rounded-full pointer-events-none" />
-
-      {/* Top Brand Link */}
-      <div className="relative mb-8 text-center">
-        <Link to="/" className="inline-flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#16A34A] to-[#15803D] flex items-center justify-center text-white shadow-md shadow-emerald-700/20 group-hover:scale-105 transition-transform">
-            <Shield size={22} className="stroke-[2.5]" />
-          </div>
-          <div className="flex flex-col text-left leading-tight">
-            <span className="text-[15px] font-black tracking-wide text-white uppercase">
-              Reticen8
-            </span>
-            <span className="text-[10px] font-bold tracking-[0.2em] text-[#16A34A] uppercase -mt-0.5">
-              Academy
-            </span>
-          </div>
-        </Link>
-      </div>
-
+    <AuthLayout
+      eyebrow="Join for free"
+      title="Start learning. Get certified."
+      subtitle="Create your free Reticen8 Academy account to unlock every course, the hands-on lab simulator and the certification guides."
+      points={['Free introductory courses', 'Interactive firewall lab simulator', 'Industry-recognised certifications']}
+    >
       {/* Card Container */}
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+      <div className="relative w-full max-w-lg mx-auto lg:mr-0 bg-white rounded-3xl shadow-[var(--shadow-lift)] ring-1 ring-slate-200/80 overflow-hidden">
         {/* Header */}
         <div className="p-8 pb-6 border-b border-slate-100">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-emerald-50 text-[#16A34A]">
+              <span className="p-1.5 rounded-lg bg-emerald-50 text-brand-600">
                 <UserPlus size={18} />
               </span>
               <h1 className="text-xl font-black text-slate-900 tracking-tight">
@@ -149,7 +93,8 @@ export default function SignUp() {
             </div>
             <Link
               to="/login"
-              className="text-xs font-bold text-[#16A34A] hover:underline flex items-center gap-1"
+              state={{ from }}
+              className="text-xs font-bold text-brand-600 hover:underline flex items-center gap-1"
             >
               <span>Sign In</span>
               <ArrowRight size={13} />
@@ -158,6 +103,15 @@ export default function SignUp() {
           <p className="text-xs text-slate-500">
             Choose your role category and enter your enterprise credentials to begin.
           </p>
+
+          {gatedPage && (
+            <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2.5 text-xs text-amber-800" role="status">
+              <Lock size={15} className="text-amber-600 flex-shrink-0 mt-0.5" />
+              <span>
+                <strong className="font-bold">Members only.</strong> Please create a free account or sign in to view {gatedPage}. You'll be taken straight there afterwards.
+              </span>
+            </div>
+          )}
 
           {/* 3 Categories Selector */}
           <div className="mt-5 grid grid-cols-2 gap-2 p-1.5 bg-slate-100 rounded-2xl">
@@ -186,7 +140,7 @@ export default function SignUp() {
                           ? 'text-purple-600'
                           : cat.id === 'Partner'
                           ? 'text-blue-600'
-                          : 'text-[#16A34A]'
+                          : 'text-brand-600'
                         : 'text-slate-400'
                     }`}
                   />
@@ -202,17 +156,21 @@ export default function SignUp() {
           {/* Active Category Tag */}
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-[#16A34A] flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-brand-600 flex items-center justify-center font-bold">
                 <IconComponent size={16} />
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-800">{activeCategory.roleTag}</div>
-                <div className="text-[10px] text-slate-500">{activeCategory.desc}</div>
+                <div className="text-xs font-bold text-slate-800">{activeCategory.signupTag || activeCategory.roleTag}</div>
+                {!activeCategory.signupTitleOnly && (
+                  <div className="text-[10px] text-slate-500">{activeCategory.desc}</div>
+                )}
               </div>
             </div>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${activeCategory.badgeClass}`}>
-              {activeCategory.label}
-            </span>
+            {!activeCategory.signupTitleOnly && (
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${activeCategory.badgeClass}`}>
+                {activeCategory.label}
+              </span>
+            )}
           </div>
 
           {errorMsg && (
@@ -240,7 +198,7 @@ export default function SignUp() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Avik Jana"
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20 focus:border-[#16A34A]"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
               />
             </div>
           </div>
@@ -256,7 +214,7 @@ export default function SignUp() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="avik@enterprise.com"
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20 focus:border-[#16A34A]"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
               />
             </div>
           </div>
@@ -271,7 +229,7 @@ export default function SignUp() {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 placeholder="e.g. Security Operations Center (SOC)"
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20 focus:border-[#16A34A]"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
               />
             </div>
           </div>
@@ -289,7 +247,7 @@ export default function SignUp() {
                 placeholder="Create a secure password"
                 minLength={8}
                 autoComplete="new-password"
-                className="w-full h-11 pl-10 pr-11 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20 focus:border-[#16A34A]"
+                className="w-full h-11 pl-10 pr-11 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
               />
               <button
                 type="button"
@@ -332,25 +290,25 @@ export default function SignUp() {
             onSuccess={(u) => {
               setErrorMsg('')
               setSuccessMsg(`Welcome, ${u.name}! Signed in with Google.`)
-              setTimeout(() => navigate(dashboardPathFor(u.role), { replace: true }), 500)
+              setTimeout(() => navigate(pathAfterAuth(from, u.role), { replace: true }), 500)
             }}
             onError={(msg) => setErrorMsg(msg)}
           />
         </div>
 
         {/* Footer Links */}
-        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-slate-600">
           <div>
             <span>Already have an account? </span>
-            <Link to="/login" className="font-bold text-[#16A34A] hover:underline">
+            <Link to="/login" state={{ from }} className="font-bold text-brand-600 hover:underline">
               Sign In here
             </Link>
           </div>
-          <Link to="/forgot-password" className="text-slate-500 hover:text-slate-800 hover:underline">
+          <Link to="/forgot-password" className="whitespace-nowrap text-slate-500 hover:text-slate-800 hover:underline">
             Forgot Password?
           </Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { KeyRound, Mail, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react'
+import AuthLayout from './AuthLayout'
+import { KeyRound, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -12,9 +13,14 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200 p-8 shadow-xl">
-        <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#16A34A] flex items-center justify-center mb-6">
+    <AuthLayout
+      eyebrow="Account recovery"
+      title="Locked out? We've got you."
+      subtitle="Enter the email you registered with and we'll send you instructions to reset your password."
+      points={['Works for email & password accounts', 'Google accounts: just use “Sign in with Google”', 'Link expires for your security']}
+    >
+      <div className="w-full max-w-md mx-auto lg:mr-0 bg-white rounded-3xl ring-1 ring-slate-200/80 p-6 sm:p-8 shadow-[var(--shadow-lift)]">
+        <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-brand-600 flex items-center justify-center mb-6">
           <KeyRound size={24} />
         </div>
 
@@ -26,7 +32,7 @@ export default function ForgotPassword() {
         {submitted ? (
           <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs mb-6">
             <div className="flex items-center gap-2 font-bold mb-1">
-              <CheckCircle2 size={16} className="text-[#16A34A]" />
+              <CheckCircle2 size={16} className="text-brand-600" />
               <span>Reset Link Dispatched</span>
             </div>
             <p className="text-slate-600 leading-relaxed">
@@ -45,14 +51,14 @@ export default function ForgotPassword() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@reticen8.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-[#16A34A]"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-brand-600"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-[#16A34A] hover:bg-[#15803D] text-white font-bold rounded-xl text-xs transition-colors shadow-sm"
+              className="w-full py-3 px-4 bg-action-600 hover:bg-action-700 text-white font-bold rounded-xl text-xs transition-colors shadow-sm"
             >
               Send Password Reset Instructions
             </button>
@@ -77,6 +83,6 @@ export default function ForgotPassword() {
           <span>Back to Sign In</span>
         </Link>
       </div>
-    </div>
+    </AuthLayout>
   )
 }

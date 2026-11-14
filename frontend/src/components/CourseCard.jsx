@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, BookOpen, Clock, Shield, Lock, Network, Cpu, Check } from 'lucide-react'
+import { ArrowRight, BookOpen, Shield, Lock, Network, Cpu, Check } from 'lucide-react'
 
 const iconMap = {
   shield: Shield,
@@ -61,8 +61,7 @@ export function CourseCard({ course, index }) {
       {/* Card Header */}
       <div className="p-5 sm:p-6 pb-4 flex items-start justify-between gap-4">
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform"
-          style={{ background: course.bgColor || '#F0FDF4' }}
+          className="w-12 h-12 rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform bg-emerald-50"
         >
           <Icon size={24} style={{ color: theme.accent }} />
         </div>
@@ -76,7 +75,7 @@ export function CourseCard({ course, index }) {
 
       {/* Card Content */}
       <div className="px-5 sm:px-6 flex-1 flex flex-col">
-        <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#16A34A] transition-colors leading-snug">
+        <h3 className="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition-colors leading-snug">
           {course.title}
         </h3>
         <p className="mt-2.5 text-sm text-slate-500 leading-relaxed">
@@ -91,7 +90,7 @@ export function CourseCard({ course, index }) {
           <ul className="space-y-2">
             {topicsList.slice(0, 4).map((topic) => (
               <li key={topic} className="flex items-center gap-2 text-xs font-medium text-slate-600">
-                <Check size={14} className="text-[#16A34A] flex-shrink-0" />
+                <Check size={14} className="text-brand-600 flex-shrink-0" />
                 <span className="truncate">{topic}</span>
               </li>
             ))}
@@ -107,7 +106,7 @@ export function CourseCard({ course, index }) {
         </div>
         <Link
           to={`/courses/${course.id}`}
-          className="inline-flex items-center gap-1 text-xs font-bold text-[#16A34A] hover:text-emerald-800 transition-colors group/btn"
+          className="inline-flex items-center gap-1 text-xs font-bold text-brand-600 hover:text-emerald-800 transition-colors group/btn"
         >
           <span>Explore Course</span>
           <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />

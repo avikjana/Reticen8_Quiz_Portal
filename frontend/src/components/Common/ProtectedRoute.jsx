@@ -23,7 +23,7 @@ export function ProtectedRoute({ children, allowedRoles = [] }) {
           </p>
           <a
             href="/"
-            className="inline-block px-5 py-2.5 bg-[#16A34A] hover:bg-[#15803D] text-white font-bold text-xs rounded-xl transition-colors"
+            className="inline-block px-5 py-2.5 bg-action-600 hover:bg-action-700 text-white font-bold text-xs rounded-xl transition-colors"
           >
             Return to Academy Home
           </a>

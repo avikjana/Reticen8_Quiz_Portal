@@ -2,35 +2,83 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Award, ShieldCheck, CheckCircle2, FileText, ArrowRight,
-  Clock, DollarSign, Calendar, ChevronRight, Download, Search,
-  Check, Sparkles, AlertCircle, X, Shield, ExternalLink
+  Award, ShieldCheck, ChevronRight, AlertCircle, X
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import AnnouncementBar from '../components/AnnouncementBar'
 import Footer from '../components/Footer'
-import { certificationsData } from '../data/certifications'
+import useApi from '../hooks/useApi'
+import api from '../services/api'
+import { useAuth } from '../context/AuthContext'
+import { ErrorState, PageSpinner } from '../components/ui/DataState'
 
+// Loads the members-only certification guide, then renders the page
 export default function Certifications() {
-  const [selectedCert, setSelectedCert] = useState(certificationsData[0])
+  const { data, loading, error, reload } = useApi('/certifications/guide')
+
+  if (data?.length) return <CertificationsView certificationsData={data} />
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <AnnouncementBar />
+      <Navbar />
+      <main className="flex-1">
+        {loading ? (
+          <PageSpinner />
+        ) : (
+          <div className="max-w-md mx-auto px-4 py-16">
+            <ErrorState
+              error={error || { message: 'No certifications are available yet.' }}
+              onRetry={reload}
+              title="We couldn't load the certification guide"
+            />
+          </div>
+        )}
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+function CertificationsView({ certificationsData }) {
+  const { user } = useAuth()
+  const [verifying, setVerifying] = useState(false)
+  const [verifyError, setVerifyError] = useState('')
   const [verifyId, setVerifyId] = useState('')
   const [verificationResult, setVerificationResult] = useState(null)
   const [showCertModal, setShowCertModal] = useState(false)
 
-  const handleVerify = (e) => {
+  // Looks the credential up in the backend registry — unknown IDs are rejected
+  const handleVerify = async (e) => {
     e.preventDefault()
-    if (!verifyId.trim()) return
+    const id = verifyId.trim()
+    if (!id || verifying) return
 
-    setVerificationResult({
-      status: 'VERIFIED',
-      candidateName: 'Avik Jana',
-      credentialName: 'Reticen8 Certified Firewall Professional (RCFP)',
-      credentialId: verifyId.trim().toUpperCase(),
-      issueDate: 'October 14, 2026',
-      expirationDate: 'October 14, 2029',
-      score: '890 / 1000',
-    })
-    setShowCertModal(true)
+    setVerifyError('')
+    setVerifying(true)
+    try {
+      const { data: cred } = await api.get(`/credentials/${encodeURIComponent(id)}`)
+      setVerificationResult({
+        status: cred.status,
+        candidateName: cred.candidateName,
+        credentialName: `${cred.certificationTitle} (${cred.certificationCode})`,
+        credentialId: cred.credentialId,
+        issueDate: cred.issueDate,
+        expirationDate: cred.expirationDate,
+        score: cred.score,
+      })
+      setShowCertModal(true)
+    } catch (err) {
+      setVerifyError(
+        err.status === 404
+          ? 'No credential found with this ID. Please check it and try again.'
+          : err.status === 429
+          ? err.message
+          : 'Verification is unavailable right now. Please try again shortly.'
+      )
+    } finally {
+      setVerifying(false)
+    }
   }
 
   return (
@@ -39,7 +87,7 @@ export default function Certifications() {
       <Navbar />
 
       {/* Certifications Hero */}
-      <section className="bg-slate-900 text-white pt-10 pb-16 relative overflow-hidden">
+      <section className="theme-fixed bg-slate-900 text-white pt-10 pb-16 relative overflow-hidden">
         <div className="absolute top-0 right-1/4 w-[600px] max-w-[90vw] h-[300px] bg-emerald-600/10 blur-[140px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -70,7 +118,7 @@ export default function Certifications() {
       <section className="py-12 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-xl mx-auto mb-10">
-            <span className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">
+            <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">
               Certification Hierarchy
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
@@ -85,7 +133,7 @@ export default function Certifications() {
             {certificationsData.map((c, i) => (
               <div
                 key={c.id}
-                className="relative bg-slate-50 rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:border-[#16A34A] hover:bg-white hover:shadow-lg transition-all"
+                className="relative bg-slate-50 rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:border-brand-600 hover:bg-white hover:shadow-lg transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
@@ -100,7 +148,7 @@ export default function Certifications() {
                   </div>
 
                   <h3 className="text-base font-bold text-slate-900">{c.code}</h3>
-                  <p className="text-xs font-semibold text-[#16A34A] mt-0.5">{c.title}</p>
+                  <p className="text-xs font-semibold text-brand-600 mt-0.5">{c.title}</p>
                   <p className="text-xs text-slate-500 mt-2 leading-relaxed">{c.roleTag}</p>
                 </div>
 
@@ -108,7 +156,7 @@ export default function Certifications() {
                   <span className="text-slate-400 font-mono">{c.examDuration}</span>
                   <a
                     href={`#${c.id}`}
-                    className="font-bold text-[#16A34A] hover:underline"
+                    className="font-bold text-brand-600 hover:underline"
                   >
                     View Blueprint →
                   </a>
@@ -141,11 +189,11 @@ export default function Certifications() {
                 {/* Left: Cert Details */}
                 <div className="lg:col-span-6 space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-center text-xl shadow-md">
+                    <div className="theme-fixed w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-center text-xl shadow-md">
                       {c.badge}
                     </div>
                     <div>
-                      <span className="text-xs font-black tracking-widest text-[#16A34A] uppercase">{c.code}</span>
+                      <span className="text-xs font-black tracking-widest text-brand-600 uppercase">{c.code}</span>
                       <h3 className="text-xl font-bold text-slate-900 leading-snug">{c.title}</h3>
                     </div>
                   </div>
@@ -169,34 +217,34 @@ export default function Certifications() {
                     </div>
                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                       <span className="text-slate-400 block font-medium">Voucher Fee</span>
-                      <span className="font-bold text-[#16A34A] mt-0.5 block">{c.voucherCost}</span>
+                      <span className="font-bold text-brand-600 mt-0.5 block">{c.voucherCost}</span>
                     </div>
                   </div>
 
                   <div className="pt-2 flex flex-wrap gap-3">
                     <Link
                       to="/courses"
-                      className="px-6 py-2.5 rounded-xl bg-[#16A34A] text-white text-xs font-bold hover:bg-[#15803D] shadow-xs transition-colors"
+                      className="px-6 py-2.5 rounded-xl bg-action-600 text-white text-xs font-bold hover:bg-action-700 shadow-xs transition-colors"
                     >
                       Browse Prep Courses
                     </Link>
                     <button
                       onClick={() => {
-                        setVerifyId(`R8-2026-${c.code}-7741`)
+                        // Preview only — clearly labelled as a sample in the modal
                         setVerificationResult({
-                          status: 'VERIFIED',
-                          candidateName: 'Avik Jana',
+                          sample: true,
+                          candidateName: user?.name || 'Your Name',
                           credentialName: c.title,
-                          credentialId: `R8-2026-${c.code}-7741`,
-                          issueDate: 'October 2026',
-                          expirationDate: 'October 2029',
-                          score: '910 / 1000',
+                          credentialId: `R8-XXXX-${c.code}-0000`,
+                          issueDate: '—',
+                          expirationDate: `Valid ${c.validity || '3 Years'}`,
+                          score: c.passingScore || '—',
                         })
                         setShowCertModal(true)
                       }}
                       className="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5"
                     >
-                      <ShieldCheck size={14} className="text-[#16A34A]" />
+                      <ShieldCheck size={14} className="text-brand-600" />
                       <span>Sample Certificate</span>
                     </button>
                   </div>
@@ -214,11 +262,11 @@ export default function Certifications() {
                       <div key={b.domain} className="space-y-1">
                         <div className="flex justify-between text-xs font-semibold text-slate-700">
                           <span>{b.domain}</span>
-                          <span className="font-mono text-[#16A34A]">{b.weight}</span>
+                          <span className="font-mono text-brand-600">{b.weight}</span>
                         </div>
                         <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-emerald-500 to-[#16A34A] rounded-full"
+                            className="h-full bg-gradient-to-r from-emerald-500 to-brand-600 rounded-full"
                             style={{ width: b.weight }}
                           />
                         </div>
@@ -288,7 +336,7 @@ export default function Certifications() {
       </section>
 
       {/* Verification Tool Section */}
-      <section className="py-16 bg-slate-900 text-white relative">
+      <section className="theme-fixed py-16 bg-slate-900 text-white relative">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
             <ShieldCheck size={26} />
@@ -310,15 +358,25 @@ export default function Certifications() {
             />
             <button
               type="submit"
-              className="px-6 py-3 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold transition-colors whitespace-nowrap"
+              disabled={verifying}
+              className="px-6 py-3 rounded-xl bg-action-500 hover:bg-action-600 ring-1 ring-white/25 text-white text-xs font-bold transition-colors whitespace-nowrap disabled:opacity-60"
             >
-              Verify Credential
+              {verifying ? 'Checking…' : 'Verify Credential'}
             </button>
           </form>
 
-          <div className="mt-4 text-xs text-slate-500">
-            Test serial: <code className="bg-slate-800 px-2 py-0.5 rounded text-emerald-400 font-mono">R8-2026-RCFP-8492</code>
-          </div>
+          {verifyError && (
+            <p className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-rose-300" role="alert">
+              <AlertCircle size={14} />
+              {verifyError}
+            </p>
+          )}
+
+          {import.meta.env.DEV && (
+            <div className="mt-4 text-xs text-slate-500">
+              Test serial: <code className="bg-slate-800 px-2 py-0.5 rounded text-emerald-400 font-mono">R8-2026-RCFP-8492</code>
+            </div>
+          )}
         </div>
       </section>
 
@@ -340,12 +398,18 @@ export default function Certifications() {
               </button>
 
               <div className="text-center border-b border-slate-100 pb-6">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-[#16A34A] flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <div className="w-16 h-16 rounded-full bg-emerald-100 text-brand-600 flex items-center justify-center mx-auto mb-3 shadow-sm">
                   <ShieldCheck size={32} />
                 </div>
-                <span className="text-[11px] font-bold tracking-widest text-[#16A34A] uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                  OFFICIALLY VERIFIED CREDENTIAL
-                </span>
+                {verificationResult.sample ? (
+                  <span className="text-[11px] font-bold tracking-widest text-amber-700 uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                    Sample certificate — not a real credential
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-bold tracking-widest text-brand-600 uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    OFFICIALLY VERIFIED CREDENTIAL
+                  </span>
+                )}
                 <h3 className="text-xl font-black text-slate-900 mt-3">
                   Certificate of Technical Competency
                 </h3>
@@ -356,7 +420,7 @@ export default function Certifications() {
                 <p className="text-xs text-slate-400 uppercase tracking-wider">This certifies that</p>
                 <p className="text-2xl font-bold text-slate-900">{verificationResult.candidateName}</p>
                 <p className="text-xs text-slate-500">has successfully mastered all testing domains and is certified as a</p>
-                <p className="text-base font-extrabold text-[#16A34A]">{verificationResult.credentialName}</p>
+                <p className="text-base font-extrabold text-brand-600">{verificationResult.credentialName}</p>
               </div>
 
               <div className="bg-slate-50 rounded-2xl p-4 grid grid-cols-2 gap-3 text-xs border border-slate-200">
@@ -381,7 +445,7 @@ export default function Certifications() {
               <div className="mt-6 flex gap-3">
                 <button
                   onClick={() => setShowCertModal(false)}
-                  className="flex-1 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
+                  className="theme-fixed flex-1 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
                 >
                   Close Verification
                 </button>

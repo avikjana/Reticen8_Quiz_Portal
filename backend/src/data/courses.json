@@ -16,12 +16,20 @@
     "certificationCode": "RCFA",
     "certificationTitle": "Reticen8 Certified Firewall Associate",
     "badge": "🛡️",
+    "instructor": {
+      "name": "Reticen8 Academy Faculty",
+      "role": "Curriculum Team",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80"
+    },
     "skills": [
       "Network Security Fundamentals",
       "Perimeter Defense",
       "Security Policy Architecture"
     ],
-    "curriculum": []
+    "curriculum": [],
+    "audience": [
+      "Employee"
+    ]
   },
   {
     "id": "reticen8-ngfw-professional",
@@ -40,12 +48,21 @@
     "certificationCode": "RCFP",
     "certificationTitle": "Reticen8 Certified Firewall Professional",
     "badge": "🔒",
+    "instructor": {
+      "name": "Reticen8 Academy Faculty",
+      "role": "Curriculum Team",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80"
+    },
     "skills": [
       "NGFW Architecture",
       "Security Policies & NAT",
       "High Availability"
     ],
-    "curriculum": []
+    "curriculum": [],
+    "audience": [
+      "Employee",
+      "Partner"
+    ]
   },
   {
     "id": "advanced-firewall-security",
@@ -64,12 +81,20 @@
     "certificationCode": "RCFP",
     "certificationTitle": "Reticen8 Certified Firewall Professional",
     "badge": "⚡",
+    "instructor": {
+      "name": "Reticen8 Academy Faculty",
+      "role": "Curriculum Team",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&h=150&q=80"
+    },
     "skills": [
       "Threat Prevention & IPS",
       "SSL/IPsec VPN",
       "Advanced Traffic Inspection"
     ],
-    "curriculum": []
+    "curriculum": [],
+    "audience": [
+      "Employee"
+    ]
   },
   {
     "id": "enterprise-security-architecture",
@@ -83,16 +108,24 @@
     "estimatedWeeks": "Self-paced",
     "modulesCount": 0,
     "lessonsCount": 0,
-    "rating": 5.0,
+    "rating": 5,
     "studentsCount": 430,
     "certificationCode": "RCSA",
     "certificationTitle": "Reticen8 Certified Security Architect",
     "badge": "🏛️",
+    "instructor": {
+      "name": "Reticen8 Academy Faculty",
+      "role": "Curriculum Team",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80"
+    },
     "skills": [
       "Enterprise Architecture",
       "SD-WAN Security",
       "Zero-Trust Security Design"
     ],
-    "curriculum": []
+    "curriculum": [],
+    "audience": [
+      "Employee"
+    ]
   }
 ]

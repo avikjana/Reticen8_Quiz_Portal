@@ -2,18 +2,37 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, BookOpen, AlertCircle, Shield } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { coursesData } from '../data/courses'
+import useApi from '../hooks/useApi'
+import { NotFoundState } from '../components/ui/DataState'
 
 export default function LearningPlayer() {
   const { id } = useParams()
-  const course = coursesData.find((c) => c.id === id) || coursesData[0]
+  // /labs has no course id; /learn/:id loads that course
+  const { data: course, error } = useApi(id ? `/courses/${encodeURIComponent(id)}` : null)
+
+  if (error?.status === 404 || error?.status === 403) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col">
+        <Navbar />
+        <main className="flex-1">
+          <NotFoundState
+            title={error.status === 403 ? 'Course not available' : 'Course not found'}
+            message={error.status === 403 ? error.message : "This course doesn't exist or may have been removed."}
+            backTo="/courses"
+            backLabel="Browse courses"
+          />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar />
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-16 flex flex-col items-center justify-center text-center">
-        <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-[#16A34A] flex items-center justify-center mb-6 shadow-sm border border-emerald-100">
+        <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-brand-600 flex items-center justify-center mb-6 shadow-sm border border-emerald-100">
           <Shield size={32} />
         </div>
 
@@ -31,7 +50,7 @@ export default function LearningPlayer() {
 
         <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-xs mb-8 text-left">
           <div className="flex items-start gap-3">
-            <AlertCircle size={18} className="text-[#16A34A] shrink-0 mt-0.5" />
+            <AlertCircle size={18} className="text-brand-600 shrink-0 mt-0.5" />
             <div>
               <div className="text-xs font-bold text-slate-900">Course Design Status</div>
               <div className="text-xs text-slate-500 mt-1 leading-relaxed">
@@ -44,7 +63,7 @@ export default function LearningPlayer() {
         <div className="flex items-center gap-4">
           <Link
             to="/courses"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold transition-colors shadow-sm"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-action-600 hover:bg-action-700 text-white text-xs font-bold transition-colors shadow-sm"
           >
             <BookOpen size={15} />
             <span>Browse Available Courses</span>

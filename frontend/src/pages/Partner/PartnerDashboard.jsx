@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Users, Award, ShieldCheck, ArrowRight, Building, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
@@ -22,7 +19,7 @@ export default function PartnerDashboard() {
               Partner Training &amp; Seats Management
             </h1>
             <p className="text-xs text-slate-500 mt-1">
-              Authorized Partner: {user?.name || 'Avik Jana'} • Gold Tier
+              Authorized Partner: {user?.name} • Gold Tier
             </p>
           </div>
         </div>
