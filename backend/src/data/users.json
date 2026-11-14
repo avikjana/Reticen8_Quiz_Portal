@@ -3,39 +3,88 @@
     "id": "usr-admin-01",
     "name": "Avik Jana",
     "email": "admin@reticen8.com",
-    "password": "AdminPassword123!",
     "role": "Administrator",
     "roleTitle": "Enterprise Systems Administrator",
     "avatar": "A",
     "department": "Global Information Security",
-    "permissions": ["all", "system_admin", "user_management", "audit_logs", "lab_provisioning"],
+    "permissions": [
+      "all",
+      "system_admin",
+      "user_management",
+      "audit_logs",
+      "lab_provisioning"
+    ],
     "badgeColor": "purple",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "passwordHash": "scrypt$16384$8$1$1gPFJ5+eSHA44KCoPmgcfQ==$yRdw8EjsvYVRSUzCUH2WTSgc9+wAypjdRaGn6+aGYlmUDno29nCmiM4OpdSCcIWy+AaHMNCC7tynqE9zcdWJzg==",
+    "authProviders": [
+      "password"
+    ]
   },
   {
     "id": "usr-emp-02",
     "name": "Avik Jana",
     "email": "employee@reticen8.com",
-    "password": "EmployeePassword123!",
     "role": "Employee",
     "roleTitle": "Lead Security Engineer",
     "avatar": "A",
     "department": "Security Operations Center (SOC)",
-    "permissions": ["engineer_labs", "internal_curriculum", "firewall_sandbox", "exam_vouchers"],
+    "permissions": [
+      "engineer_labs",
+      "internal_curriculum",
+      "firewall_sandbox",
+      "exam_vouchers"
+    ],
     "badgeColor": "emerald",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "passwordHash": "scrypt$16384$8$1$zFD+NljFvASJr7t5wKl9cw==$syxHdWwW4J9mSlP/xyCVGtz1EeFt8leO5eFdCOcSlpPh2Hj1EAzP2WZ7iUVc7O3vsYqimo9FAu7ghcfA7nOgxA==",
+    "authProviders": [
+      "password"
+    ]
   },
   {
     "id": "usr-partner-03",
     "name": "Avik Jana",
     "email": "partner@reticen8.com",
-    "password": "PartnerPassword123!",
     "role": "Partner",
     "roleTitle": "Authorized Training Partner",
     "avatar": "A",
     "department": "Partner Engineering Ecosystem",
-    "permissions": ["partner_portal", "seat_allocation", "discounted_vouchers", "co_branding"],
+    "permissions": [
+      "partner_portal",
+      "seat_allocation",
+      "discounted_vouchers",
+      "co_branding"
+    ],
     "badgeColor": "blue",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "passwordHash": "scrypt$16384$8$1$In18hK+cXbDwU9IKluEODQ==$hAfxs91p6JHQZt2xyKBhj0Sg55fCyvAKxq8G8eaFi6oAeohxIHL/L7O7dEsRczhnw4PJyNTkd6ExjFFspcJZBg==",
+    "authProviders": [
+      "password"
+    ]
+  },
+  {
+    "id": "usr-2f3e07f9-d234-448e-8402-3c62316f819c",
+    "name": "Avik",
+    "email": "avikjana212@gmail.com",
+    "passwordHash": "scrypt$16384$8$1$m6sYUUIhr7/aVKRQFSc9nQ==$fJaG9H0Olt/0UwYyQqbnff/nxwJTnFDyhRHAP01BnOJVJhiAmVc82iGT1Ukw6bp9HPJG9qlfcwuBxu/MnK3ApA==",
+    "googleId": null,
+    "picture": null,
+    "authProviders": [
+      "password"
+    ],
+    "role": "Partner",
+    "roleTitle": "Authorized Training Partner",
+    "department": "SOC",
+    "avatar": "A",
+    "permissions": [
+      "partner_portal",
+      "seat_allocation",
+      "discounted_vouchers",
+      "co_branding"
+    ],
+    "status": "ACTIVE",
+    "createdAt": "2026-11-14T12:54:34.978Z",
+    "updatedAt": "2026-11-14T12:54:34.978Z"
   }
 ]

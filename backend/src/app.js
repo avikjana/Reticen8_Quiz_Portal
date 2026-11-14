@@ -10,11 +10,17 @@ import AppError from './utils/AppError.js'
 import db from './db/index.js'
 
 // Parse JSON request bodies safely
+const MAX_BODY_BYTES = 1024 * 1024 // 1 MB
+
 const parseRequestBody = (req) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let body = ''
     req.on('data', (chunk) => {
       body += chunk.toString()
+      if (body.length > MAX_BODY_BYTES) {
+        reject(new AppError('Request body too large', 413))
+        req.destroy()
+      }
     })
     req.on('end', () => {
       try {
@@ -26,11 +32,18 @@ const parseRequestBody = (req) => {
   })
 }
 
+// Allowed browser origins (comma-separated), e.g. "http://localhost:5173,https://academy.reticen8.com"
+const ALLOWED_ORIGINS = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean)
+
 // Set standard CORS & headers
-const setCorsHeaders = (res, statusCode = 200) => {
+export const setCorsHeaders = (res, statusCode = 200) => {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': res.corsOrigin || ALLOWED_ORIGINS[0],
+    Vary: 'Origin',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   })
@@ -41,6 +54,9 @@ export const createApp = () => {
     const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`)
     const pathname = urlObj.pathname
     const method = req.method
+
+    const origin = req.headers.origin
+    res.corsOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]
 
     // Handle CORS preflight
     if (method === 'OPTIONS') {

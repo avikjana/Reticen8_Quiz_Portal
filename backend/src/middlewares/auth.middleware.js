@@ -1,32 +1,45 @@
 import UserModel from '../models/user.model.js'
 import AppError from '../utils/AppError.js'
+import { verifyToken } from '../utils/jwt.js'
 
-// In-memory token store for sessions
-export const sessionStore = new Map()
+// Tokens explicitly signed out before they expire (jti -> exp). In-memory, so
+// it resets on restart; move it to Redis/DB if you need durable revocation.
+const revokedTokens = new Map()
+
+export function revokeToken(payload) {
+  if (payload?.jti) revokedTokens.set(payload.jti, payload.exp)
+}
+
+setInterval(() => {
+  const now = Math.floor(Date.now() / 1000)
+  for (const [jti, exp] of revokedTokens) if (exp < now) revokedTokens.delete(jti)
+}, 60 * 60 * 1000).unref()
+
+export const getBearerToken = (req) => {
+  const header = req.headers.authorization || ''
+  return header.startsWith('Bearer ') ? header.slice(7).trim() : null
+}
 
 export const authenticate = async (req, res, next) => {
-  const authHeader = req.headers.authorization
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  const token = getBearerToken(req)
+  if (!token) {
     throw new AppError('Authentication required. Please log in.', 401)
   }
 
-  const token = authHeader.split(' ')[1]
-  const session = sessionStore.get(token)
-
-  if (!session) {
-    // If not found in memory, try parsing offline or demo token
-    if (token.startsWith('r8_')) {
-      const users = UserModel.getAll()
-      const user = users.find((u) => token.includes(u.id)) || users[0]
-      if (user) {
-        req.user = UserModel.sanitize(user)
-        return next ? next() : null
-      }
-    }
-    throw new AppError('Invalid or expired session token.', 401)
+  const payload = verifyToken(token)
+  if (!payload || revokedTokens.has(payload.jti)) {
+    throw new AppError('Your session is invalid or has expired. Please log in again.', 401)
   }
 
-  req.user = session.user
+  // Always load the user fresh so deleted/disabled accounts and role changes
+  // take effect immediately rather than when the token expires.
+  const user = UserModel.findById(payload.sub)
+  if (!user || (user.status && user.status !== 'ACTIVE')) {
+    throw new AppError('This account is no longer active.', 401)
+  }
+
+  req.user = UserModel.sanitize(user)
+  req.tokenPayload = payload
   if (next) next()
 }
 
@@ -47,4 +60,4 @@ export const requireRole = (...allowedRoles) => {
   }
 }
 
-export default { authenticate, requireRole, sessionStore }
+export default { authenticate, requireRole, revokeToken }

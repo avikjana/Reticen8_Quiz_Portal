@@ -18,10 +18,10 @@ import {
   KeyRound,
   UserPlus
 } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
-import api from '../services/api'
+import { useAuth, dashboardPathFor } from '../context/AuthContext'
+import GoogleSignInButton, { OrDivider } from '../components/Auth/GoogleSignInButton'
 
-const categories = [
+const allCategories = [
   {
     id: 'Administrator',
     label: 'Administrator',
@@ -57,9 +57,13 @@ const categories = [
   },
 ]
 
+// Administrator accounts can only be created by an existing admin, so they
+// aren't offered on the public sign-up form.
+const categories = allCategories.filter((c) => c.id !== 'Administrator')
+
 export default function SignUp() {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { register } = useAuth()
 
   const [selectedCategory, setSelectedCategory] = useState('Employee')
   const [name, setName] = useState('')
@@ -71,7 +75,7 @@ export default function SignUp() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
 
-  const activeCategory = categories.find((c) => c.id === selectedCategory) || categories[1]
+  const activeCategory = categories.find((c) => c.id === selectedCategory) || categories[0]
   const IconComponent = activeCategory.icon
 
   const handleSubmit = async (e) => {
@@ -81,7 +85,7 @@ export default function SignUp() {
     setLoading(true)
 
     try {
-      const res = await api.post('/auth/register', {
+      const res = await register({
         name,
         email,
         password,
@@ -96,13 +100,8 @@ export default function SignUp() {
       })
 
       if (res.success) {
-        setSuccessMsg(`Account created successfully for ${name}! Logging you in...`)
-        await login({ email, password, role: selectedCategory })
-        setTimeout(() => {
-          if (selectedCategory === 'Administrator') navigate('/admin')
-          else if (selectedCategory === 'Partner') navigate('/partner')
-          else navigate('/employee')
-        }, 900)
+        setSuccessMsg(`Account created successfully for ${res.user.name}! Logging you in...`)
+        setTimeout(() => navigate(dashboardPathFor(res.user.role), { replace: true }), 900)
       } else {
         setErrorMsg(res.error || 'Registration failed. Please try again.')
       }
@@ -116,7 +115,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-600/10 blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] max-w-[90vw] h-[400px] bg-emerald-600/10 blur-[140px] rounded-full pointer-events-none" />
 
       {/* Top Brand Link */}
       <div className="relative mb-8 text-center">
@@ -161,7 +160,7 @@ export default function SignUp() {
           </p>
 
           {/* 3 Categories Selector */}
-          <div className="mt-5 grid grid-cols-3 gap-2 p-1.5 bg-slate-100 rounded-2xl">
+          <div className="mt-5 grid grid-cols-2 gap-2 p-1.5 bg-slate-100 rounded-2xl">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat.id
               const TabIcon = cat.icon
@@ -288,6 +287,8 @@ export default function SignUp() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create a secure password"
+                minLength={8}
+                autoComplete="new-password"
                 className="w-full h-11 pl-10 pr-11 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20 focus:border-[#16A34A]"
               />
               <button
@@ -298,6 +299,7 @@ export default function SignUp() {
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+            <p className="text-[11px] text-slate-500">At least 8 characters, including a letter and a number.</p>
           </div>
 
           <div className="pt-2">
@@ -320,6 +322,21 @@ export default function SignUp() {
             </button>
           </div>
         </form>
+
+        {/* Google sign-up */}
+        <div className="px-8 pb-7 -mt-2 space-y-4">
+          <OrDivider />
+          <GoogleSignInButton
+            text="signup_with"
+            role={selectedCategory}
+            onSuccess={(u) => {
+              setErrorMsg('')
+              setSuccessMsg(`Welcome, ${u.name}! Signed in with Google.`)
+              setTimeout(() => navigate(dashboardPathFor(u.role), { replace: true }), 500)
+            }}
+            onError={(msg) => setErrorMsg(msg)}
+          />
+        </div>
 
         {/* Footer Links */}
         <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">

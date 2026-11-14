@@ -40,7 +40,7 @@ export default function AdminUsers() {
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <Link
             to="/admin"
             className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
@@ -48,12 +48,12 @@ export default function AdminUsers() {
             <ArrowLeft size={14} />
             <span>Back to Admin Overview</span>
           </Link>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
             {['All', 'Administrator', 'Employee', 'Partner'].map((role) => (
               <button
                 key={role}
                 onClick={() => setRoleFilter(role)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
                   roleFilter === role
                     ? 'bg-[#16A34A] text-white shadow-2xs'
                     : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -72,7 +72,7 @@ export default function AdminUsers() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full min-w-[640px] text-left text-xs whitespace-nowrap">
               <thead className="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-200">
                 <tr>
                   <th className="px-6 py-3">User</th>

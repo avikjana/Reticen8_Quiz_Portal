@@ -169,7 +169,7 @@ export default function Courses() {
           </div>
 
           {/* Category Filter Pills */}
-          <div className="mt-5 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="mt-5 flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -193,8 +193,8 @@ export default function Courses() {
 
           {/* Left Sidebar Filters */}
           <aside className="lg:col-span-3">
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs sticky top-24 space-y-6">
-              <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+            <div className="bg-white rounded-3xl ring-1 ring-slate-200/80 p-4 sm:p-5 shadow-[var(--shadow-soft)] lg:sticky lg:top-24 space-y-4 lg:space-y-6">
+              <div className="flex items-center justify-between pb-3 lg:pb-3.5 border-b border-slate-100">
                 <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
                   <Filter size={16} className="text-[#16A34A]" />
                   <span>Filter Courses</span>
@@ -214,18 +214,22 @@ export default function Courses() {
                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
                   Difficulty Level
                 </h4>
-                <div className="space-y-2">
+                <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap lg:block lg:space-y-2">
                   {difficulties.map((diff) => (
                     <label
                       key={diff}
-                      className="flex items-center gap-2.5 text-sm text-slate-700 hover:text-slate-900 cursor-pointer select-none"
+                      className={`flex flex-shrink-0 items-center gap-2 lg:gap-2.5 text-sm cursor-pointer select-none whitespace-nowrap rounded-full px-3 py-1.5 ring-1 lg:rounded-none lg:p-0 lg:ring-0 transition-colors ${
+                        selectedDifficulty === diff
+                          ? 'bg-emerald-50 ring-emerald-300 text-[#15803D] font-semibold lg:bg-transparent lg:text-slate-900'
+                          : 'ring-slate-200 text-slate-700 hover:text-slate-900'
+                      }`}
                     >
                       <input
                         type="radio"
                         name="difficulty"
                         checked={selectedDifficulty === diff}
                         onChange={() => setSelectedDifficulty(diff)}
-                        className="w-4 h-4 text-[#16A34A] focus:ring-[#16A34A] border-slate-300"
+                        className="w-4 h-4 accent-[#16A34A] max-lg:sr-only"
                       />
                       <span>{diff}</span>
                     </label>
@@ -234,7 +238,7 @@ export default function Courses() {
               </div>
 
               {/* Certifications Shortcut Banner */}
-              <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-900 to-slate-900 text-white">
+              <div className="hidden lg:block p-4 rounded-2xl bg-gradient-to-br from-emerald-900 to-slate-900 text-white">
                 <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
                   <Award size={15} />
                   <span>Exam Blueprints</span>
@@ -312,7 +316,7 @@ export default function Courses() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: idx * 0.05 }}
                     whileHover={{ y: -4 }}
-                    className="flex flex-col bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-xl hover:border-slate-300 transition-all duration-200 overflow-hidden"
+                    className="flex flex-col bg-white rounded-3xl ring-1 ring-slate-200/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] hover:ring-slate-300 transition-shadow duration-300 overflow-hidden"
                   >
                     {/* Header Strip */}
                     <div className="p-6 pb-4 flex items-start justify-between gap-3">
@@ -392,7 +396,7 @@ export default function Courses() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25, delay: idx * 0.04 }}
-                    className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-lg hover:border-slate-300 transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+                    className="bg-white rounded-3xl ring-1 ring-slate-200/80 p-5 sm:p-6 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">

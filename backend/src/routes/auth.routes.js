@@ -10,6 +10,10 @@ export const handleAuthRoutes = async (req, res, pathname, method) => {
     return await AuthController.register(req, res)
   }
 
+  if (pathname === '/api/auth/google' && method === 'POST') {
+    return await AuthController.googleLogin(req, res)
+  }
+
   if (pathname === '/api/auth/roles' && method === 'GET') {
     return await AuthController.getRoles(req, res)
   }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Shield,
@@ -15,7 +15,8 @@ import {
   KeyRound,
   ArrowLeft,
 } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth, dashboardPathFor } from '../context/AuthContext'
+import GoogleSignInButton, { OrDivider } from '../components/Auth/GoogleSignInButton'
 
 const categories = [
   {
@@ -28,8 +29,8 @@ const categories = [
     badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
     btnClass: 'bg-purple-600 hover:bg-purple-700',
     ringClass: 'focus:ring-purple-500/20 focus:border-purple-600',
-    demoEmail: 'admin@reticen8.com',
-    demoPass: 'AdminPassword123!',
+    demoEmail: import.meta.env.DEV ? 'admin@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'AdminPassword123!' : '',
   },
   {
     id: 'Employee',
@@ -41,8 +42,8 @@ const categories = [
     badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     btnClass: 'bg-[#16A34A] hover:bg-[#15803D]',
     ringClass: 'focus:ring-[#16A34A]/20 focus:border-[#16A34A]',
-    demoEmail: 'employee@reticen8.com',
-    demoPass: 'EmployeePassword123!',
+    demoEmail: import.meta.env.DEV ? 'employee@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'EmployeePassword123!' : '',
   },
   {
     id: 'Partner',
@@ -54,18 +55,21 @@ const categories = [
     badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
     btnClass: 'bg-blue-600 hover:bg-blue-700',
     ringClass: 'focus:ring-blue-500/20 focus:border-blue-600',
-    demoEmail: 'partner@reticen8.com',
-    demoPass: 'PartnerPassword123!',
+    demoEmail: import.meta.env.DEV ? 'partner@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'PartnerPassword123!' : '',
   },
 ]
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
+  // Send users back to the protected page they tried to open, else their dashboard
+  const goAfterLogin = (u) => navigate(location.state?.from?.pathname || dashboardPathFor(u.role), { replace: true })
   const { login } = useAuth()
 
   const [selectedCategory, setSelectedCategory] = useState('Employee')
-  const [email, setEmail] = useState('employee@reticen8.com')
-  const [password, setPassword] = useState('EmployeePassword123!')
+  const [email, setEmail] = useState(import.meta.env.DEV ? 'employee@reticen8.com' : '')
+  const [password, setPassword] = useState(import.meta.env.DEV ? 'EmployeePassword123!' : '')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -100,9 +104,7 @@ export default function Login() {
 
     if (result.success) {
       setSuccessMsg(`Welcome, ${result.user.name}! Connected as ${result.user.role}.`)
-      setTimeout(() => {
-        navigate('/')
-      }, 700)
+      setTimeout(() => goAfterLogin(result.user), 700)
     } else {
       setErrorMsg(result.error || 'Authentication failed. Please check your credentials.')
     }
@@ -111,7 +113,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-emerald-600/10 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] max-w-[90vw] h-[400px] bg-emerald-600/10 blur-[150px] rounded-full pointer-events-none" />
 
       {/* Back to Home Link */}
       <div className="max-w-md w-full mx-auto mb-6">
@@ -239,6 +241,7 @@ export default function Login() {
                 >
                   Forgot Password?
                 </Link>
+                {import.meta.env.DEV && (
                 <button
                   type="button"
                   onClick={() => {
@@ -250,6 +253,7 @@ export default function Login() {
                   <KeyRound size={12} />
                   <span>Fill Demo Password</span>
                 </button>
+                )}
               </div>
             </div>
             <div className="relative">
@@ -293,6 +297,21 @@ export default function Login() {
             </button>
           </div>
         </form>
+
+        {/* Google sign-in */}
+        <div className="px-8 pb-7 -mt-2 space-y-4">
+          <OrDivider />
+          <GoogleSignInButton
+            text="signin_with"
+            role={selectedCategory === 'Partner' ? 'Partner' : 'Employee'}
+            onSuccess={(u) => {
+              setErrorMsg('')
+              setSuccessMsg(`Welcome, ${u.name}! Signed in with Google.`)
+              setTimeout(() => goAfterLogin(u), 500)
+            }}
+            onError={(msg) => setErrorMsg(msg)}
+          />
+        </div>
 
         {/* Card Footer: Sign Up & Help */}
         <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">

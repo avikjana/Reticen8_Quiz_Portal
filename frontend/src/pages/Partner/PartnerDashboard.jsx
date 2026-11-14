@@ -60,7 +60,7 @@ export default function PartnerDashboard() {
             <h2 className="text-base font-bold text-slate-900">Sponsored Trainees &amp; Engineers</h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full min-w-[640px] text-left text-xs whitespace-nowrap">
               <thead className="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-200">
                 <tr>
                   <th className="px-6 py-3">Trainee</th>

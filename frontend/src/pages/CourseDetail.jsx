@@ -23,7 +23,7 @@ export default function CourseDetail() {
 
       {/* Course Hero Banner */}
       <section className="bg-slate-900 text-white pt-10 pb-16 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[350px] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[500px] max-w-[90vw] h-[350px] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           {/* Breadcrumb */}

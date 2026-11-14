@@ -40,7 +40,7 @@ export default function Certifications() {
 
       {/* Certifications Hero */}
       <section className="bg-slate-900 text-white pt-10 pb-16 relative overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[600px] h-[300px] bg-emerald-600/10 blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-[600px] max-w-[90vw] h-[300px] bg-emerald-600/10 blur-[140px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           {/* Breadcrumb */}
@@ -249,7 +249,7 @@ export default function Certifications() {
           </div>
 
           <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-xs">
-            <table className="w-full text-left text-xs sm:text-sm">
+            <table className="w-full min-w-[640px] text-left text-xs sm:text-sm">
               <thead className="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
                 <tr>
                   <th className="py-4 px-6">Certification</th>

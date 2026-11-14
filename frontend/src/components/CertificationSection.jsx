@@ -10,7 +10,7 @@ export default function CertificationSection() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="py-20 lg:py-28 bg-white" id="certifications">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-white" id="certifications">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}

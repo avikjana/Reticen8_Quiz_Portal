@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "start": "node --env-file-if-exists=.env src/index.js",
+    "dev": "node --env-file-if-exists=.env --watch src/index.js"
   },
   "keywords": [
     "reticen8",
@@ -16,5 +16,11 @@
     "academy"
   ],
   "author": "Reticen8 Technologies",
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "dependencies": {
+    "google-auth-library": "^10.9.1"
+  }
 }

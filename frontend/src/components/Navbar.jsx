@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
@@ -50,7 +50,8 @@ const exploreMenu = [
 
 export default function Navbar() {
   const navigate = useNavigate()
-  const { user, logout, openLoginModal, switchRole } = useAuth()
+  const location = useLocation()
+  const { user, logout, openLoginModal } = useAuth()
   const [exploreOpen, setExploreOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [searchFilter, setSearchFilter] = useState('Learner')
@@ -73,6 +74,43 @@ export default function Navbar() {
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close every menu whenever the route changes
+  useEffect(() => {
+    setMobileMenuOpen(false)
+    setExploreOpen(false)
+    setUserMenuOpen(false)
+  }, [location.pathname, location.search])
+
+  // Esc closes menus; lock page scroll while the mobile drawer is open
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false)
+        setExploreOpen(false)
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [])
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [mobileMenuOpen])
+
+  // Close the drawer automatically when resizing up to desktop
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const onChange = (e) => e.matches && setMobileMenuOpen(false)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
   }, [])
 
   useEffect(() => {
@@ -120,19 +158,23 @@ export default function Navbar() {
   }
 
   return (
-    <header
-      className={`sticky top-0 z-40 bg-white transition-all duration-200 ${
-        scrolled ? 'shadow-md border-b border-slate-200/80' : 'border-b border-slate-200'
-      }`}
-    >
+    <header className="sticky top-0 z-40">
+      {/* Frosted background lives on its own layer so fixed-position children
+          (login modal, mobile drawer) aren't trapped by backdrop-filter */}
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 -z-10 glass border-b transition-[box-shadow,border-color] duration-300 ${
+          scrolled ? 'border-slate-200/70 shadow-[0_8px_30px_-12px_rgb(15_23_42/0.15)]' : 'border-transparent'
+        }`}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-[72px] gap-4 lg:gap-8">
+        <div className={`flex items-center justify-between gap-3 lg:gap-6 transition-[height] duration-300 ${scrolled ? 'h-16' : 'h-[72px]'}`}>
 
           {/* Left: Brand + Explore Button */}
           <div className="flex items-center gap-4 lg:gap-6 flex-shrink-0">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#16A34A] to-[#15803D] flex items-center justify-center text-white shadow-sm shadow-emerald-700/20 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-[#16A34A] to-teal-700 flex items-center justify-center text-white shadow-[var(--shadow-glow)] group-hover:scale-105 group-hover:rotate-[-4deg] transition-transform duration-300">
                 <Shield size={22} className="stroke-[2.5]" />
               </div>
               <div className="flex flex-col leading-tight">
@@ -149,10 +191,10 @@ export default function Navbar() {
             <div className="relative hidden md:block" ref={exploreRef}>
               <button
                 onClick={() => setExploreOpen(!exploreOpen)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg border text-sm font-semibold transition-all ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-full border text-sm font-semibold transition-all ${
                   exploreOpen
-                    ? 'border-[#16A34A] bg-emerald-50 text-[#16A34A]'
-                    : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50'
+                    ? 'border-emerald-300 bg-emerald-50 text-[#16A34A]'
+                    : 'border-slate-200 bg-white/70 text-slate-700 hover:border-slate-300 hover:bg-white hover:shadow-[var(--shadow-soft)]'
                 }`}
                 aria-expanded={exploreOpen}
               >
@@ -168,11 +210,11 @@ export default function Navbar() {
               <AnimatePresence>
                 {exploreOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.18 }}
-                    className="absolute left-0 top-full mt-2 w-[580px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 z-50"
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute left-0 top-full mt-3 w-[min(580px,calc(100vw-2rem))] origin-top-left bg-white/95 backdrop-blur-xl rounded-2xl shadow-[var(--shadow-lift)] ring-1 ring-slate-900/5 p-6 z-50"
                   >
                     <div className="grid grid-cols-2 gap-6">
                       {exploreMenu.map((group) => (
@@ -217,20 +259,41 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Primary links (wide screens) */}
+            <nav className="hidden xl:flex items-center gap-1" aria-label="Primary">
+              {[
+                { label: 'Courses', href: '/courses' },
+                { label: 'Certifications', href: '/certifications' },
+                { label: 'Labs', href: '/labs' },
+              ].map((l) => (
+                <NavLink
+                  key={l.href}
+                  to={l.href}
+                  className={({ isActive }) =>
+                    `relative px-3 py-2 rounded-full text-sm font-semibold transition-colors ${
+                      isActive ? 'text-[#16A34A] bg-emerald-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                    }`
+                  }
+                >
+                  {l.label}
+                </NavLink>
+              ))}
+            </nav>
           </div>
 
           {/* Center: Search Field (Cisco-style) */}
-          <div className="hidden lg:flex flex-1 max-w-lg items-center">
+          <div className="hidden lg:flex flex-1 max-w-md items-center">
             <form onSubmit={handleSearchSubmit} className="relative w-full flex items-center">
               <Search size={17} className="absolute left-3.5 text-slate-400 pointer-events-none" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for courses, articles and certifications"
-                className="w-full h-10 pl-10 pr-24 rounded-full border border-slate-300 bg-slate-50/60 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 focus:outline-none transition-all"
+                placeholder="Search courses &amp; certifications…"
+                className="w-full h-10 pl-10 pr-4 2xl:pr-20 rounded-full border border-slate-200 bg-slate-100/60 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 focus:outline-none transition-all"
               />
-              <div className="absolute right-1.5 flex items-center">
+              <div className="absolute right-1.5 hidden 2xl:flex items-center">
                 <button
                   type="submit"
                   className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] rounded-full transition-colors shadow-2xs"
@@ -243,17 +306,9 @@ export default function Navbar() {
 
           {/* Right: Actions & User Navigation */}
           <div className="flex items-center gap-2 sm:gap-3.5 flex-shrink-0">
-            {/* My Learning */}
-            <Link
-              to="/courses"
-              className="hidden xl:inline-flex text-sm font-semibold text-slate-700 hover:text-[#16A34A] transition-colors"
-            >
-              My Learning
-            </Link>
-
             {/* Language */}
             <button
-              className="hidden sm:inline-flex items-center gap-1 p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors"
+              className="hidden sm:inline-flex lg:hidden 2xl:inline-flex items-center gap-1 p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors"
               title="Language: English"
               aria-label="Language selector"
             >
@@ -310,7 +365,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 6, scale: 0.98 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-50 text-slate-800 text-xs"
+                      className="absolute right-0 top-full mt-3 w-72 origin-top-right bg-white/95 backdrop-blur-xl rounded-2xl shadow-[var(--shadow-lift)] ring-1 ring-slate-900/5 p-4 z-50 text-slate-800 text-xs"
                     >
                       {/* User Info Header */}
                       <div className="pb-3 border-b border-slate-100">
@@ -330,49 +385,17 @@ export default function Navbar() {
                         </span>
                       </div>
 
-                      {/* Quick 3-Category Switcher */}
+                      {/* Switch account */}
                       <div className="py-2.5 border-b border-slate-100">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                            Role / Category
-                          </span>
-                          <button
-                            onClick={() => {
-                              setUserMenuOpen(false)
-                              openLoginModal(user.role)
-                            }}
-                            className="text-[10px] font-semibold text-[#16A34A] hover:underline flex items-center gap-1"
-                          >
-                            <LogIn size={11} /> Open Login Form
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-3 gap-1.5">
-                          {[
-                            { role: 'Administrator', short: 'Admin', icon: Shield, activeClass: 'bg-purple-100 text-purple-800 border-purple-300' },
-                            { role: 'Employee', short: 'Engineer', icon: Briefcase, activeClass: 'bg-emerald-100 text-[#15803D] border-emerald-300' },
-                            { role: 'Partner', short: 'Partner', icon: Users, activeClass: 'bg-blue-100 text-blue-800 border-blue-300' },
-                          ].map((cat) => {
-                            const isCurrent = user.role === cat.role
-                            const CatIcon = cat.icon
-                            return (
-                              <button
-                                key={cat.role}
-                                onClick={() => {
-                                  switchRole(cat.role)
-                                  setUserMenuOpen(false)
-                                }}
-                                className={`flex flex-col items-center justify-center p-2 rounded-xl border text-[10px] font-semibold transition-all ${
-                                  isCurrent
-                                    ? `${cat.activeClass} shadow-xs font-bold`
-                                    : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
-                                }`}
-                              >
-                                <CatIcon size={13} className="mb-0.5" />
-                                <span>{cat.short}</span>
-                              </button>
-                            )
-                          })}
-                        </div>
+                        <button
+                          onClick={() => {
+                            setUserMenuOpen(false)
+                            openLoginModal(user.role)
+                          }}
+                          className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+                        >
+                          <RefreshCw size={13} className="text-[#16A34A]" /> Switch account
+                        </button>
                       </div>
 
                       {/* Navigation Links */}
@@ -459,14 +482,14 @@ export default function Navbar() {
               <div className="hidden sm:flex items-center gap-2.5">
                 <Link
                   to="/login"
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-slate-300 hover:border-slate-400 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                 >
                   <LogIn size={13} className="text-[#16A34A]" />
                   <span>Login</span>
                 </Link>
                 <Link
                   to="/signup"
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold transition-colors shadow-2xs"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold transition-all shadow-[var(--shadow-glow)] hover:-translate-y-px"
                 >
                   <span>Sign Up</span>
                   <ArrowRight size={12} />
@@ -477,10 +500,12 @@ export default function Navbar() {
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+              className="lg:hidden p-2 -mr-2 text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
               aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-drawer"
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              <Menu size={24} />
             </button>
           </div>
         </div>
@@ -489,12 +514,40 @@ export default function Navbar() {
       {/* Mobile Drawer */}
       <AnimatePresence>
         {mobileMenuOpen && (
+          <>
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden border-t border-slate-200 bg-white px-4 py-6 shadow-xl overflow-hidden"
+            key="drawer-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setMobileMenuOpen(false)}
+            className="lg:hidden fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm"
+            aria-hidden="true"
+          />
+          <motion.div
+            key="drawer-panel"
+            id="mobile-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 380, damping: 38 }}
+            className="lg:hidden fixed inset-y-0 right-0 z-[61] w-full max-w-sm bg-white shadow-2xl flex flex-col"
           >
+            <div className="flex items-center justify-between px-5 h-16 border-b border-slate-100 flex-shrink-0">
+              <span className="font-display text-base font-bold text-slate-900">Menu</span>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 -mr-2 rounded-full text-slate-600 hover:bg-slate-100 transition-colors"
+                aria-label="Close menu"
+              >
+                <X size={22} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
             {/* Mobile search */}
             <form onSubmit={handleSearchSubmit} className="relative mb-5">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -503,7 +556,7 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search courses, articles..."
-                className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 bg-slate-50 text-sm focus:outline-none focus:border-[#16A34A]"
+                className="w-full pl-9 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:bg-white focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 transition-all"
               />
             </form>
 
@@ -523,19 +576,6 @@ export default function Navbar() {
                   <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] border ${roleTheme.tagBadge}`}>
                     {user.role}
                   </span>
-                </div>
-                <div className="grid grid-cols-3 gap-1.5 mt-2">
-                  {['Administrator', 'Employee', 'Partner'].map((role) => (
-                    <button
-                      key={role}
-                      onClick={() => switchRole(role)}
-                      className={`py-1 text-[10px] font-semibold rounded border ${
-                        user.role === role ? 'bg-white border-[#16A34A] text-[#16A34A]' : 'border-slate-200 text-slate-500'
-                      }`}
-                    >
-                      {role === 'Administrator' ? 'Admin' : role === 'Employee' ? 'Engineer' : 'Partner'}
-                    </button>
-                  ))}
                 </div>
                 <div className="mt-3 pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
                   <Link
@@ -599,13 +639,21 @@ export default function Navbar() {
                 const Icon = link.icon
                 return (
                   <NavLink
-                    key={link.href}
+                    key={link.label}
                     to={link.href}
+                    end
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-semibold text-slate-700 hover:text-[#16A34A] hover:bg-emerald-50 transition-colors"
+                    className={({ isActive }) =>
+                      `group flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold transition-colors ${
+                        isActive ? 'bg-emerald-50 text-[#16A34A]' : 'text-slate-700 hover:text-[#16A34A] hover:bg-emerald-50'
+                      }`
+                    }
                   >
-                    <Icon size={18} className="text-[#16A34A]" />
-                    <span>{link.label}</span>
+                    <span className="w-9 h-9 rounded-lg bg-emerald-50 group-hover:bg-white flex items-center justify-center transition-colors">
+                      <Icon size={18} className="text-[#16A34A]" />
+                    </span>
+                    <span className="flex-1">{link.label}</span>
+                    <ArrowRight size={14} className="text-slate-300 group-hover:text-[#16A34A] group-hover:translate-x-0.5 transition-all" />
                   </NavLink>
                 )
               })}
@@ -627,7 +675,9 @@ export default function Navbar() {
                 Certifications
               </Link>
             </div>
+            </div>
           </motion.div>
+          </>
         )}
       </AnimatePresence>
 

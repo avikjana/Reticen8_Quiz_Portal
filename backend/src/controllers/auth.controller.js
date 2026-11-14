@@ -1,113 +1,167 @@
-import UserModel from '../models/user.model.js'
+import UserModel, { SELF_SIGNUP_ROLES } from '../models/user.model.js'
 import AppError from '../utils/AppError.js'
-import { sessionStore } from '../middlewares/auth.middleware.js'
+import { revokeToken, getBearerToken } from '../middlewares/auth.middleware.js'
+import { signToken, verifyToken } from '../utils/jwt.js'
+import { verifyPassword, fakeVerify, validatePasswordStrength } from '../utils/password.js'
+import { verifyGoogleCredential } from '../utils/google.js'
+import { rateLimit, resetRateLimit, clientIp } from '../utils/rateLimit.js'
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+const issueSession = (user, message) => {
+  const safeUser = UserModel.sanitize(user)
+  return {
+    success: true,
+    message,
+    token: signToken({ sub: user.id, role: user.role }),
+    user: safeUser,
+  }
+}
+
+const trimmed = (v, max = 120) => (typeof v === 'string' ? v.trim().slice(0, max) : '')
 
 export class AuthController {
-  static async login(req, res) {
+  static async login(req) {
     const { email, password, role } = req.body || {}
+    const cleanEmail = trimmed(email, 254).toLowerCase()
 
-    if (!email || !password) {
+    if (!cleanEmail || !password) {
       throw new AppError('Email and password are required', 400)
     }
 
-    const user = UserModel.findByEmail(email)
+    // Per 15 min: 30 attempts per IP and 10 per email (slows password guessing)
+    const ip = clientIp(req)
+    rateLimit(`login:ip:${ip}`, { limit: 30 })
+    rateLimit(`login:email:${cleanEmail}`, { limit: 10 })
+
+    const user = UserModel.findByEmail(cleanEmail)
 
     if (!user) {
-      throw new AppError(`No account registered with email "${email}".`, 404)
+      await fakeVerify(password)
+      throw new AppError('Invalid email or password.', 401)
     }
 
-    // Role check if specified
-    if (role && user.role.toLowerCase() !== role.toLowerCase()) {
+    if (!user.passwordHash) {
       throw new AppError(
-        `Role mismatch: This account is registered as "${user.role}", but you attempted to login under "${role}".`,
+        'This account was created with Google. Please use "Sign in with Google".',
+        400
+      )
+    }
+
+    if (!(await verifyPassword(password, user.passwordHash))) {
+      throw new AppError('Invalid email or password.', 401)
+    }
+
+    if (user.status && user.status !== 'ACTIVE') {
+      throw new AppError('This account has been disabled. Contact an administrator.', 403)
+    }
+
+    // Role check only after the password is verified, so it can't be used to
+    // probe which role an email belongs to.
+    if (role && user.role.toLowerCase() !== String(role).toLowerCase()) {
+      throw new AppError(
+        `This account is registered as "${user.role}". Please choose the ${user.role} tab to sign in.`,
         403
       )
     }
 
-    // Password verification
-    if (user.password !== password) {
-      throw new AppError('Incorrect password for this account.', 401)
-    }
-
-    // Generate session token
-    const token = `r8_auth_${user.role.toLowerCase()}_${user.id}_${Date.now().toString(36)}`
-    const safeUser = UserModel.sanitize(user)
-
-    sessionStore.set(token, {
-      user: safeUser,
-      token,
-      loginAt: new Date().toISOString(),
-    })
-
-    return {
-      success: true,
-      message: `Authenticated successfully as ${user.role}`,
-      token,
-      user: safeUser,
-    }
+    resetRateLimit(`login:email:${cleanEmail}`)
+    return issueSession(user, `Authenticated successfully as ${user.role}`)
   }
 
-  static async register(req, res) {
+  static async register(req) {
     const { name, email, password, role, roleTitle, department } = req.body || {}
+    const cleanName = trimmed(name, 80)
+    const cleanEmail = trimmed(email, 254).toLowerCase()
 
-    if (!email || !password || !name) {
+    rateLimit(`register:ip:${clientIp(req)}`, { limit: 10, windowMs: 60 * 60 * 1000 })
+
+    if (!cleanName || !cleanEmail || !password) {
       throw new AppError('Name, email, and password are required', 400)
     }
+    if (!EMAIL_RE.test(cleanEmail)) {
+      throw new AppError('Please enter a valid email address.', 400)
+    }
+    const weak = validatePasswordStrength(password)
+    if (weak) throw new AppError(weak, 400)
 
-    const existing = UserModel.findByEmail(email)
-    if (existing) {
-      throw new AppError(`User with email "${email}" already exists.`, 409)
+    const requestedRole = role || 'Employee'
+    if (!SELF_SIGNUP_ROLES.includes(requestedRole)) {
+      throw new AppError(
+        `You can't sign up as "${requestedRole}". Administrator accounts are created by an existing administrator.`,
+        403
+      )
     }
 
-    const newUser = UserModel.create({
-      name,
-      email,
+    if (UserModel.findByEmail(cleanEmail)) {
+      throw new AppError('An account with this email already exists. Try signing in instead.', 409)
+    }
+
+    const newUser = await UserModel.create({
+      name: cleanName,
+      email: cleanEmail,
       password,
-      role: role || 'Employee',
-      roleTitle,
-      department,
+      role: requestedRole,
+      roleTitle: trimmed(roleTitle) || undefined,
+      department: trimmed(department) || undefined,
     })
 
-    const token = `r8_auth_${newUser.role.toLowerCase()}_${newUser.id}_${Date.now().toString(36)}`
-    const safeUser = UserModel.sanitize(newUser)
-
-    sessionStore.set(token, {
-      user: safeUser,
-      token,
-      loginAt: new Date().toISOString(),
-    })
-
-    return {
-      success: true,
-      message: 'Account registered successfully',
-      token,
-      user: safeUser,
-    }
+    return issueSession(newUser, 'Account registered successfully')
   }
 
-  static async getMe(req, res) {
+  // POST /api/auth/google  { credential, role? }
+  // `credential` is the ID token returned by Google Identity Services.
+  static async googleLogin(req) {
+    rateLimit(`google:ip:${clientIp(req)}`, { limit: 30 })
+
+    const { credential, role } = req.body || {}
+    const profile = await verifyGoogleCredential(credential)
+
+    let user = UserModel.findByGoogleId(profile.googleId)
+
+    if (!user) {
+      const existing = UserModel.findByEmail(profile.email)
+      if (existing) {
+        // Google has verified ownership of this email, so it's safe to link
+        // the Google identity to the existing account.
+        user = UserModel.update(existing.id, {
+          googleId: profile.googleId,
+          picture: existing.picture || profile.picture,
+          authProviders: [...new Set([...(existing.authProviders || ['password']), 'google'])],
+        })
+      } else {
+        const newRole = SELF_SIGNUP_ROLES.includes(role) ? role : 'Employee'
+        user = await UserModel.create({
+          name: profile.name,
+          email: profile.email,
+          googleId: profile.googleId,
+          picture: profile.picture,
+          role: newRole,
+        })
+      }
+    }
+
+    if (user.status && user.status !== 'ACTIVE') {
+      throw new AppError('This account has been disabled. Contact an administrator.', 403)
+    }
+
+    return issueSession(user, `Signed in with Google as ${user.role}`)
+  }
+
+  static async getMe(req) {
     if (!req.user) {
       throw new AppError('Not authenticated', 401)
     }
-    return {
-      success: true,
-      user: req.user,
-    }
+    return { success: true, user: req.user }
   }
 
-  static async logout(req, res) {
-    const authHeader = req.headers.authorization
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.split(' ')[1]
-      sessionStore.delete(token)
-    }
-    return {
-      success: true,
-      message: 'Signed out successfully',
-    }
+  static async logout(req) {
+    const payload = verifyToken(getBearerToken(req))
+    if (payload) revokeToken(payload)
+    return { success: true, message: 'Signed out successfully' }
   }
 
-  static async getRoles(req, res) {
+  static async getRoles() {
     return {
       success: true,
       roles: [
@@ -117,6 +171,7 @@ export class AuthController {
           description: 'Full enterprise control, audit logging, system settings, and user provisioning.',
           badge: '🛡️',
           color: 'purple',
+          selfSignup: false,
         },
         {
           id: 'Employee',
@@ -124,6 +179,7 @@ export class AuthController {
           description: 'Internal security operations, firewall sandbox labs, and technical training.',
           badge: '💼',
           color: 'emerald',
+          selfSignup: true,
         },
         {
           id: 'Partner',
@@ -131,6 +187,7 @@ export class AuthController {
           description: 'Authorized training partner portal, organization seats, and co-branded certifications.',
           badge: '🤝',
           color: 'blue',
+          selfSignup: true,
         },
       ],
     }

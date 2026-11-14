@@ -47,7 +47,7 @@ export function CertificationCard({ cert, index }) {
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.45, delay: index * 0.08 }}
       whileHover={{ y: -6, transition: { duration: 0.2 } }}
-      className="group flex flex-col bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-slate-300 transition-all duration-200 p-6"
+      className="group flex flex-col bg-white rounded-3xl ring-1 ring-slate-200/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] hover:ring-slate-300 transition-shadow duration-300 p-5 sm:p-6"
     >
       {/* Top Header: Badge Emblem + Level Pill */}
       <div className="flex items-center justify-between gap-3 mb-5">

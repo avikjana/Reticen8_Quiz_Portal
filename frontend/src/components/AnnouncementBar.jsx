@@ -34,11 +34,11 @@ export default function AnnouncementBar() {
   }
 
   return (
-    <div className="relative z-50 bg-gradient-to-r from-[#0F5132] via-[#146C43] to-[#198754] text-white text-xs sm:text-[13px] py-2 px-4 shadow-sm">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <div className="relative bg-gradient-to-r from-[#0F5132] via-[#146C43] to-[#198754] text-white text-xs sm:text-[13px] py-2 px-4">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
         {/* Left message with badge */}
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <span className="font-bold tracking-wide uppercase text-emerald-200 text-xs px-2 py-0.5 rounded bg-emerald-900/40 border border-emerald-500/30 flex-shrink-0">
+          <span className="hidden sm:inline-block font-bold tracking-wide uppercase text-emerald-200 text-[11px] px-2 py-0.5 rounded-full bg-emerald-900/40 border border-emerald-500/30 flex-shrink-0">
             {current.title}
           </span>
           <p className="truncate text-emerald-50">
@@ -46,7 +46,7 @@ export default function AnnouncementBar() {
           </p>
           <a
             href={current.linkUrl}
-            className="inline-flex items-center gap-1 font-semibold text-white underline underline-offset-2 hover:text-emerald-200 flex-shrink-0 transition-colors"
+            className="hidden md:inline-flex items-center gap-1 font-semibold text-white underline underline-offset-2 hover:text-emerald-200 flex-shrink-0 transition-colors"
           >
             {current.linkText}
             <ExternalLink size={12} />
@@ -62,7 +62,7 @@ export default function AnnouncementBar() {
           >
             <ChevronLeft size={16} />
           </button>
-          <span className="text-[11px] font-medium px-1 text-emerald-200">
+          <span className="hidden sm:inline text-[11px] font-medium px-1 text-emerald-200 tabular-nums">
             {index + 1}/{announcements.length}
           </span>
           <button

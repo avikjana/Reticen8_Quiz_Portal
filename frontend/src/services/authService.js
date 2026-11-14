@@ -9,6 +9,10 @@ export const authService = {
     return await api.post('/auth/register', userData)
   },
 
+  google: async ({ credential, role }) => {
+    return await api.post('/auth/google', { credential, role })
+  },
+
   getMe: async () => {
     return await api.get('/auth/me')
   },

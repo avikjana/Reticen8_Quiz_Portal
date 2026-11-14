@@ -52,14 +52,14 @@ export function CourseCard({ course, index }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.45, delay: index * 0.08 }}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-      className="group flex flex-col bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-slate-300 transition-all duration-200 overflow-hidden"
+      whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+      className="group flex flex-col bg-white rounded-3xl ring-1 ring-slate-200/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] hover:ring-slate-300 transition-[box-shadow,--tw-ring-color] duration-300 overflow-hidden"
     >
       {/* Top colorful accent strip */}
-      <div className="h-2 w-full" style={{ background: theme.accent }} />
+      <div className="h-1.5 w-full" style={{ background: `linear-gradient(90deg, ${theme.accent}, ${theme.accent}55)` }} />
 
       {/* Card Header */}
-      <div className="p-6 pb-4 flex items-start justify-between gap-4">
+      <div className="p-5 sm:p-6 pb-4 flex items-start justify-between gap-4">
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform"
           style={{ background: course.bgColor || '#F0FDF4' }}
@@ -75,7 +75,7 @@ export function CourseCard({ course, index }) {
       </div>
 
       {/* Card Content */}
-      <div className="px-6 flex-1 flex flex-col">
+      <div className="px-5 sm:px-6 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#16A34A] transition-colors leading-snug">
           {course.title}
         </h3>
@@ -100,7 +100,7 @@ export function CourseCard({ course, index }) {
       </div>
 
       {/* Card Footer with Meta & CTA */}
-      <div className="px-6 py-4 mt-6 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between">
+      <div className="px-5 sm:px-6 py-4 mt-6 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-3">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
           <BookOpen size={14} className="text-slate-400" />
           <span>{modulesCount} Modules</span>

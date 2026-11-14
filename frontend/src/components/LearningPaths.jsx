@@ -10,7 +10,7 @@ export default function LearningPaths() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="py-20 lg:py-28 bg-[#F8FAFC]" id="learning-paths">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-gradient-to-b from-[#F8FAFC] to-white" id="learning-paths">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
@@ -18,7 +18,7 @@ export default function LearningPaths() {
           initial={{ opacity: 0, y: 15 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-2xl mx-auto mb-14"
+          className="text-center max-w-2xl mx-auto mb-10 sm:mb-14"
         >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-[#15803D] text-xs font-bold uppercase tracking-wider mb-3">
             <Compass size={14} />
@@ -33,7 +33,7 @@ export default function LearningPaths() {
         </motion.div>
 
         {/* 4 Cards Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6">
           {learningPaths.map((course, i) => (
             <CourseCard key={course.id} course={course} index={i} />
           ))}

@@ -16,6 +16,7 @@ import {
   KeyRound,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import GoogleSignInButton, { OrDivider } from './Auth/GoogleSignInButton'
 
 const categories = [
   {
@@ -28,8 +29,8 @@ const categories = [
     badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
     btnClass: 'bg-purple-600 hover:bg-purple-700',
     ringClass: 'focus:ring-purple-500/20 focus:border-purple-600',
-    demoEmail: 'admin@reticen8.com',
-    demoPass: 'AdminPassword123!',
+    demoEmail: import.meta.env.DEV ? 'admin@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'AdminPassword123!' : '',
   },
   {
     id: 'Employee',
@@ -41,8 +42,8 @@ const categories = [
     badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     btnClass: 'bg-[#16A34A] hover:bg-[#15803D]',
     ringClass: 'focus:ring-[#16A34A]/20 focus:border-[#16A34A]',
-    demoEmail: 'employee@reticen8.com',
-    demoPass: 'EmployeePassword123!',
+    demoEmail: import.meta.env.DEV ? 'employee@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'EmployeePassword123!' : '',
   },
   {
     id: 'Partner',
@@ -54,8 +55,8 @@ const categories = [
     badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
     btnClass: 'bg-blue-600 hover:bg-blue-700',
     ringClass: 'focus:ring-blue-500/20 focus:border-blue-600',
-    demoEmail: 'partner@reticen8.com',
-    demoPass: 'PartnerPassword123!',
+    demoEmail: import.meta.env.DEV ? 'partner@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'PartnerPassword123!' : '',
   },
 ]
 
@@ -260,6 +261,7 @@ export default function LoginModal() {
                 >
                   Forgot Password?
                 </a>
+                {import.meta.env.DEV && (
                 <button
                   type="button"
                   onClick={() => {
@@ -271,6 +273,7 @@ export default function LoginModal() {
                   <KeyRound size={12} />
                   <span>Fill Demo Password</span>
                 </button>
+                )}
               </div>
             </div>
             <div className="relative">
@@ -324,6 +327,20 @@ export default function LoginModal() {
             </button>
           </div>
         </form>
+
+        {/* Google sign-in */}
+        <div className="px-7 pb-6 -mt-1 space-y-4">
+          <OrDivider />
+          <GoogleSignInButton
+            text="signin_with"
+            role={selectedCategory === 'Partner' ? 'Partner' : 'Employee'}
+            onSuccess={() => {
+              setErrorMsg('')
+              closeLoginModal()
+            }}
+            onError={(msg) => setErrorMsg(msg)}
+          />
+        </div>
 
         {/* Modal Footer */}
         <div className="px-7 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">

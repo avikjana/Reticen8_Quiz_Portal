@@ -76,7 +76,7 @@ export default function FeatureGrid() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="py-20 lg:py-28 bg-white" id="features">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-white" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
@@ -84,7 +84,7 @@ export default function FeatureGrid() {
           initial={{ opacity: 0, y: 15 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-2xl mx-auto mb-16"
+          className="text-center max-w-2xl mx-auto mb-10 sm:mb-16"
         >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-[#15803D] text-xs font-bold uppercase tracking-wider mb-3">
             <Sparkles size={14} />
@@ -100,7 +100,7 @@ export default function FeatureGrid() {
         </motion.div>
 
         {/* 8 Features Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
           {features.map((item, idx) => {
             const Icon = item.icon
             return (
@@ -110,7 +110,7 @@ export default function FeatureGrid() {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="p-6 rounded-2xl bg-white border border-slate-200/90 hover:border-slate-300 shadow-2xs hover:shadow-lg transition-all duration-200"
+                className="group p-6 rounded-3xl bg-white ring-1 ring-slate-200/80 hover:ring-emerald-200 shadow-[var(--shadow-soft)] card-lift"
               >
                 <div
                   className={`w-12 h-12 rounded-xl ${item.lightBg} flex items-center justify-center mb-5`}

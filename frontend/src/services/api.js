@@ -12,7 +12,7 @@ export async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
 
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 4000)
+  const timeoutId = setTimeout(() => controller.abort(), 10000)
 
   try {
     const res = await fetch(url, {
@@ -26,7 +26,15 @@ export async function request(endpoint, options = {}) {
     const data = await res.json().catch(() => ({}))
 
     if (!res.ok) {
-      throw new Error(data.error || `HTTP error ${res.status}: ${res.statusText}`)
+      const error = new Error(data.error || `HTTP error ${res.status}: ${res.statusText}`)
+      error.status = res.status
+      // A rejected token on an authenticated call means the session is over
+      // (but a wrong password on the login form is not a session problem)
+      const isCredentialCheck = /^\/?auth\/(login|register|google)/.test(endpoint)
+      if (res.status === 401 && token && !isCredentialCheck) {
+        window.dispatchEvent(new Event('r8:unauthorized'))
+      }
+      throw error
     }
 
     return data

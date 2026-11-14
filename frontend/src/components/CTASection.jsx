@@ -8,10 +8,10 @@ export default function CTASection() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="relative py-20 lg:py-28 bg-[#0F172A] text-white overflow-hidden" id="cta">
+    <section ref={ref} className="relative isolate py-16 sm:py-20 lg:py-28 bg-[#0F172A] text-white overflow-hidden" id="cta">
       {/* Subtle green ambient glow */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[700px] h-[350px] bg-emerald-500/20 blur-[120px] animate-blob rounded-full pointer-events-none"
         aria-hidden="true"
       />
 
@@ -49,10 +49,10 @@ export default function CTASection() {
           </p>
 
           {/* Buttons */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4">
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] active:scale-[0.98] shadow-lg shadow-emerald-900/40 transition-all group"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white bg-[#16A34A] hover:-translate-y-0.5 hover:bg-[#15803D] active:scale-[0.98] shadow-lg shadow-emerald-900/40 transition-all group"
             >
               <span>Get Started Today</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

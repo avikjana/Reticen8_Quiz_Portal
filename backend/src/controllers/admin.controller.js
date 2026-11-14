@@ -1,3 +1,4 @@
+import { validatePasswordStrength } from '../utils/password.js'
 import UserModel from '../models/user.model.js'
 import CourseModel from '../models/course.model.js'
 import db from '../db/index.js'
@@ -48,12 +49,15 @@ export class AdminController {
       throw new AppError('Name, email, and password are required', 400)
     }
 
+    const weak = validatePasswordStrength(password)
+    if (weak) throw new AppError(weak, 400)
+
     const existing = UserModel.findByEmail(email)
     if (existing) {
       throw new AppError('User already exists', 409)
     }
 
-    const created = UserModel.create({ name, email, password, role, roleTitle, department })
+    const created = await UserModel.create({ name, email, password, role, roleTitle, department })
     return {
       success: true,
       user: UserModel.sanitize(created),

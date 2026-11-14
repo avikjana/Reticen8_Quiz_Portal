@@ -53,7 +53,7 @@ export default function PartnerSection() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="py-20 lg:py-28 bg-[#F8FAFC]" id="partners">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-[#F8FAFC]" id="partners">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 

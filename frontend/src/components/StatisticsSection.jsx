@@ -26,8 +26,8 @@ function StatItem({ stat, started }) {
   const count = useCounter(stat.value, 1800, started)
 
   return (
-    <div className="flex flex-col items-center justify-center text-center px-4 py-8 sm:py-10">
-      <div className="text-3xl sm:text-4xl lg:text-[2.75rem] font-light tracking-tight text-slate-900 leading-none">
+    <div className="h-full flex flex-col items-center justify-center text-center px-3 sm:px-4 py-7 sm:py-10 bg-white transition-colors hover:bg-emerald-50/40">
+      <div className="font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-slate-900 leading-none tabular-nums">
         {count.toLocaleString()}
         <span className="text-[#16A34A] font-normal">{stat.suffix}</span>
       </div>
@@ -46,11 +46,16 @@ export default function StatisticsSection() {
   const inView = useInView(ref, { once: true, margin: '-40px' })
 
   return (
-    <section ref={ref} className="bg-white border-y border-slate-100/90 shadow-2xs">
+    <section ref={ref} className="relative bg-white py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
-          {statistics.map((stat) => (
-            <div key={stat.id}>
+        <div className="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-5 gap-px bg-slate-200/70 rounded-3xl overflow-hidden ring-1 ring-slate-200/70 shadow-[var(--shadow-soft)]">
+          {statistics.map((stat, i) => (
+            <div
+              key={stat.id}
+              className={`${
+                i === statistics.length - 1 && statistics.length % 2 === 1 ? 'col-span-2' : ''
+              } ${i < 3 ? 'md:col-span-2' : 'md:col-span-3'} lg:col-span-1`}
+            >
               <StatItem stat={stat} started={inView} />
             </div>
           ))}

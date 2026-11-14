@@ -1,4 +1,7 @@
 import createApp from './app.js'
+import UserModel from './models/user.model.js'
+
+await UserModel.migratePlaintextPasswords()
 
 const PORT = process.env.PORT || 5000
 
@@ -13,6 +16,7 @@ app.listen(PORT, () => {
 ║   🛡️ Auth Routes:                                                 ║
 ║      - POST /api/auth/login    (Admin, Employee, Partner)         ║
 ║      - POST /api/auth/register (New User Registration)            ║
+║      - POST /api/auth/google   (Sign in with Google)              ║
 ║      - GET  /api/auth/me       (Active Session Inspection)        ║
 ║      - POST /api/auth/logout   (Session Invalidation)             ║
 ║      - GET  /api/auth/roles    (Role Capabilities)                ║

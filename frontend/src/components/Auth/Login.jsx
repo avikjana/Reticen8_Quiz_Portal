@@ -17,8 +17,8 @@ const categories = [
     badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
     btnClass: 'bg-purple-600 hover:bg-purple-700',
     ringClass: 'focus:ring-purple-500/20 focus:border-purple-600',
-    demoEmail: 'admin@reticen8.com',
-    demoPass: 'AdminPassword123!',
+    demoEmail: import.meta.env.DEV ? 'admin@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'AdminPassword123!' : '',
   },
   {
     id: 'Employee',
@@ -30,8 +30,8 @@ const categories = [
     badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     btnClass: 'bg-[#16A34A] hover:bg-[#15803D]',
     ringClass: 'focus:ring-[#16A34A]/20 focus:border-[#16A34A]',
-    demoEmail: 'employee@reticen8.com',
-    demoPass: 'EmployeePassword123!',
+    demoEmail: import.meta.env.DEV ? 'employee@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'EmployeePassword123!' : '',
   },
   {
     id: 'Partner',
@@ -43,8 +43,8 @@ const categories = [
     badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
     btnClass: 'bg-blue-600 hover:bg-blue-700',
     ringClass: 'focus:ring-blue-500/20 focus:border-blue-600',
-    demoEmail: 'partner@reticen8.com',
-    demoPass: 'PartnerPassword123!',
+    demoEmail: import.meta.env.DEV ? 'partner@reticen8.com' : '',
+    demoPass: import.meta.env.DEV ? 'PartnerPassword123!' : '',
   },
 ]
 

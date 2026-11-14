@@ -78,7 +78,7 @@ function PhotoCard({ src, alt, caption, className, fallbackColor = 'from-emerald
   const [error, setError] = useState(false)
 
   return (
-    <div className={`relative overflow-hidden bg-slate-100 shadow-xl ${className}`}>
+    <div className={`group relative overflow-hidden bg-slate-100 shadow-[var(--shadow-lift)] ring-1 ring-slate-900/5 ${className}`}>
       {/* Real image */}
       {!error && (
         <img
@@ -87,7 +87,7 @@ function PhotoCard({ src, alt, caption, className, fallbackColor = 'from-emerald
           loading="eager"
           onLoad={() => setLoaded(true)}
           onError={() => setError(true)}
-          className={`w-full h-full object-cover transition-opacity duration-500 ${
+          className={`w-full h-full object-cover transition-[opacity,transform] duration-700 group-hover:scale-105 ${
             loaded ? 'opacity-100' : 'opacity-0'
           }`}
         />
@@ -112,7 +112,14 @@ function PhotoCard({ src, alt, caption, className, fallbackColor = 'from-emerald
 
 export default function HeroSection() {
   return (
-    <section className="relative bg-white pt-8 pb-16 lg:pt-14 lg:pb-24 overflow-hidden">
+    <section className="relative isolate bg-white pt-8 pb-16 sm:pt-10 lg:pt-14 lg:pb-24 overflow-hidden">
+      {/* Soft aurora glow */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-32 -right-24 w-[28rem] h-[28rem] sm:w-[36rem] sm:h-[36rem] rounded-full bg-emerald-300/30 blur-3xl animate-blob" />
+        <div className="absolute top-40 -left-32 w-[22rem] h-[22rem] sm:w-[30rem] sm:h-[30rem] rounded-full bg-sky-200/40 blur-3xl animate-blob [animation-delay:-6s]" />
+        <div className="absolute bottom-0 right-1/3 w-[18rem] h-[18rem] rounded-full bg-teal-200/30 blur-3xl animate-blob [animation-delay:-12s]" />
+        <div className="absolute inset-0 bg-dot-grid [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
+      </div>
       {/* Background undulating wave patterns */}
       <BackgroundWaves />
 
@@ -124,7 +131,7 @@ export default function HeroSection() {
           transition={{ duration: 0.4 }}
           className="mb-8"
         >
-          <div className="inline-flex flex-wrap items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200/90 shadow-2xs text-xs sm:text-sm text-slate-700 hover:border-slate-300 transition-colors">
+          <div className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2 rounded-2xl sm:rounded-full glass ring-1 ring-slate-900/5 shadow-[var(--shadow-soft)] text-xs sm:text-sm text-slate-700 hover:ring-slate-900/10 transition">
             <span className="flex items-center gap-1.5 font-bold text-amber-600">
               <Flame size={16} className="fill-amber-500 text-amber-500" />
               The cybersecurity job market is hot!
@@ -148,11 +155,11 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-4xl sm:text-5xl xl:text-[3.5rem] font-light text-slate-900 tracking-tight leading-[1.12]"
+              className="text-[2.5rem] leading-[1.05] sm:text-6xl xl:text-7xl font-bold text-slate-900 tracking-tight sm:leading-[1.05]"
             >
               Build your skills.
               <br />
-              <span className="font-normal text-slate-900">Build your future.</span>
+              <span className="text-gradient">Build your future.</span>
             </motion.h1>
 
             <motion.p
@@ -178,18 +185,18 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="mt-8 flex flex-wrap items-center gap-3.5"
+              className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3"
             >
               <Link
                 to="/register"
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] active:scale-[0.98] shadow-md shadow-emerald-700/20 transition-all duration-150"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-[#16A34A] to-emerald-500 hover:from-[#15803D] hover:to-[#16A34A] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-[var(--shadow-glow)] transition-all duration-200"
               >
                 <span>Start Learning</span>
-                <ArrowRight size={16} />
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/courses"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-[#16A34A] bg-white border-2 border-[#16A34A] hover:bg-emerald-50 active:scale-[0.98] transition-all duration-150"
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-slate-800 bg-white/80 backdrop-blur ring-1 ring-slate-200 hover:ring-emerald-300 hover:text-[#16A34A] hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)] active:scale-[0.98] transition-all duration-200"
               >
                 Explore Subjects
               </Link>
@@ -200,7 +207,7 @@ export default function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-8 pt-6 border-t border-slate-100 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-slate-500 font-medium"
+              className="mt-8 pt-6 border-t border-slate-200/70 flex flex-wrap items-center gap-y-2 gap-x-5 sm:gap-x-6 text-xs text-slate-500 font-medium"
             >
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 size={15} className="text-[#16A34A]" />
@@ -231,7 +238,7 @@ export default function HeroSection() {
               />
 
               {/* Two columns of rounded image cards */}
-              <div className="grid grid-cols-12 gap-4 items-center">
+              <div className="grid grid-cols-12 gap-3 sm:gap-4 items-center">
 
                 {/* Left Card: Tall vertical card of Indian female engineer */}
                 <div className="col-span-5 sm:col-span-5">
@@ -244,7 +251,7 @@ export default function HeroSection() {
                       src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=700&h=950&q=80"
                       alt="Cybersecurity Engineer configuring firewall console"
                       caption="Network Security Specialist"
-                      className="h-[380px] sm:h-[430px] rounded-[32px]"
+                      className="h-[280px] sm:h-[400px] lg:h-[430px] rounded-3xl sm:rounded-[32px] animate-float"
                       fallbackColor="from-emerald-700 via-teal-800 to-slate-900"
                     />
                   </motion.div>
@@ -262,7 +269,7 @@ export default function HeroSection() {
                       src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&h=550&q=80"
                       alt="Engineers collaborating in modern tech office"
                       caption="Collaborative NOC Environment"
-                      className="h-[185px] sm:h-[210px] rounded-[28px]"
+                      className="h-[134px] sm:h-[192px] lg:h-[207px] rounded-2xl sm:rounded-[28px]"
                       fallbackColor="from-slate-800 via-blue-900 to-indigo-950"
                     />
                   </motion.div>
@@ -277,7 +284,7 @@ export default function HeroSection() {
                       src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&h=550&q=80"
                       alt="Technical training and remote firewall lab"
                       caption="Technical Training Environment"
-                      className="h-[185px] sm:h-[210px] rounded-[28px]"
+                      className="h-[134px] sm:h-[192px] lg:h-[207px] rounded-2xl sm:rounded-[28px]"
                       fallbackColor="from-amber-700 via-orange-800 to-slate-900"
                     />
                   </motion.div>

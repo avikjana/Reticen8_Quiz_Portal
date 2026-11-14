@@ -1,151 +1,109 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import authService from '../services/authService'
 
 const AuthContext = createContext(null)
 
-// Fallback seed accounts for offline resilience
-const DEMO_ACCOUNTS = {
-  Administrator: {
-    id: 'usr-admin-01',
-    name: 'Avik Jana',
-    email: 'admin@reticen8.com',
-    password: 'AdminPassword123!',
-    role: 'Administrator',
-    roleTitle: 'Enterprise Systems Administrator',
-    avatar: 'A',
-    department: 'Global Information Security',
-    permissions: ['all', 'system_admin', 'user_management', 'audit_logs', 'lab_provisioning'],
-    badgeColor: 'purple',
-  },
-  Employee: {
-    id: 'usr-emp-02',
-    name: 'Avik Jana',
-    email: 'employee@reticen8.com',
-    password: 'EmployeePassword123!',
-    role: 'Employee',
-    roleTitle: 'Lead Security Engineer',
-    avatar: 'A',
-    department: 'Security Operations Center (SOC)',
-    permissions: ['engineer_labs', 'internal_curriculum', 'firewall_sandbox', 'exam_vouchers'],
-    badgeColor: 'emerald',
-  },
-  Partner: {
-    id: 'usr-partner-03',
-    name: 'Avik Jana',
-    email: 'partner@reticen8.com',
-    password: 'PartnerPassword123!',
-    role: 'Partner',
-    roleTitle: 'Authorized Training Partner',
-    avatar: 'A',
-    department: 'Partner Engineering Ecosystem',
-    permissions: ['partner_portal', 'seat_allocation', 'discounted_vouchers', 'co_branding'],
-    badgeColor: 'blue',
-  },
+const TOKEN_KEY = 'r8_token'
+const USER_KEY = 'r8_user'
+
+const readStoredUser = () => {
+  try {
+    const saved = localStorage.getItem(USER_KEY)
+    return saved ? JSON.parse(saved) : null
+  } catch {
+    return null
+  }
 }
 
+export const dashboardPathFor = (role) =>
+  role === 'Administrator' ? '/admin' : role === 'Partner' ? '/partner' : '/employee'
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('r8_user')
-      return saved ? JSON.parse(saved) : null
-    } catch {
-      return null
-    }
-  })
-
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem('r8_token') || null
-  })
-
+  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null)
+  // Cached user lets the UI render instantly; it's re-validated against /auth/me below.
+  const [user, setUser] = useState(() => (localStorage.getItem(TOKEN_KEY) ? readStoredUser() : null))
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [loginModalDefaultCategory, setLoginModalDefaultCategory] = useState('Employee')
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('r8_user', JSON.stringify(user))
-    } else {
-      localStorage.removeItem('r8_user')
-    }
+    if (user) localStorage.setItem(USER_KEY, JSON.stringify(user))
+    else localStorage.removeItem(USER_KEY)
   }, [user])
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('r8_token', token)
-    } else {
-      localStorage.removeItem('r8_token')
-    }
+    if (token) localStorage.setItem(TOKEN_KEY, token)
+    else localStorage.removeItem(TOKEN_KEY)
   }, [token])
 
-  // Login action with real backend connection + graceful offline fallback
-  const login = async ({ email, password, role }) => {
-    try {
-      // 1. Attempt connection to Backend API (http://localhost:5000/api/auth/login)
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 3500)
+  const clearSession = useCallback(() => {
+    setUser(null)
+    setToken(null)
+  }, [])
 
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role }),
-        signal: controller.signal,
+  // On load, confirm the stored token is still valid and refresh the user record
+  useEffect(() => {
+    if (!token) return
+    let cancelled = false
+    authService
+      .getMe()
+      .then((res) => {
+        if (!cancelled && res?.user) setUser(res.user)
       })
+      .catch((err) => {
+        // Only drop the session if the server actually rejected the token;
+        // keep it if the backend is just unreachable for a moment.
+        if (!cancelled && err.status === 401) clearSession()
+      })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-      clearTimeout(timeoutId)
+  // Any API call that gets a 401 (expired/revoked token) signs the user out
+  useEffect(() => {
+    const onUnauthorized = () => clearSession()
+    window.addEventListener('r8:unauthorized', onUnauthorized)
+    return () => window.removeEventListener('r8:unauthorized', onUnauthorized)
+  }, [clearSession])
 
-      if (response.ok) {
-        const data = await response.json()
-        if (data.success && data.user) {
-          setUser(data.user)
-          setToken(data.token)
-          setIsLoginModalOpen(false)
-          return { success: true, user: data.user }
-        }
-      } else {
-        const errData = await response.json()
-        return { success: false, error: errData.error || 'Authentication failed' }
-      }
-    } catch (networkErr) {
-      console.warn('Backend server not reachable on port 5000, using local fallback validation:', networkErr.message)
+  const startSession = (data) => {
+    setToken(data.token)
+    setUser(data.user)
+    setIsLoginModalOpen(false)
+    return { success: true, user: data.user }
+  }
 
-      // Fallback matching for local seamless demo
-      const fallback = DEMO_ACCOUNTS[role]
-      if (fallback && fallback.email.toLowerCase() === email.toLowerCase() && fallback.password === password) {
-        setUser(fallback)
-        setToken(`r8_offline_${fallback.id}_${Date.now()}`)
-        setIsLoginModalOpen(false)
-        return { success: true, user: fallback }
-      }
-
+  const run = async (fn) => {
+    try {
+      const data = await fn()
+      if (data?.success && data.token && data.user) return startSession(data)
+      return { success: false, error: data?.error || 'Authentication failed' }
+    } catch (err) {
       return {
         success: false,
-        error: `Invalid credentials for ${role}. Please check your email and password.`,
+        error:
+          err.name === 'AbortError' || err.message === 'Failed to fetch'
+            ? 'Cannot reach the server. Make sure the backend is running.'
+            : err.message,
       }
     }
   }
+
+  const login = ({ email, password, role }) => run(() => authService.login({ email, password, role }))
+
+  const register = (userData) => run(() => authService.register(userData))
+
+  // `credential` is the Google ID token from the Google Identity Services button
+  const loginWithGoogle = ({ credential, role }) => run(() => authService.google({ credential, role }))
 
   const logout = async () => {
     try {
-      if (token && token.startsWith('r8_auth_')) {
-        await fetch('http://localhost:5000/api/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        })
-      }
+      if (token) await authService.logout()
     } catch (err) {
       console.warn('Logout API call notice:', err.message)
     } finally {
-      setUser(null)
-      setToken(null)
-    }
-  }
-
-  const switchRole = (newRole) => {
-    const target = DEMO_ACCOUNTS[newRole]
-    if (target) {
-      setUser(target)
-      setToken(`r8_auth_${target.id}_switched`)
+      clearSession()
     }
   }
 
@@ -154,24 +112,22 @@ export function AuthProvider({ children }) {
     setIsLoginModalOpen(true)
   }
 
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false)
-  }
+  const closeLoginModal = () => setIsLoginModalOpen(false)
 
   return (
     <AuthContext.Provider
       value={{
         user,
         token,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user && !!token,
         login,
+        register,
+        loginWithGoogle,
         logout,
-        switchRole,
         isLoginModalOpen,
         loginModalDefaultCategory,
         openLoginModal,
         closeLoginModal,
-        demoAccounts: DEMO_ACCOUNTS,
       }}
     >
       {children}
