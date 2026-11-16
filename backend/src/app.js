@@ -7,6 +7,7 @@ import handlePartnerRoutes from './routes/partner.routes.js'
 import handleUserRoutes from './routes/user.routes.js'
 import handleCourseRoutes from './routes/course.routes.js'
 import handleCertificationRoutes from './routes/certification.routes.js'
+import handleEnrollmentRoutes from './routes/enrollment.routes.js'
 import errorHandler from './middlewares/error.middleware.js'
 import AppError from './utils/AppError.js'
 import db from './db/index.js'
@@ -109,6 +110,7 @@ export const createApp = () => {
       if (result === null) result = await handleUserRoutes(req, res, pathname, method)
       if (result === null) result = await handleCourseRoutes(req, res, pathname, method)
       if (result === null) result = await handleCertificationRoutes(req, res, pathname, method)
+      if (result === null) result = await handleEnrollmentRoutes(req, res, pathname, method)
 
       // 4. Return result if route matched
       if (result !== null) {

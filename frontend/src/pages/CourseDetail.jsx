@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   BookOpen, Clock, Star, Award, ChevronRight, CheckCircle2,
-  AlertCircle, Sparkles, ChevronDown, FileText, Play
+  AlertCircle, Sparkles, ChevronDown, FileText, Play, Loader2, PartyPopper
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import useApi from '../hooks/useApi'
+import { useAuth } from '../context/AuthContext'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { ErrorState, NotFoundState, PageSpinner } from '../components/ui/DataState'
+import api from '../services/api'
 
 // Loads the course from the API, then renders it. Unknown IDs get a proper
 // "not found" page instead of silently showing a different course.
@@ -52,6 +55,47 @@ export default function CourseDetail() {
 
 function CourseDetailView({ course }) {
   const [activeTab, setActiveTab] = useState('overview')
+  const { user } = useAuth()
+  const { data: enrollmentCheck, reload: recheckEnrollment } = useApi(
+    user ? `/enrollments/check/${encodeURIComponent(course.id)}` : null
+  )
+  const [enrolling, setEnrolling] = useState(false)
+  const [enrollMsg, setEnrollMsg] = useState('')
+  const [justEnrolled, setJustEnrolled] = useState(false)
+
+  const isEnrolled = enrollmentCheck?.enrolled === true
+
+  const handleEnroll = async () => {
+    setEnrolling(true)
+    setEnrollMsg('')
+    setJustEnrolled(false)
+    try {
+      const res = await api.post('/enrollments', { courseId: course.id })
+      setEnrollMsg(res.message || 'Enrolled successfully!')
+      setJustEnrolled(true)
+      recheckEnrollment()
+      setTimeout(() => setJustEnrolled(false), 3000)
+    } catch (err) {
+      setEnrollMsg(err.message || 'Failed to enroll.')
+    } finally {
+      setEnrolling(false)
+    }
+  }
+
+  const handleUnenroll = async () => {
+    setEnrolling(true)
+    setEnrollMsg('')
+    try {
+      const res = await api.delete(`/enrollments/${encodeURIComponent(course.id)}`)
+      setEnrollMsg(res.message || 'Unenrolled successfully.')
+      recheckEnrollment()
+    } catch (err) {
+      setEnrollMsg(err.message || 'Failed to unenroll.')
+    } finally {
+      setEnrolling(false)
+    }
+  }
+
   usePageTitle(course.title)
 
   return (
@@ -123,20 +167,176 @@ function CourseDetailView({ course }) {
 
             {/* Right Action Card */}
             <div className="lg:col-span-4">
-              <div className="bg-white rounded-2xl p-6 text-slate-900 border border-slate-200 shadow-xl">
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  Course Enrollment
-                </div>
-                <div className="text-2xl font-extrabold text-slate-900 mb-4">
-                  Complimentary Access
-                </div>
-                <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-                  Available for registered Reticen8 Academy students, authorized engineers, and enterprise partners.
-                </p>
-                <div className="space-y-3">
-                  <button className="w-full py-3 px-4 bg-action-600 hover:bg-action-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
-                    Enroll in Course
-                  </button>
+              <motion.div
+                className={`bg-white rounded-2xl p-6 text-slate-900 border shadow-xl overflow-hidden relative ${
+                  justEnrolled ? 'border-emerald-300' : 'border-slate-200'
+                }`}
+                animate={justEnrolled ? { scale: [1, 1.02, 1], borderColor: ['#d1d5db', '#6ee7b7', '#d1d5db'] } : {}}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              >
+                {/* Success celebration overlay */}
+                <AnimatePresence>
+                  {justEnrolled && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute inset-0 pointer-events-none overflow-hidden"
+                    >
+                      {/* Animated rings */}
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0.4 }}
+                        animate={{ scale: 4, opacity: 0 }}
+                        transition={{ duration: 1.2, ease: 'easeOut' }}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border-2 border-emerald-400"
+                      />
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0.3 }}
+                        animate={{ scale: 4, opacity: 0 }}
+                        transition={{ duration: 1.2, ease: 'easeOut', delay: 0.15 }}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border-2 border-emerald-300"
+                      />
+                      {/* Shimmer */}
+                      <motion.div
+                        initial={{ x: '-100%' }}
+                        animate={{ x: '200%' }}
+                        transition={{ duration: 0.8, ease: 'easeInOut', delay: 0.2 }}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-100/50 to-transparent skew-x-12"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence mode="wait">
+                  {justEnrolled ? (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-center py-4 relative"
+                    >
+                      <motion.div
+                        initial={{ scale: 0, rotate: -20 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.1 }}
+                        className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3"
+                      >
+                        <PartyPopper size={28} />
+                      </motion.div>
+                      <motion.h3
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-lg font-black text-slate-900"
+                      >
+                        You're In!
+                      </motion.h3>
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="text-xs text-slate-500 mt-1"
+                      >
+                        Successfully enrolled. Start learning now!
+                      </motion.p>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="default"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                        Course Enrollment
+                      </div>
+                      <div className="text-2xl font-extrabold text-slate-900 mb-4">
+                        {isEnrolled ? 'You\'re Enrolled' : 'Complimentary Access'}
+                      </div>
+                      <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+                        {isEnrolled
+                          ? 'You have access to this course. Explore the curriculum and start learning.'
+                          : 'Available for registered Reticen8 Academy students, authorized engineers, and enterprise partners.'}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Messages */}
+                <AnimatePresence>
+                  {enrollMsg && !justEnrolled && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="overflow-hidden"
+                    >
+                      <div className={`mb-4 p-3 rounded-xl text-xs font-medium flex items-center gap-2 ${
+                        enrollMsg.includes('success') || enrollMsg.includes('Successfully')
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-700 border border-rose-200'
+                      }`}>
+                        {enrollMsg.includes('success') || enrollMsg.includes('Successfully')
+                          ? <CheckCircle2 size={14} />
+                          : <AlertCircle size={14} />}
+                        <span>{enrollMsg}</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Buttons */}
+                <div className="space-y-3 relative">
+                  <AnimatePresence mode="wait">
+                    {isEnrolled && !justEnrolled ? (
+                      <motion.button
+                        key="unenroll"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        onClick={handleUnenroll}
+                        disabled={enrolling}
+                        className="w-full py-3 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
+                      >
+                        {enrolling && <Loader2 size={16} className="animate-spin" />}
+                        {enrolling ? 'Processing...' : 'Unenroll from Course'}
+                      </motion.button>
+                    ) : !justEnrolled ? (
+                      <motion.button
+                        key="enroll"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={handleEnroll}
+                        disabled={enrolling}
+                        className="w-full py-3 px-4 bg-action-600 hover:bg-action-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {enrolling ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin" />
+                            <span>Enrolling...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Enroll in Course</span>
+                            <motion.span
+                              animate={{ x: [0, 4, 0] }}
+                              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                            >
+                              →
+                            </motion.span>
+                          </>
+                        )}
+                      </motion.button>
+                    ) : null}
+                  </AnimatePresence>
                   <Link
                     to="/courses"
                     className="block text-center w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-colors"
@@ -144,7 +344,7 @@ function CourseDetailView({ course }) {
                     ← Browse Other Courses
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>

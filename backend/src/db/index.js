@@ -31,6 +31,7 @@ const COLLECTIONS = {
   credentials: 'credentialId',
   statistics: 'id',
   resetTokens: 'token',
+  enrollments: 'id',
 }
 
 class SqliteDB {
