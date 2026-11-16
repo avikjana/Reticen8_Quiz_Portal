@@ -139,10 +139,10 @@ export default function LoginModal() {
                   key={cat.id}
                   type="button"
                   onClick={() => handleCategorySwitch(cat.id)}
-                  className={`py-2.5 px-2 rounded-xl text-xs font-bold flex flex-col items-center gap-1 transition-all ${
+                  className={`py-2.5 px-2 rounded-xl text-xs font-bold flex flex-col items-center gap-1 transition-all border ${
                     isSelected
-                      ? 'bg-white text-slate-900 shadow-sm border border-slate-200/80'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
+                      ? 'bg-white text-slate-900 shadow-sm border-slate-200/80'
+                      : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-white/50'
                   }`}
                 >
                   <CatIcon

@@ -1,4 +1,3 @@
-import AnnouncementBar from '../components/AnnouncementBar'
 import Navbar from '../components/Navbar'
 import HeroSection from '../components/HeroSection'
 import StatisticsSection from '../components/StatisticsSection'
@@ -20,7 +19,6 @@ export default function Home() {
         Skip to main content
       </a>
 
-      <AnnouncementBar />
       <Navbar />
 
       <main id="main-content">

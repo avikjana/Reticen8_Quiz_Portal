@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { CheckCircle2, ShieldCheck, ArrowLeft } from 'lucide-react'
-import AnnouncementBar from '../AnnouncementBar'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
 
@@ -39,7 +38,6 @@ export default function AuthLayout({
   const [first, ...rest] = title.split('. ')
   return (
     <div className="min-h-dvh flex flex-col bg-white">
-      <AnnouncementBar />
       <Navbar />
 
       <main id="main-content" className="relative isolate flex-1 overflow-hidden">

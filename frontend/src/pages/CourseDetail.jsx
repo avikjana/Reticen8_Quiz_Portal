@@ -2,10 +2,9 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   BookOpen, Clock, Star, Award, ChevronRight, CheckCircle2,
-  AlertCircle, Sparkles
+  AlertCircle, Sparkles, ChevronDown, FileText, Play
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
-import AnnouncementBar from '../components/AnnouncementBar'
 import Footer from '../components/Footer'
 import useApi from '../hooks/useApi'
 import { usePageTitle } from '../hooks/usePageTitle'
@@ -21,7 +20,7 @@ export default function CourseDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <AnnouncementBar />
+
       <Navbar />
       <main className="flex-1">
         {loading ? (
@@ -57,7 +56,7 @@ function CourseDetailView({ course }) {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <AnnouncementBar />
+
       <Navbar />
 
       {/* Course Hero Banner */}
@@ -107,10 +106,16 @@ function CourseDetailView({ course }) {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock size={16} />
-                  <span>Self-Paced</span>
+                  <span>{course.duration && course.duration !== 'TBD' ? course.duration : 'Self-Paced'}</span>
                 </div>
+                {course.modulesCount > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <BookOpen size={16} />
+                    <span>{course.modulesCount} Modules · {course.lessonsCount} Chapters</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-1.5">
-                  <BookOpen size={16} />
+                  <Award size={16} />
                   <span>Official Reticen8 Training</span>
                 </div>
               </div>
@@ -197,23 +202,27 @@ function CourseDetailView({ course }) {
               </div>
             )}
 
-            {/* TAB: Curriculum (Clean State - Ready for User's Course Design) */}
+            {/* TAB: Curriculum */}
             {activeTab === 'curriculum' && (
-              <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center shadow-xs">
-                <div className="w-12 h-12 rounded-full bg-emerald-50 text-brand-600 flex items-center justify-center mx-auto mb-4">
-                  <Sparkles size={24} />
+              course.curriculum && course.curriculum.length > 0 ? (
+                <CurriculumView course={course} />
+              ) : (
+                <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center shadow-xs">
+                  <div className="w-12 h-12 rounded-full bg-emerald-50 text-brand-600 flex items-center justify-center mx-auto mb-4">
+                    <Sparkles size={24} />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 mb-2">
+                    Course Syllabus Under Development
+                  </h3>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed mb-6">
+                    The syllabus, module design, and technical training materials for this course are currently being finalized. Once published, complete module breakdowns will be available here.
+                  </p>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">
+                    <AlertCircle size={14} className="text-slate-400" />
+                    <span>Awaiting Course Design Configuration</span>
+                  </div>
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-2">
-                  Course Syllabus Under Development
-                </h3>
-                <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed mb-6">
-                  The syllabus, module design, and technical training materials for this course are currently being finalized. Once published, complete module breakdowns will be available here.
-                </p>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">
-                  <AlertCircle size={14} className="text-slate-400" />
-                  <span>Awaiting Course Design Configuration</span>
-                </div>
-              </div>
+              )
             )}
           </div>
 
@@ -244,6 +253,100 @@ function CourseDetailView({ course }) {
       </section>
 
       <Footer />
+    </div>
+  )
+}
+
+function CurriculumView({ course }) {
+  const [expandedModule, setExpandedModule] = useState(null)
+  const totalChapters = course.curriculum.reduce((sum, m) => sum + m.chapters.length, 0)
+
+  const toggle = (idx) => setExpandedModule(expandedModule === idx ? null : idx)
+
+  return (
+    <div className="space-y-5">
+      {/* Summary bar */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 className="text-base font-bold text-slate-900">Course Curriculum</h3>
+            {course.courseCode && (
+              <p className="text-xs text-slate-500 mt-0.5">
+                {course.courseCode} · {course.format || 'Self-paced'} · {course.duration}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-4 text-xs font-semibold text-slate-600">
+            <span className="flex items-center gap-1.5">
+              <BookOpen size={14} className="text-brand-600" />
+              {course.curriculum.length} Modules
+            </span>
+            <span className="flex items-center gap-1.5">
+              <FileText size={14} className="text-brand-600" />
+              {totalChapters} Chapters
+            </span>
+            {course.duration && (
+              <span className="flex items-center gap-1.5">
+                <Clock size={14} className="text-brand-600" />
+                {course.duration}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Module accordion */}
+      <div className="space-y-3">
+        {course.curriculum.map((mod, idx) => {
+          const isOpen = expandedModule === idx
+          return (
+            <div
+              key={idx}
+              className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden transition-shadow hover:shadow-sm"
+            >
+              <button
+                onClick={() => toggle(idx)}
+                className="w-full flex items-center gap-4 p-5 text-left"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">
+                  {String(mod.module).padStart(2, '0')}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-bold text-slate-900 truncate">{mod.title}</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    {mod.chapters.length} chapter{mod.chapters.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+                <ChevronDown
+                  size={16}
+                  className={`text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {isOpen && (
+                <div className="px-5 pb-5 pt-0">
+                  <div className="border-t border-slate-100 pt-4 space-y-2">
+                    {mod.chapters.map((chapter, cIdx) => (
+                      <div
+                        key={cIdx}
+                        className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
+                          <Play size={10} className="ml-0.5" />
+                        </div>
+                        <span className="text-xs text-slate-700 font-medium">{chapter}</span>
+                        <span className="ml-auto text-[10px] text-slate-400 font-mono shrink-0">
+                          {String(mod.module).padStart(2, '0')}.{String(cIdx + 1).padStart(2, '0')}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

@@ -3,12 +3,6 @@ import { ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react'
 
 const announcements = [
   {
-    title: 'Updates',
-    message: 'Reminder: Check your profile name before course completion. Make sure it matches how you want it to appear on your Reticen8 certification certificate.',
-    linkText: 'Read more',
-    linkUrl: '/certifications',
-  },
-  {
     title: 'New Course',
     message: 'Advanced Firewall Security v7.4 is now live. Explore zero-trust network architectures and next-gen threat defense.',
     linkText: 'Explore path',

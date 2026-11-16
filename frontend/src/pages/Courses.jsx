@@ -5,7 +5,6 @@ import {
   Search, Filter, BookOpen, Clock, Star, ArrowRight, X, LayoutGrid, List, Award, GraduationCap, ChevronRight
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
-import AnnouncementBar from '../components/AnnouncementBar'
 import Footer from '../components/Footer'
 import useApi from '../hooks/useApi'
 import { useAuth } from '../context/AuthContext'
@@ -94,7 +93,6 @@ export default function Courses() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <AnnouncementBar />
       <Navbar />
 
       {/* Course Catalog Hero */}

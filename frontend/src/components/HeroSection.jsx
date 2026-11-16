@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Flame, Shield, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, Shield, CheckCircle2 } from 'lucide-react'
 
 // Elegant wavy topographic line pattern in background (matching Cisco NetAcad)
 function BackgroundWaves() {
@@ -124,28 +124,6 @@ export default function HeroSection() {
       <BackgroundWaves />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hot Job Market Banner Pill (exact Cisco style) */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-8"
-        >
-          <div className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2 rounded-2xl sm:rounded-full glass ring-1 ring-slate-900/5 shadow-[var(--shadow-soft)] text-xs sm:text-sm text-slate-700 hover:ring-slate-900/10 transition">
-            <span className="flex items-center gap-1.5 font-bold text-amber-600">
-              <Flame size={16} className="fill-amber-500 text-amber-500" />
-              The cybersecurity job market is hot!
-            </span>
-            <span className="text-slate-400 hidden sm:inline">•</span>
-            <span className="text-slate-600">
-              See why 12,000+ engineers began their journey with our{' '}
-              <Link to="/courses" className="text-brand-600 font-semibold underline underline-offset-2 hover:text-emerald-700">
-                free Intro to Network Security course
-              </Link>
-            </span>
-          </div>
-        </motion.div>
-
         {/* 2-Column Hero: Clean Typography Left, Asymmetric Images Right */}
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
 

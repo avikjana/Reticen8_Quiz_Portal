@@ -3,14 +3,17 @@
     "id": "network-security-fundamentals",
     "title": "Network Security Fundamentals",
     "shortDesc": "Foundational principles of enterprise network security, routing security, and firewall perimeter defense.",
-    "description": "Build a solid foundation in enterprise network security principles. Course design and technical syllabus to be configured.",
+    "description": "Build a solid foundation in enterprise network security principles — from OSI-layer threats and subnetting to firewall policies, VPN architectures, and hands-on attack simulation. Designed for beginners, this 12-module course prepares you for the RCFA certification.",
     "difficulty": "Beginner",
     "difficultyColor": "green",
     "category": "Network Security",
-    "duration": "TBD",
+    "courseCode": "RNS-101",
+    "duration": "40–50 Hours",
+    "format": "Video + Reading + Interactive Labs + Assessments",
+    "prerequisites": "Basic computer knowledge",
     "estimatedWeeks": "Self-paced",
-    "modulesCount": 0,
-    "lessonsCount": 0,
+    "modulesCount": 12,
+    "lessonsCount": 69,
     "rating": 4.8,
     "studentsCount": 1240,
     "certificationCode": "RCFA",
@@ -26,7 +29,149 @@
       "Perimeter Defense",
       "Security Policy Architecture"
     ],
-    "curriculum": [],
+    "curriculum": [
+      {
+        "module": 1,
+        "title": "Introduction to Network Security",
+        "chapters": [
+          "What is Network Security?",
+          "Importance of Network Security",
+          "CIA Triad (Confidentiality, Integrity, Availability)",
+          "Security Principles and Concepts",
+          "Network Security Challenges"
+        ]
+      },
+      {
+        "module": 2,
+        "title": "Networking Fundamentals for Security",
+        "chapters": [
+          "Introduction to Computer Networks",
+          "LAN, WAN, MAN and WLAN",
+          "Network Topologies",
+          "Network Devices (Router, Switch, Firewall)",
+          "MAC and IP Addresses",
+          "Public IP vs Private IP"
+        ]
+      },
+      {
+        "module": 3,
+        "title": "OSI & TCP/IP Security Concepts",
+        "chapters": [
+          "Introduction to OSI Model",
+          "Seven Layers of OSI",
+          "TCP/IP Model",
+          "Encapsulation and Decapsulation",
+          "Security Risks at Different OSI Layers"
+        ]
+      },
+      {
+        "module": 4,
+        "title": "IP Addressing, Subnetting & Network Segmentation",
+        "chapters": [
+          "IPv4 Addressing",
+          "IPv6 Fundamentals",
+          "Subnet Mask and CIDR",
+          "Subnetting",
+          "VLAN Fundamentals",
+          "Network Segmentation"
+        ]
+      },
+      {
+        "module": 5,
+        "title": "Network Protocols & Services Security",
+        "chapters": [
+          "TCP vs UDP",
+          "DNS and DNS Security",
+          "DHCP",
+          "HTTP vs HTTPS",
+          "SSH, Telnet and FTP",
+          "ARP and ICMP"
+        ]
+      },
+      {
+        "module": 6,
+        "title": "Network Threats & Attack Techniques",
+        "chapters": [
+          "Introduction to Network Threats",
+          "DoS and DDoS Attacks",
+          "Man-in-the-Middle Attacks",
+          "ARP Spoofing",
+          "DNS Spoofing",
+          "Port Scanning and Service Enumeration",
+          "Brute Force Attacks"
+        ]
+      },
+      {
+        "module": 7,
+        "title": "Network Security Devices & Architecture",
+        "chapters": [
+          "Introduction to Network Security Architecture",
+          "IDS and IPS",
+          "Proxy Servers",
+          "WAF Fundamentals",
+          "Network Access Control",
+          "DMZ Architecture"
+        ]
+      },
+      {
+        "module": 8,
+        "title": "Firewall Fundamentals",
+        "chapters": [
+          "What is a Firewall?",
+          "Packet Filtering Firewall",
+          "Stateful Firewall",
+          "Proxy Firewall",
+          "Next-Generation Firewall (NGFW)",
+          "Firewall Rules and Policies",
+          "NAT and PAT"
+        ]
+      },
+      {
+        "module": 9,
+        "title": "Access Control & Network Security Policies",
+        "chapters": [
+          "Access Control Fundamentals",
+          "ACL (Access Control Lists)",
+          "Authentication and Authorization",
+          "Role-Based Access Control",
+          "Security Policies and Rule Management"
+        ]
+      },
+      {
+        "module": 10,
+        "title": "VPN & Secure Network Communication",
+        "chapters": [
+          "VPN Fundamentals",
+          "Site-to-Site VPN",
+          "Remote Access VPN",
+          "IPsec VPN",
+          "SSL VPN",
+          "VPN Encryption and Authentication"
+        ]
+      },
+      {
+        "module": 11,
+        "title": "Network Monitoring & Troubleshooting",
+        "chapters": [
+          "Network Monitoring Fundamentals",
+          "Firewall Logs and Analysis",
+          "Wireshark Fundamentals",
+          "Network Troubleshooting",
+          "Ping, Traceroute and Nmap",
+          "Introduction to SIEM"
+        ]
+      },
+      {
+        "module": 12,
+        "title": "Practical Network Security Project",
+        "chapters": [
+          "Design a Secure Enterprise Network",
+          "Implement Network Segmentation and Firewall Policies",
+          "Simulate Network Attacks and Analyze Logs",
+          "Final Practical Assessment"
+        ]
+      }
+    ],
     "audience": [
       "Employee"
     ]

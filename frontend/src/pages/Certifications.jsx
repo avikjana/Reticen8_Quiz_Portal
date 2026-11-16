@@ -5,7 +5,6 @@ import {
   Award, ShieldCheck, ChevronRight, AlertCircle, X
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
-import AnnouncementBar from '../components/AnnouncementBar'
 import Footer from '../components/Footer'
 import useApi from '../hooks/useApi'
 import api from '../services/api'
@@ -22,7 +21,7 @@ export default function Certifications() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <AnnouncementBar />
+
       <Navbar />
       <main className="flex-1">
         {loading ? (
@@ -95,7 +94,7 @@ function CertificationsView({ certificationsData }) {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <AnnouncementBar />
+
       <Navbar />
 
       {/* Certifications Hero */}
@@ -418,52 +417,107 @@ function CertificationsView({ certificationsData }) {
                 <X size={20} />
               </button>
 
-              <div className="text-center border-b border-slate-100 pb-6">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-brand-600 flex items-center justify-center mx-auto mb-3 shadow-sm">
-                  <ShieldCheck size={32} />
+              {/* Certificate body with decorative border */}
+              <div className="border-2 border-slate-200 rounded-2xl p-6 sm:p-8 bg-gradient-to-b from-slate-50/50 to-white relative overflow-hidden">
+                {/* Decorative corner accents */}
+                <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-emerald-400/40 rounded-tl-2xl" />
+                <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-emerald-400/40 rounded-tr-2xl" />
+                <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-emerald-400/40 rounded-bl-2xl" />
+                <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-emerald-400/40 rounded-br-2xl" />
+
+                {/* Header */}
+                <div className="text-center mb-5">
+                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-brand-600 flex items-center justify-center mx-auto mb-3">
+                    <ShieldCheck size={28} />
+                  </div>
+                  {verificationResult.sample ? (
+                    <span className="text-[10px] font-bold tracking-widest text-amber-700 uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                      Sample certificate — not a real credential
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold tracking-widest text-brand-600 uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                      Officially verified credential
+                    </span>
+                  )}
+                  <h3 className="text-lg sm:text-xl font-black text-slate-900 mt-3 tracking-tight">
+                    Certificate of Technical Competency
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Reticen8 Global Security Certification Board</p>
                 </div>
-                {verificationResult.sample ? (
-                  <span className="text-[11px] font-bold tracking-widest text-amber-700 uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                    Sample certificate — not a real credential
-                  </span>
-                ) : (
-                  <span className="text-[11px] font-bold tracking-widest text-brand-600 uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                    OFFICIALLY VERIFIED CREDENTIAL
-                  </span>
-                )}
-                <h3 className="text-xl font-black text-slate-900 mt-3">
-                  Certificate of Technical Competency
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">Reticen8 Global Security Certification Board</p>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 my-4">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                  <ShieldCheck size={14} className="text-slate-300" />
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                </div>
+
+                {/* Certification body */}
+                <div className="text-center space-y-1.5 mb-5">
+                  <p className="text-[11px] text-slate-400 uppercase tracking-[0.2em]">This certifies that</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-900" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                    {verificationResult.candidateName}
+                  </p>
+                  <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto">
+                    has successfully mastered all testing domains and is certified as a
+                  </p>
+                  <p className="text-sm sm:text-base font-extrabold text-brand-600 tracking-wide">
+                    {verificationResult.credentialName}
+                  </p>
+                </div>
+
+                {/* Credential details */}
+                <div className="bg-slate-50/80 rounded-xl p-3.5 grid grid-cols-2 gap-3 text-xs border border-slate-200/80 mb-6">
+                  <div>
+                    <span className="text-slate-400 block font-medium text-[10px]">Credential ID</span>
+                    <span className="font-mono font-bold text-slate-800">{verificationResult.credentialId}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-medium text-[10px]">Passing Score</span>
+                    <span className="font-mono font-bold text-emerald-700">{verificationResult.score}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-medium text-[10px]">Issued Date</span>
+                    <span className="font-semibold text-slate-800">{verificationResult.issueDate}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-medium text-[10px]">Valid Through</span>
+                    <span className="font-semibold text-slate-800">{verificationResult.expirationDate}</span>
+                  </div>
+                </div>
+
+                {/* Three signatures */}
+                <div className="border-t border-dashed border-slate-200 pt-5">
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div className="space-y-1">
+                      <p className="text-sm italic text-slate-600 font-semibold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                        M. Reticen
+                      </p>
+                      <div className="w-full h-px bg-slate-300 mx-auto" />
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">CEO</p>
+                      <p className="text-[9px] text-slate-400">Reticen8 Technologies</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm italic text-slate-600 font-semibold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                        S. Verma
+                      </p>
+                      <div className="w-full h-px bg-slate-300 mx-auto" />
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Director</p>
+                      <p className="text-[9px] text-slate-400">Academy & Training</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm italic text-slate-600 font-semibold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                        R. Kapoor
+                      </p>
+                      <div className="w-full h-px bg-slate-300 mx-auto" />
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Head Examiner</p>
+                      <p className="text-[9px] text-slate-400">Certification Board</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="py-6 text-center space-y-2">
-                <p className="text-xs text-slate-400 uppercase tracking-wider">This certifies that</p>
-                <p className="text-2xl font-bold text-slate-900">{verificationResult.candidateName}</p>
-                <p className="text-xs text-slate-500">has successfully mastered all testing domains and is certified as a</p>
-                <p className="text-base font-extrabold text-brand-600">{verificationResult.credentialName}</p>
-              </div>
-
-              <div className="bg-slate-50 rounded-2xl p-4 grid grid-cols-2 gap-3 text-xs border border-slate-200">
-                <div>
-                  <span className="text-slate-400 block font-medium">Credential ID</span>
-                  <span className="font-mono font-bold text-slate-800">{verificationResult.credentialId}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block font-medium">Passing Score</span>
-                  <span className="font-mono font-bold text-emerald-700">{verificationResult.score}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block font-medium">Issued Date</span>
-                  <span className="font-semibold text-slate-800">{verificationResult.issueDate}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block font-medium">Valid Through</span>
-                  <span className="font-semibold text-slate-800">{verificationResult.expirationDate}</span>
-                </div>
-              </div>
-
-              <div className="mt-6 flex gap-3">
+              <div className="mt-5 flex gap-3">
                 <button
                   onClick={() => setShowCertModal(false)}
                   className="theme-fixed flex-1 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
