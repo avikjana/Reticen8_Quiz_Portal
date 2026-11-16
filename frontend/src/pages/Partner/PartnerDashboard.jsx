@@ -147,7 +147,7 @@ export default function PartnerDashboard() {
                     {course.difficulty}
                   </span>
                   <Link
-                    to={`/courses/${course.id}`}
+                    to={`/learn/${course.id}`}
                     className="text-xs font-bold text-brand-600 hover:underline flex items-center gap-1"
                   >
                     <span>Continue Learning</span>

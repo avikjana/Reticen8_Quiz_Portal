@@ -73,6 +73,29 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
     }
   }
 
+  // GET /api/enrollments/learn/:courseId — full course material for enrolled users
+  const learnMatch = pathname.match(/^\/api\/enrollments\/learn\/(.+)$/)
+  if (learnMatch && method === 'GET') {
+    const courseId = decodeURIComponent(learnMatch[1])
+
+    if (!EnrollmentModel.isEnrolled(req.user.sub, courseId)) {
+      throw new AppError('You must enroll in this course to access the learning material.', 403)
+    }
+
+    const course = CourseModel.findById(courseId)
+    if (!course) throw new AppError('Course not found.', 404)
+
+    const enrollment = EnrollmentModel.findByUserAndCourse(req.user.sub, courseId)
+
+    return {
+      success: true,
+      data: {
+        course,
+        enrollment,
+      },
+    }
+  }
+
   // DELETE /api/enrollments/:courseId — unenroll
   const deleteMatch = pathname.match(/^\/api\/enrollments\/(.+)$/)
   if (deleteMatch && method === 'DELETE') {

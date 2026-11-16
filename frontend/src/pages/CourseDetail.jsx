@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   BookOpen, Clock, Star, Award, ChevronRight, CheckCircle2,
@@ -55,6 +55,7 @@ export default function CourseDetail() {
 
 function CourseDetailView({ course }) {
   const [activeTab, setActiveTab] = useState('overview')
+  const navigate = useNavigate()
   const { user } = useAuth()
   const { data: enrollmentCheck, reload: recheckEnrollment } = useApi(
     user ? `/enrollments/check/${encodeURIComponent(course.id)}` : null
@@ -74,7 +75,8 @@ function CourseDetailView({ course }) {
       setEnrollMsg(res.message || 'Enrolled successfully!')
       setJustEnrolled(true)
       recheckEnrollment()
-      setTimeout(() => setJustEnrolled(false), 3000)
+      // Navigate to learning page after the celebration animation
+      setTimeout(() => navigate(`/learn/${course.id}`), 2000)
     } catch (err) {
       setEnrollMsg(err.message || 'Failed to enroll.')
     } finally {
@@ -294,18 +296,29 @@ function CourseDetailView({ course }) {
                 <div className="space-y-3 relative">
                   <AnimatePresence mode="wait">
                     {isEnrolled && !justEnrolled ? (
-                      <motion.button
-                        key="unenroll"
+                      <motion.div
+                        key="enrolled-actions"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        onClick={handleUnenroll}
-                        disabled={enrolling}
-                        className="w-full py-3 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
+                        className="space-y-2"
                       >
-                        {enrolling && <Loader2 size={16} className="animate-spin" />}
-                        {enrolling ? 'Processing...' : 'Unenroll from Course'}
-                      </motion.button>
+                        <Link
+                          to={`/learn/${course.id}`}
+                          className="w-full py-3 px-4 bg-action-600 hover:bg-action-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm flex items-center justify-center gap-2"
+                        >
+                          <BookOpen size={16} />
+                          Start Learning
+                        </Link>
+                        <button
+                          onClick={handleUnenroll}
+                          disabled={enrolling}
+                          className="w-full py-2.5 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-2"
+                        >
+                          {enrolling && <Loader2 size={14} className="animate-spin" />}
+                          {enrolling ? 'Processing...' : 'Unenroll from Course'}
+                        </button>
+                      </motion.div>
                     ) : !justEnrolled ? (
                       <motion.button
                         key="enroll"

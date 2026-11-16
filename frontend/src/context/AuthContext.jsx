@@ -8,9 +8,12 @@ const AuthContext = createContext(null)
 const TOKEN_KEY = 'r8_token'
 const USER_KEY = 'r8_user'
 
+// Session lives only while the tab is open — closing or refreshing shows Login/Sign Up
+const storage = sessionStorage
+
 const readStoredUser = () => {
   try {
-    const saved = localStorage.getItem(USER_KEY)
+    const saved = storage.getItem(USER_KEY)
     return saved ? JSON.parse(saved) : null
   } catch {
     return null
@@ -34,25 +37,24 @@ export const describeGatedPage = (from) => {
 }
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null)
-  // Cached user lets the UI render instantly; it's re-validated against /auth/me below.
-  const [user, setUser] = useState(() => (localStorage.getItem(TOKEN_KEY) ? readStoredUser() : null))
+  const [token, setToken] = useState(() => storage.getItem(TOKEN_KEY) || null)
+  const [user, setUser] = useState(() => (storage.getItem(TOKEN_KEY) ? readStoredUser() : null))
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [loginModalDefaultCategory, setLoginModalDefaultCategory] = useState('Employee')
 
   useEffect(() => {
-    if (user) localStorage.setItem(USER_KEY, JSON.stringify(user))
-    else localStorage.removeItem(USER_KEY)
+    if (user) storage.setItem(USER_KEY, JSON.stringify(user))
+    else storage.removeItem(USER_KEY)
   }, [user])
 
   useEffect(() => {
-    if (token) localStorage.setItem(TOKEN_KEY, token)
-    else localStorage.removeItem(TOKEN_KEY)
+    if (token) storage.setItem(TOKEN_KEY, token)
+    else storage.removeItem(TOKEN_KEY)
   }, [token])
 
   const clearSession = useCallback(() => {
     // Remove the token right away so re-fetches after logout go out as a visitor
-    localStorage.removeItem(TOKEN_KEY)
+    storage.removeItem(TOKEN_KEY)
     clearApiCache()
     setUser(null)
     setToken(null)
@@ -88,7 +90,7 @@ export function AuthProvider({ children }) {
   const startSession = (data) => {
     clearApiCache()
     // Store the token immediately so API calls made right after login carry it
-    localStorage.setItem(TOKEN_KEY, data.token)
+    storage.setItem(TOKEN_KEY, data.token)
     setToken(data.token)
     setUser(data.user)
     setIsLoginModalOpen(false)
