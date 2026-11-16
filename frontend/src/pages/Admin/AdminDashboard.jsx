@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import {
-  Users, BookOpen, AlertCircle, Sparkles, CheckCircle2, ArrowRight
+  Users, BookOpen, AlertCircle, CheckCircle2, ArrowRight, GraduationCap
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Navbar from '../../components/Navbar'
@@ -9,8 +9,7 @@ import useApi from '../../hooks/useApi'
 import { ErrorState } from '../../components/ui/DataState'
 
 export default function AdminDashboard() {
-  const { user, } = useAuth()
-  // No fallback numbers: if the API fails the page shows the error
+  const { user } = useAuth()
   const { data: stats, loading, error, reload } = useApi('/admin/overview', { cacheResult: false })
 
   return (
@@ -40,7 +39,7 @@ export default function AdminDashboard() {
               className="flex items-center gap-1.5 px-4 py-2 bg-action-600 hover:bg-action-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm"
             >
               <BookOpen size={14} />
-              <span>Course Design Manager</span>
+              <span>Manage Courses</span>
             </Link>
             <Link
               to="/admin/users"
@@ -52,57 +51,63 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Course Design Notice Banner */}
-        <div className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 shadow-xs">
-          <div className="flex items-start gap-3.5">
-            <div className="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0">
-              <Sparkles size={18} />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-bold text-slate-900">
-                Course Design &amp; Lab Materials Status: Ready for Author Input
-              </h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                All placeholder lab materials, modules, and fake curriculums have been cleanly removed. The system structure is primed to accept your custom course syllabus, module definitions, and lab exercises.
-              </p>
-              <div className="mt-3 flex items-center gap-3">
-                <Link
-                  to="/admin/courses"
-                  className="text-xs font-bold text-brand-600 hover:underline flex items-center gap-1"
-                >
-                  Configure Course Catalog →
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {error && <ErrorState error={error} onRetry={reload} title="We couldn't load the admin overview" className="mb-8" />}
 
-        {/* Stats Grid */}
+        {/* Stats Grid — clickable cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-              Total Accounts
+          <Link
+            to="/admin/users"
+            className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs hover:border-purple-300 hover:shadow-sm transition-all group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Total Accounts
+              </div>
+              <ArrowRight size={14} className="text-slate-300 group-hover:text-purple-500 transition-colors" />
             </div>
             <div className="text-3xl font-black text-slate-900">
               {stats?.totalUsers ?? '—'}
             </div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Active in 3 role categories
+            <div className="text-[11px] text-slate-500 mt-1 space-y-0.5">
+              <div className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                {stats?.usersByRole?.administrators ?? 0} Admin
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-2" />
+                {stats?.usersByRole?.employees ?? 0} Employee
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 ml-2" />
+                {stats?.usersByRole?.partners ?? 0} Partner
+              </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-              Active Courses
+          <Link
+            to="/admin/courses"
+            className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs hover:border-emerald-300 hover:shadow-sm transition-all group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Active Courses
+              </div>
+              <ArrowRight size={14} className="text-slate-300 group-hover:text-emerald-500 transition-colors" />
             </div>
             <div className="text-3xl font-black text-slate-900">
               {stats?.totalCourses ?? '—'}
             </div>
             <div className="text-[11px] text-slate-500 mt-1">
-              Awaiting course design input
+              Click to manage courses
+            </div>
+          </Link>
+
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+              Total Enrollments
+            </div>
+            <div className="text-3xl font-black text-emerald-700 flex items-center gap-2">
+              <GraduationCap size={24} />
+              {stats?.totalEnrollments ?? '—'}
+            </div>
+            <div className="text-[11px] text-slate-500 mt-1">
+              Active student enrollments
             </div>
           </div>
 
@@ -122,46 +127,35 @@ export default function AdminDashboard() {
               </div>
             )}
             <div className="text-[11px] text-slate-500 mt-1">
-              {stats?.systemHealth?.memoryUsageMB ? `API memory: ${stats.systemHealth.memoryUsageMB} MB` : 'Backend API'}
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-              Active Role Categories
-            </div>
-            <div className="text-xs font-bold text-slate-800 space-y-1">
-              <div className="text-purple-700">🛡️ Administrator</div>
-              <div className="text-emerald-700">💼 Employee (Engineer)</div>
-              <div className="text-blue-700">🤝 Training Partner</div>
+              {stats?.systemHealth?.memoryUsageMB ? `Memory: ${stats.systemHealth.memoryUsageMB} MB • Node ${stats.systemHealth.nodeVersion}` : 'Backend API'}
             </div>
           </div>
         </div>
 
-        {/* Quick Role Navigation */}
+        {/* Quick Navigation */}
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
-          <h3 className="text-sm font-bold text-slate-900 mb-4">Role Portals &amp; Navigation</h3>
+          <h3 className="text-sm font-bold text-slate-900 mb-4">Quick Navigation</h3>
           <div className="grid sm:grid-cols-3 gap-4">
             <Link
-              to="/employee"
-              className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40 transition-all flex items-center justify-between"
+              to="/admin/users"
+              className="p-4 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/40 transition-all flex items-center justify-between"
             >
               <div>
-                <div className="text-xs font-bold text-slate-800">Employee / Engineer View</div>
-                <div className="text-[11px] text-slate-500">Student &amp; learning dashboard</div>
+                <div className="text-xs font-bold text-slate-800">User Management</div>
+                <div className="text-[11px] text-slate-500">View all accounts &amp; enrollments</div>
               </div>
-              <ArrowRight size={14} className="text-brand-600" />
+              <ArrowRight size={14} className="text-purple-600" />
             </Link>
 
             <Link
-              to="/partner"
-              className="p-4 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/40 transition-all flex items-center justify-between"
+              to="/admin/courses"
+              className="p-4 rounded-xl border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40 transition-all flex items-center justify-between"
             >
               <div>
-                <div className="text-xs font-bold text-slate-800">Partner Organization Portal</div>
-                <div className="text-[11px] text-slate-500">Seat &amp; trainee management</div>
+                <div className="text-xs font-bold text-slate-800">Course Management</div>
+                <div className="text-[11px] text-slate-500">Add, remove &amp; manage courses</div>
               </div>
-              <ArrowRight size={14} className="text-blue-600" />
+              <ArrowRight size={14} className="text-brand-600" />
             </Link>
 
             <Link
@@ -169,8 +163,8 @@ export default function AdminDashboard() {
               className="p-4 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-between"
             >
               <div>
-                <div className="text-xs font-bold text-slate-800">Public Academy Catalog</div>
-                <div className="text-[11px] text-slate-500">Public course discovery</div>
+                <div className="text-xs font-bold text-slate-800">Public Course Catalog</div>
+                <div className="text-[11px] text-slate-500">View as students see it</div>
               </div>
               <ArrowRight size={14} className="text-slate-500" />
             </Link>

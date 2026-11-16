@@ -21,7 +21,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
       throw new AppError(`This course is not available for ${req.user.role} accounts.`, 403)
     }
 
-    const enrollment = EnrollmentModel.enroll(req.user.sub, courseId)
+    const enrollment = EnrollmentModel.enroll(req.user.id, courseId)
     if (!enrollment) {
       throw new AppError('You are already enrolled in this course.', 409)
     }
@@ -35,7 +35,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
 
   // GET /api/enrollments — list my enrollments (with course details)
   if (pathname === '/api/enrollments' && method === 'GET') {
-    const enrollments = EnrollmentModel.getByUser(req.user.sub)
+    const enrollments = EnrollmentModel.getByUser(req.user.id)
 
     // Attach course info to each enrollment
     const enriched = enrollments.map((e) => {
@@ -69,7 +69,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
     const courseId = decodeURIComponent(checkMatch[1])
     return {
       success: true,
-      enrolled: EnrollmentModel.isEnrolled(req.user.sub, courseId),
+      enrolled: EnrollmentModel.isEnrolled(req.user.id, courseId),
     }
   }
 
@@ -78,14 +78,14 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
   if (learnMatch && method === 'GET') {
     const courseId = decodeURIComponent(learnMatch[1])
 
-    if (!EnrollmentModel.isEnrolled(req.user.sub, courseId)) {
+    if (!EnrollmentModel.isEnrolled(req.user.id, courseId)) {
       throw new AppError('You must enroll in this course to access the learning material.', 403)
     }
 
     const course = CourseModel.findById(courseId)
     if (!course) throw new AppError('Course not found.', 404)
 
-    const enrollment = EnrollmentModel.findByUserAndCourse(req.user.sub, courseId)
+    const enrollment = EnrollmentModel.findByUserAndCourse(req.user.id, courseId)
 
     return {
       success: true,
@@ -101,7 +101,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
   if (deleteMatch && method === 'DELETE') {
     const courseId = decodeURIComponent(deleteMatch[1])
 
-    if (!EnrollmentModel.unenroll(req.user.sub, courseId)) {
+    if (!EnrollmentModel.unenroll(req.user.id, courseId)) {
       throw new AppError('You are not enrolled in this course.', 404)
     }
 
