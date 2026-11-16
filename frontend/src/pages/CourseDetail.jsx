@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import useApi from '../hooks/useApi'
+import useApi, { clearApiCache } from '../hooks/useApi'
 import { useAuth } from '../context/AuthContext'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { ErrorState, NotFoundState, PageSpinner } from '../components/ui/DataState'
@@ -74,6 +74,7 @@ function CourseDetailView({ course }) {
       const res = await api.post('/enrollments', { courseId: course.id })
       setEnrollMsg(res.message || 'Enrolled successfully!')
       setJustEnrolled(true)
+      clearApiCache()
       recheckEnrollment()
       // Navigate to learning page after the celebration animation
       setTimeout(() => navigate(`/learn/${course.id}`), 2000)
@@ -90,6 +91,7 @@ function CourseDetailView({ course }) {
     try {
       const res = await api.delete(`/enrollments/${encodeURIComponent(course.id)}`)
       setEnrollMsg(res.message || 'Unenrolled successfully.')
+      clearApiCache()
       recheckEnrollment()
     } catch (err) {
       setEnrollMsg(err.message || 'Failed to unenroll.')

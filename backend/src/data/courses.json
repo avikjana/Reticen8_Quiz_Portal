@@ -171,9 +171,6 @@
           "Final Practical Assessment"
         ]
       }
-    ],
-    "audience": [
-      "Employee"
     ]
   },
   {
@@ -203,11 +200,7 @@
       "Security Policies & NAT",
       "High Availability"
     ],
-    "curriculum": [],
-    "audience": [
-      "Employee",
-      "Partner"
-    ]
+    "curriculum": []
   },
   {
     "id": "advanced-firewall-security",
@@ -236,10 +229,7 @@
       "SSL/IPsec VPN",
       "Advanced Traffic Inspection"
     ],
-    "curriculum": [],
-    "audience": [
-      "Employee"
-    ]
+    "curriculum": []
   },
   {
     "id": "enterprise-security-architecture",
@@ -268,9 +258,6 @@
       "SD-WAN Security",
       "Zero-Trust Security Design"
     ],
-    "curriculum": [],
-    "audience": [
-      "Employee"
-    ]
+    "curriculum": []
   }
 ]
