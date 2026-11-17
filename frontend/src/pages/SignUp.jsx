@@ -13,7 +13,7 @@ import {
   UserPlus
 } from 'lucide-react'
 import { SIGNUP_CATEGORIES } from '../config/roles'
-import { useAuth, pathAfterAuth, describeGatedPage } from '../context/AuthContext'
+import { useAuth, describeGatedPage } from '../context/AuthContext'
 import AuthLayout from '../components/Auth/AuthLayout'
 import GoogleSignInButton, { OrDivider } from '../components/Auth/GoogleSignInButton'
 
@@ -59,8 +59,8 @@ export default function SignUp() {
       })
 
       if (res.success) {
-        setSuccessMsg(`Account created successfully for ${res.user.name}! Logging you in...`)
-        setTimeout(() => navigate(pathAfterAuth(from, res.user.role), { replace: true }), 900)
+        setSuccessMsg(`Account created successfully for ${res.user.name}! Please log in to continue.`)
+        setTimeout(() => navigate('/login', { replace: true }), 1500)
       } else {
         setErrorMsg(res.error || 'Registration failed. Please try again.')
       }

@@ -115,7 +115,21 @@ export function AuthProvider({ children }) {
 
   const login = ({ email, password, role }) => run(() => authService.login({ email, password, role }))
 
-  const register = (userData) => run(() => authService.register(userData))
+  const register = async (userData) => {
+    try {
+      const data = await authService.register(userData)
+      if (data?.success) return { success: true, user: data.user }
+      return { success: false, error: data?.error || 'Registration failed' }
+    } catch (err) {
+      return {
+        success: false,
+        error:
+          err.name === 'AbortError' || err.message === 'Failed to fetch'
+            ? 'Cannot reach the server. Make sure the backend is running.'
+            : err.message,
+      }
+    }
+  }
 
   // `credential` is the Google ID token from the Google Identity Services button
   const loginWithGoogle = ({ credential, role }) => run(() => authService.google({ credential, role }))

@@ -183,8 +183,8 @@
     "category": "Firewall Administration",
     "duration": "TBD",
     "estimatedWeeks": "Self-paced",
-    "modulesCount": 0,
-    "lessonsCount": 0,
+    "modulesCount": 6,
+    "lessonsCount": 63,
     "rating": 4.9,
     "studentsCount": 980,
     "certificationCode": "RCFP",
@@ -200,7 +200,101 @@
       "Security Policies & NAT",
       "High Availability"
     ],
-    "curriculum": []
+    "curriculum": [
+      {
+        "title": "Module 1: Network Foundation and Firewall Configuration",
+        "chapters": [
+          "Introduction to Reticen8 NGFW Architecture",
+          "Initial Setup and Dashboard Overview",
+          "Interface Configuration and Assignment",
+          "LAN, WAN, and OPT Interface Setup",
+          "DHCP Server and Relay Configuration",
+          "DNS Resolver and Forwarder Setup",
+          "Firewall Rule Fundamentals",
+          "Creating and Managing Firewall Rules",
+          "NAT Configuration (Port Forward, Outbound, 1:1)",
+          "Aliases and Rule Organization",
+          "Floating Rules and Rule Precedence",
+          "Network Troubleshooting Tools"
+        ]
+      },
+      {
+        "title": "Module 2: WAN Configuration",
+        "chapters": [
+          "Single WAN Setup and Gateway Configuration",
+          "Multi-WAN and Load Balancing",
+          "WAN Failover and Gateway Groups",
+          "PPPoE and DHCP WAN Types",
+          "Traffic Shaping and QoS Fundamentals",
+          "Configuring Traffic Shapers and Queues",
+          "WAN Bandwidth Monitoring",
+          "Dynamic DNS (DDNS) Configuration",
+          "WAN Health Check and Monitoring",
+          "IPv6 WAN Configuration"
+        ]
+      },
+      {
+        "title": "Module 3: VPN and Branch Connectivity",
+        "chapters": [
+          "VPN Overview: IPsec, OpenVPN, WireGuard",
+          "Site-to-Site IPsec VPN Configuration",
+          "IPsec Phase 1 and Phase 2 Settings",
+          "OpenVPN Server Setup (Road Warrior)",
+          "OpenVPN Site-to-Site Tunnel",
+          "WireGuard VPN Configuration",
+          "VPN Client Export and Deployment",
+          "Certificate Management for VPNs",
+          "VPN Failover and Redundancy",
+          "Troubleshooting VPN Connectivity"
+        ]
+      },
+      {
+        "title": "Module 4: Security Services",
+        "chapters": [
+          "Intrusion Detection and Prevention (IDS/IPS)",
+          "Configuring Suricata Rules and Rulesets",
+          "Web Proxy and Content Filtering",
+          "DNS-based Ad Blocking and Threat Filtering",
+          "GeoIP Blocking and Country-based Rules",
+          "Application Layer Gateway (ALG) Configuration",
+          "Captive Portal Setup and Authentication",
+          "Two-Factor Authentication (TOTP)",
+          "SSL/TLS Inspection Concepts",
+          "Security Hardening Best Practices"
+        ]
+      },
+      {
+        "title": "Module 5: Routing Configuration",
+        "chapters": [
+          "Static Routing Fundamentals",
+          "Policy-Based Routing",
+          "OSPF Configuration and Area Design",
+          "BGP Peering and Route Advertisements",
+          "VLAN Configuration and Inter-VLAN Routing",
+          "Bridge Interfaces and Transparent Mode",
+          "Gateway Monitoring and Failover Routes",
+          "Routing Table Analysis and Diagnostics",
+          "Route Maps and Prefix Lists",
+          "IPv6 Routing Configuration"
+        ]
+      },
+      {
+        "title": "Module 6: Advanced Administration and Monitoring",
+        "chapters": [
+          "High Availability (CARP) Configuration",
+          "Configuration Backup and Restore",
+          "Firmware Updates and Upgrade Procedures",
+          "User and Group Management",
+          "LDAP and RADIUS Authentication",
+          "Syslog and Remote Logging",
+          "NetFlow and Traffic Analysis",
+          "Real-time Dashboard and Widgets",
+          "Scheduled Tasks and Cron Jobs",
+          "Performance Tuning and Optimization",
+          "Disaster Recovery Planning"
+        ]
+      }
+    ]
   },
   {
     "id": "advanced-firewall-security",
