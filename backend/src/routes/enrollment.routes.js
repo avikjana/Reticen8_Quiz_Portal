@@ -1,5 +1,7 @@
+import crypto from 'node:crypto'
 import EnrollmentModel from '../models/enrollment.model.js'
 import CourseModel from '../models/course.model.js'
+import db from '../db/index.js'
 import { authenticate } from '../middlewares/auth.middleware.js'
 import AppError from '../utils/AppError.js'
 
@@ -94,6 +96,54 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
         enrollment,
       },
     }
+  }
+
+  // POST /api/enrollments/feedback — submit course feedback
+  if (pathname === '/api/enrollments/feedback' && method === 'POST') {
+    const { courseId, rating, comment, recommend } = req.body || {}
+    if (!courseId) throw new AppError('courseId is required.', 400)
+    if (!rating || rating < 1 || rating > 5) throw new AppError('Rating must be between 1 and 5.', 400)
+
+    if (!EnrollmentModel.isEnrolled(req.user.id, courseId)) {
+      throw new AppError('You must be enrolled in this course to leave feedback.', 403)
+    }
+
+    const existing = db.read('feedback').find(
+      f => f.userId === req.user.id && f.courseId === courseId
+    )
+    if (existing) {
+      db.update('feedback', existing.id, {
+        rating,
+        comment: comment || '',
+        recommend: recommend ?? true,
+        updatedAt: new Date().toISOString(),
+      })
+      return { success: true, message: 'Feedback updated. Thank you!' }
+    }
+
+    const now = new Date().toISOString()
+    db.insert('feedback', {
+      id: `fb-${crypto.randomUUID()}`,
+      userId: req.user.id,
+      courseId,
+      rating,
+      comment: comment || '',
+      recommend: recommend ?? true,
+      createdAt: now,
+      updatedAt: now,
+    })
+
+    return { success: true, message: 'Thank you for your feedback!' }
+  }
+
+  // GET /api/enrollments/feedback/:courseId — get my feedback for a course
+  const feedbackMatch = pathname.match(/^\/api\/enrollments\/feedback\/(.+)$/)
+  if (feedbackMatch && method === 'GET') {
+    const courseId = decodeURIComponent(feedbackMatch[1])
+    const feedback = db.read('feedback').find(
+      f => f.userId === req.user.id && f.courseId === courseId
+    )
+    return { success: true, data: feedback || null }
   }
 
   // DELETE /api/enrollments/:courseId — unenroll

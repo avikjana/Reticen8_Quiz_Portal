@@ -32,6 +32,7 @@ const COLLECTIONS = {
   statistics: 'id',
   resetTokens: 'token',
   enrollments: 'id',
+  feedback: 'id',
 }
 
 class SqliteDB {
