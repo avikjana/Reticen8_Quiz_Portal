@@ -733,23 +733,86 @@ function LearningView({ course }) {
                     {currentChapterContent ? (
                       <div className="text-sm text-slate-700 leading-relaxed space-y-4">
                         {currentChapterContent.split('\n\n').map((block, i) => {
+                          const fmt = (s) => s
+                            .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 text-xs font-mono">$1</code>')
+                            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+
                           if (block.startsWith('> ')) {
                             const text = block.replace(/^> \*\*(.+?):\*\*\s*/, '').trim()
                             const label = block.match(/^> \*\*(.+?):\*\*/)?.[1]
+                            const colors = /warning/i.test(label) ? 'bg-rose-50 border-rose-200 text-rose-900'
+                              : /caution/i.test(label) ? 'bg-orange-50 border-orange-200 text-orange-900'
+                              : /important/i.test(label) ? 'bg-blue-50 border-blue-200 text-blue-900'
+                              : 'bg-amber-50 border-amber-200 text-amber-900'
                             return (
-                              <div key={i} className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+                              <div key={i} className={`p-4 rounded-xl border text-sm ${colors}`}>
                                 {label && <span className="font-bold">{label}: </span>}
-                                {text}
+                                <span dangerouslySetInnerHTML={{ __html: fmt(text) }} />
                               </div>
                             )
                           }
+
+                          if (block.includes('\n|') || block.startsWith('|')) {
+                            const rows = block.split('\n').filter(r => r.trim().startsWith('|'))
+                            const parse = (r) => r.split('|').slice(1, -1).map(c => c.trim())
+                            const header = parse(rows[0])
+                            const sepIdx = rows.findIndex(r => /^\|[\s-|:]+\|$/.test(r.trim()))
+                            const dataRows = rows.slice(sepIdx >= 0 ? sepIdx + 1 : 1).filter(r => !/^\|[\s-|:]+\|$/.test(r.trim()))
+                            return (
+                              <div key={i} className="overflow-x-auto rounded-xl border border-slate-200">
+                                <table className="w-full text-xs">
+                                  <thead>
+                                    <tr className="bg-slate-50">
+                                      {header.map((h, j) => (
+                                        <th key={j} className="px-4 py-2.5 text-left font-bold text-slate-800 border-b border-slate-200"
+                                          dangerouslySetInnerHTML={{ __html: fmt(h) }} />
+                                      ))}
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {dataRows.map((row, ri) => (
+                                      <tr key={ri} className={ri % 2 ? 'bg-slate-50/50' : ''}>
+                                        {parse(row).map((cell, ci) => (
+                                          <td key={ci} className="px-4 py-2.5 text-slate-700 border-b border-slate-100"
+                                            dangerouslySetInnerHTML={{ __html: fmt(cell) }} />
+                                        ))}
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )
+                          }
+
+                          const lines = block.split('\n')
+                          if (lines.every(l => /^\d+\.\s/.test(l.trim()) || !l.trim())) {
+                            return (
+                              <ol key={i} className="list-decimal list-outside pl-5 space-y-2 text-slate-700">
+                                {lines.filter(l => l.trim()).map((l, li) => (
+                                  <li key={li} dangerouslySetInnerHTML={{ __html: fmt(l.replace(/^\d+\.\s*/, '')) }} />
+                                ))}
+                              </ol>
+                            )
+                          }
+
+                          if (lines.every(l => /^[-•]\s/.test(l.trim()) || !l.trim())) {
+                            return (
+                              <ul key={i} className="list-disc list-outside pl-5 space-y-2 text-slate-700">
+                                {lines.filter(l => l.trim()).map((l, li) => (
+                                  <li key={li} dangerouslySetInnerHTML={{ __html: fmt(l.replace(/^[-•]\s*/, '')) }} />
+                                ))}
+                              </ul>
+                            )
+                          }
+
+                          if (/^#{2,4}\s/.test(block)) {
+                            const text = block.replace(/^#{2,4}\s*/, '')
+                            return <h4 key={i} className="text-base font-bold text-slate-900 mt-2" dangerouslySetInnerHTML={{ __html: fmt(text) }} />
+                          }
+
                           return (
-                            <p key={i} className="m-0" dangerouslySetInnerHTML={{
-                              __html: block
-                                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                                .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                                .replace(/\n/g, '<br />')
-                            }} />
+                            <p key={i} className="m-0" dangerouslySetInnerHTML={{ __html: fmt(block).replace(/\n/g, '<br />') }} />
                           )
                         })}
                       </div>
