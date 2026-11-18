@@ -731,7 +731,7 @@ function LearningView({ course }) {
                       </div>
                     </div>
 
-                    <h3 className="text-lg font-bold text-slate-900 mb-3">{currentChapter}</h3>
+                    <h3 className="text-xl font-bold text-slate-900 mb-3">{currentChapter}</h3>
 
                     {currentChapterType === 'quiz' && currentChapterQuiz ? (
                       <QuizRenderer
@@ -740,10 +740,10 @@ function LearningView({ course }) {
                         chapterKey={chapterKey(activeModule, activeChapter)}
                       />
                     ) : currentChapterContent ? (
-                      <div className="text-sm text-slate-700 leading-relaxed space-y-4">
+                      <div className="text-base text-slate-700 leading-relaxed space-y-4">
                         {currentChapterContent.split('\n\n').map((block, i) => {
                           const fmt = (s) => s
-                            .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 text-xs font-mono">$1</code>')
+                            .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 text-sm font-mono">$1</code>')
                             .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                             .replace(/\*(.+?)\*/g, '<em>$1</em>')
 
@@ -755,7 +755,7 @@ function LearningView({ course }) {
                               : /important/i.test(label) ? 'bg-blue-50 border-blue-200 text-blue-900'
                               : 'bg-amber-50 border-amber-200 text-amber-900'
                             return (
-                              <div key={i} className={`p-4 rounded-xl border text-sm ${colors}`}>
+                              <div key={i} className={`p-4 rounded-xl border text-base ${colors}`}>
                                 {label && <span className="font-bold">{label}: </span>}
                                 <span dangerouslySetInnerHTML={{ __html: fmt(text) }} />
                               </div>
@@ -770,7 +770,7 @@ function LearningView({ course }) {
                             const dataRows = rows.slice(sepIdx >= 0 ? sepIdx + 1 : 1).filter(r => !/^\|[\s-|:]+\|$/.test(r.trim()))
                             return (
                               <div key={i} className="overflow-x-auto rounded-xl border border-slate-200">
-                                <table className="w-full text-xs">
+                                <table className="w-full text-sm">
                                   <thead>
                                     <tr className="bg-slate-50">
                                       {header.map((h, j) => (
@@ -817,7 +817,7 @@ function LearningView({ course }) {
 
                           if (/^#{2,4}\s/.test(block)) {
                             const text = block.replace(/^#{2,4}\s*/, '')
-                            return <h4 key={i} className="text-base font-bold text-slate-900 mt-2" dangerouslySetInnerHTML={{ __html: fmt(text) }} />
+                            return <h4 key={i} className="text-lg font-bold text-slate-900 mt-2" dangerouslySetInnerHTML={{ __html: fmt(text) }} />
                           }
 
                           return (
@@ -827,15 +827,15 @@ function LearningView({ course }) {
                       </div>
                     ) : (
                       <>
-                        <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                        <p className="text-base text-slate-600 leading-relaxed mb-4">
                           This chapter covers the concepts and practical knowledge of <strong>{currentChapter}</strong> as
                           part of the <em>{currentModule?.title}</em> module. Study the material below, then mark it
                           complete to track your progress.
                         </p>
 
                         <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-6">
-                          <h4 className="text-sm font-bold text-slate-800 mb-3">Key Learning Objectives</h4>
-                          <ul className="space-y-2 text-sm text-slate-600 list-none p-0 m-0">
+                          <h4 className="text-base font-bold text-slate-800 mb-3">Key Learning Objectives</h4>
+                          <ul className="space-y-2 text-base text-slate-600 list-none p-0 m-0">
                             <li className="flex items-start gap-2">
                               <CheckCircle2 size={14} className="text-brand-600 shrink-0 mt-0.5" />
                               <span>Understand the core principles of {currentChapter?.toLowerCase()}</span>
@@ -1068,10 +1068,10 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey }) {
   const labels = ['A', 'B', 'C', 'D']
 
   return (
-    <div className="space-y-6 text-sm">
+    <div className="space-y-6 text-base">
       <div className="flex items-center justify-between">
         <p className="text-slate-600 m-0">{intro}</p>
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-mono text-sm font-bold shrink-0 ${timerColor}`}>
+        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-mono text-base font-bold shrink-0 ${timerColor}`}>
           <Clock size={16} />
           <span>{String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}</span>
         </div>
