@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle2,
-  Clock, FileText, X, GraduationCap, LayoutList, Zap, Trophy, Star
+  Clock, FileText, X, GraduationCap, LayoutList, Zap, Trophy, Star, Lock
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -418,6 +418,12 @@ function LearningView({ course }) {
       return saved ? JSON.parse(saved) : {}
     } catch { return {} }
   })
+  const [quizPassed, setQuizPassed] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(`quizPassed-${course.id}`)
+      return saved ? JSON.parse(saved) : {}
+    } catch { return {} }
+  })
 
   const chapterKey = (mIdx, cIdx) => `${mIdx}-${cIdx}`
   const progress = calcProgress(curriculum, completedChapters, chapterKey)
@@ -430,15 +436,44 @@ function LearningView({ course }) {
     } catch { /* ignore */ }
   }, [completedChapters, course.id])
 
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(`quizPassed-${course.id}`, JSON.stringify(quizPassed))
+    } catch { /* ignore */ }
+  }, [quizPassed, course.id])
+
   const currentModule = curriculum[activeModule]
   const currentChapterRaw = currentModule?.chapters?.[activeChapter]
   const currentChapter = typeof currentChapterRaw === 'object' ? currentChapterRaw.title : currentChapterRaw
   const currentChapterContent = typeof currentChapterRaw === 'object' ? currentChapterRaw.content : ''
   const currentChapterType = typeof currentChapterRaw === 'object' ? currentChapterRaw.type : null
   const currentChapterQuiz = typeof currentChapterRaw === 'object' ? currentChapterRaw.quiz : null
+  const currentChapterVideoId = typeof currentChapterRaw === 'object' ? currentChapterRaw.videoId : null
 
+  const moduleHasQuiz = (mIdx) => {
+    const mod = curriculum[mIdx]
+    return mod?.chapters?.some(ch => typeof ch === 'object' && ch.type === 'quiz')
+  }
+  const isModuleQuizPassed = (mIdx) => !moduleHasQuiz(mIdx) || !!quizPassed[mIdx]
+  const isCurrentChapterQuiz = currentChapterType === 'quiz'
+
+  const [gateMessage, setGateMessage] = useState(null)
+  const showGateBlock = (msg) => {
+    setGateMessage(msg)
+    setTimeout(() => setGateMessage(null), 3500)
+  }
+
+  const handleQuizPass = () => {
+    const next = { ...quizPassed, [activeModule]: true }
+    setQuizPassed(next)
+    markComplete()
+  }
 
   const markComplete = () => {
+    if (isCurrentChapterQuiz && !quizPassed[activeModule]) {
+      showGateBlock('You must pass the Knowledge Check quiz before marking it complete.')
+      return
+    }
     const key = chapterKey(activeModule, activeChapter)
     const next = { ...completedChapters, [key]: true }
     setCompletedChapters(next)
@@ -517,6 +552,21 @@ function LearningView({ course }) {
             courseTitle={course.title}
             onClose={() => setShowFeedback(false)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Gate blocked toast */}
+      <AnimatePresence>
+        {gateMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -30 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-xl bg-rose-600 text-white text-sm font-bold shadow-xl"
+          >
+            <Lock size={16} className="shrink-0" />
+            {gateMessage}
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -657,6 +707,7 @@ function LearningView({ course }) {
                     chapterKey={chapterKey}
                     onSelect={goToChapter}
                     moduleProgress={progress.moduleCompletion[mIdx]}
+                    locked={false}
                   />
                 ))}
               </nav>
@@ -738,7 +789,39 @@ function LearningView({ course }) {
                         quiz={currentChapterQuiz}
                         intro={currentChapterContent}
                         chapterKey={chapterKey(activeModule, activeChapter)}
+                        onPass={handleQuizPass}
                       />
+                    ) : currentChapterType === 'video' && currentChapterVideoId ? (
+                      <div className="space-y-6">
+                        <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 shadow-sm" style={{ paddingBottom: '56.25%' }}>
+                          <iframe
+                            className="absolute inset-0 w-full h-full"
+                            src={`https://www.youtube.com/embed/${currentChapterVideoId}?rel=0`}
+                            title={currentChapter}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                        {currentChapterContent && (
+                          <div className="text-base text-slate-700 leading-relaxed space-y-4">
+                            {currentChapterContent.split('\n\n').map((block, i) => {
+                              if (block.startsWith('## ')) {
+                                return <h4 key={i} className="text-lg font-bold text-slate-900 mt-2">{block.replace('## ', '')}</h4>
+                              }
+                              if (block.startsWith('- ')) {
+                                return (
+                                  <ul key={i} className="space-y-1.5 pl-5 list-disc marker:text-slate-400">
+                                    {block.split('\n').filter(l => l.startsWith('- ')).map((li, j) => (
+                                      <li key={j} className="text-slate-700">{li.replace('- ', '')}</li>
+                                    ))}
+                                  </ul>
+                                )
+                              }
+                              return <p key={i}>{block}</p>
+                            })}
+                          </div>
+                        )}
+                      </div>
                     ) : currentChapterContent ? (
                       <div className="text-base text-slate-700 leading-relaxed space-y-4">
                         {currentChapterContent.split('\n\n').map((block, i) => {
@@ -890,15 +973,22 @@ function LearningView({ course }) {
                     </button>
 
                     {!completedChapters[chapterKey(activeModule, activeChapter)] ? (
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={markComplete}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-colors shadow-sm"
-                      >
-                        <CheckCircle2 size={14} />
-                        Mark as Complete
-                      </motion.button>
+                      isCurrentChapterQuiz && !quizPassed[activeModule] ? (
+                        <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-400">
+                          <Lock size={14} />
+                          Pass Quiz to Complete
+                        </div>
+                      ) : (
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={markComplete}
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-colors shadow-sm"
+                        >
+                          <CheckCircle2 size={14} />
+                          Mark as Complete
+                        </motion.button>
+                      )
                     ) : (
                       <motion.button
                         initial={{ scale: 0.9, opacity: 0 }}
@@ -939,7 +1029,7 @@ function LearningView({ course }) {
   )
 }
 
-function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedChapters, chapterKey, onSelect, moduleProgress }) {
+function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedChapters, chapterKey, onSelect, moduleProgress, locked }) {
   const isActive = mIdx === activeModule
   const [userExpanded, setUserExpanded] = useState(isActive)
   const expanded = isActive || userExpanded
@@ -956,13 +1046,15 @@ function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedCh
         }`}
       >
         <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 ${
-          allDone
+          locked
+            ? 'bg-slate-200 text-slate-400'
+            : allDone
             ? 'bg-emerald-100 text-emerald-700'
             : isActive
             ? 'bg-action-600 text-white'
             : 'bg-slate-100 text-slate-500'
         }`}>
-          {allDone ? <CheckCircle2 size={13} /> : String(mIdx + 1).padStart(2, '0')}
+          {locked ? <Lock size={13} /> : allDone ? <CheckCircle2 size={13} /> : String(mIdx + 1).padStart(2, '0')}
         </div>
         <div className="flex-1 min-w-0">
           <p className={`text-xs font-bold truncate ${isActive ? 'text-slate-900' : 'text-slate-700'}`}>
@@ -1019,6 +1111,9 @@ function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedCh
                       )}
                     </div>
                     <span className="truncate">{typeof chapter === 'object' ? chapter.title : chapter}</span>
+                    {typeof chapter === 'object' && chapter.type === 'video' && (
+                      <Play size={10} className="text-rose-500 shrink-0 ml-auto" />
+                    )}
                   </button>
                 </li>
               )
@@ -1030,7 +1125,7 @@ function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedCh
   )
 }
 
-function QuizRenderer({ quiz, intro, chapterKey: cKey }) {
+function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
   const [selected, setSelected] = useState({})
   const [submitted, setSubmitted] = useState(false)
   const [timeLeft, setTimeLeft] = useState(15 * 60)
@@ -1176,7 +1271,12 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey }) {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => { setSubmitted(true); setTimerActive(false) }}
+            onClick={() => {
+              setSubmitted(true)
+              setTimerActive(false)
+              const sc = questions.reduce((s, q, i) => s + (selected[i] === q.answer ? 1 : 0), 0)
+              if (Math.round((sc / total) * 100) >= passmark && onPass) onPass()
+            }}
             disabled={answered < total}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
           >

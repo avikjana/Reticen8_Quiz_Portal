@@ -385,7 +385,12 @@
       {
         "title": "Module 2: WAN Configuration",
         "chapters": [
-          "Single WAN Setup and Gateway Configuration",
+          {
+            "title": "Single WAN Setup and Gateway Configuration",
+            "type": "video",
+            "videoId": "dQw4w9WgXcQ",
+            "content": "This chapter covers the concepts and practical knowledge of Single WAN Setup and Gateway Configuration. Watch the video below, then mark it complete to track your progress.\n\n## Key Learning Objectives\n\n- Understand the core principles of single WAN setup and gateway configuration\n- Apply theoretical knowledge to real-world enterprise scenarios\n- Identify security implications and best practices"
+          },
           "Multi-WAN and Load Balancing",
           "WAN Failover and Gateway Groups",
           "PPPoE and DHCP WAN Types",
