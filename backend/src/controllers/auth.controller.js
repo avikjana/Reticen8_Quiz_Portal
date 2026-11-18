@@ -38,7 +38,7 @@ export class AuthController {
     rateLimit(`login:ip:${ip}`, { limit: 30 })
     rateLimit(`login:email:${cleanEmail}`, { limit: 10 })
 
-    const user = UserModel.findByEmail(cleanEmail)
+    const user = await UserModel.findByEmail(cleanEmail)
 
     if (!user) {
       await fakeVerify(password)
@@ -86,7 +86,7 @@ export class AuthController {
       )
     }
 
-    if (UserModel.findByEmail(email)) {
+    if (await UserModel.findByEmail(email)) {
       throw new AppError('An account with this email already exists. Try signing in instead.', 409)
     }
 
@@ -103,14 +103,14 @@ export class AuthController {
     const { credential, role } = validate(googleSchema, req.body)
     const profile = await verifyGoogleCredential(credential)
 
-    let user = UserModel.findByGoogleId(profile.googleId)
+    let user = await UserModel.findByGoogleId(profile.googleId)
 
     if (!user) {
-      const existing = UserModel.findByEmail(profile.email)
+      const existing = await UserModel.findByEmail(profile.email)
       if (existing) {
         // Google has verified ownership of this email, so it's safe to link
         // the Google identity to the existing account.
-        user = UserModel.update(existing.id, {
+        user = await UserModel.update(existing.id, {
           googleId: profile.googleId,
           picture: existing.picture || profile.picture,
           authProviders: [...new Set([...(existing.authProviders || ['password']), 'google'])],
@@ -146,10 +146,10 @@ export class AuthController {
       message: 'If an account exists for that email, a password reset link has been sent.',
     }
 
-    const user = UserModel.findByEmail(email)
+    const user = await UserModel.findByEmail(email)
     if (!user || (user.status && user.status !== 'ACTIVE')) return generic
 
-    const rawToken = ResetTokenModel.issue(user.id)
+    const rawToken = await ResetTokenModel.issue(user.id)
     const resetUrl = `${clientBaseUrl()}/reset-password?token=${rawToken}`
     try {
       await sendPasswordResetEmail(user.email, resetUrl)
@@ -165,17 +165,17 @@ export class AuthController {
     rateLimit(`reset:ip:${clientIp(req)}`, { limit: 20 })
     const { token, password } = validate(resetPasswordSchema, req.body)
 
-    const userId = ResetTokenModel.consume(token)
+    const userId = await ResetTokenModel.consume(token)
     if (!userId) {
       throw new AppError('This reset link is invalid or has expired. Please request a new one.', 400)
     }
-    const user = UserModel.findById(userId)
+    const user = await UserModel.findById(userId)
     if (!user) throw new AppError('Account not found.', 404)
 
     const passwordHash = await hashPassword(password)
     const authProviders = [...new Set([...(user.authProviders || []), 'password'])]
-    UserModel.update(userId, { passwordHash, authProviders })
-    ResetTokenModel.clearForUser(userId) // invalidate any other outstanding links
+    await UserModel.update(userId, { passwordHash, authProviders })
+    await ResetTokenModel.clearForUser(userId) // invalidate any other outstanding links
 
     return { success: true, message: 'Your password has been reset. You can now sign in.' }
   }

@@ -94,7 +94,7 @@ export const createApp = () => {
 
       // 2. Statistics check
       if (pathname === '/api/statistics' && method === 'GET') {
-        const stats = db.read('statistics')
+        const stats = await db.read('statistics')
         setCorsHeaders(res, 200)
         res.end(JSON.stringify({ success: true, data: stats }))
         return

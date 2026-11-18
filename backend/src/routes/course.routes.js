@@ -10,7 +10,7 @@ export const handleCourseRoutes = async (req, res, pathname, method) => {
     await authenticateOptional(req, res)
     return {
       success: true,
-      data: CourseModel.getVisibleTo(req.user?.role).map(({ curriculum, ...summary }) => ({
+      data: (await CourseModel.getVisibleTo(req.user?.role)).map(({ curriculum, ...summary }) => ({
         ...summary,
         modulesCount: summary.modulesCount || (curriculum ? curriculum.length : 0),
       })),
@@ -21,7 +21,7 @@ export const handleCourseRoutes = async (req, res, pathname, method) => {
   if (pathname.startsWith('/api/courses/') && method === 'GET') {
     await authenticate(req, res)
     const id = decodeURIComponent(pathname.replace('/api/courses/', ''))
-    const course = CourseModel.findById(id)
+    const course = await CourseModel.findById(id)
     if (!course) throw new AppError('Course not found', 404)
     if (!CourseModel.isVisibleTo(course, req.user.role)) {
       throw new AppError(`This course isn't available for ${req.user.role} accounts.`, 403)

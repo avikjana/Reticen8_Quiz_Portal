@@ -1,29 +1,15 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { DatabaseSync } from 'node:sqlite'
-
-// ---------------------------------------------------------------------------
-// SQLite-backed document store.
-//
-// Each "collection" is a table of (id, doc) where `doc` is the JSON object.
-// Writes happen one row at a time inside a transaction, so two requests that
-// change different rows (e.g. two sign-ups) can't clobber each other the way
-// a full-file JSON rewrite did.
-//
-// The public API (read / write / findById / findOne / insert / update / delete)
-// is unchanged, so the models did not need to change.
-//
-// The .db file is generated and git-ignored; the JSON files in this folder are
-// the committed seed data, loaded into an empty table on first run.
-// ---------------------------------------------------------------------------
+import { MongoClient } from 'mongodb'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const DATA_DIR = path.resolve(__dirname, '../data')
-const DB_PATH = process.env.DB_PATH || path.join(DATA_DIR, 'reticen8.db')
 
-// Collections and which field is their primary key.
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
+const DB_NAME = process.env.MONGODB_DB || 'reticen8_academy'
+
 const COLLECTIONS = {
   users: 'id',
   courses: 'id',
@@ -35,27 +21,46 @@ const COLLECTIONS = {
   feedback: 'id',
 }
 
-class SqliteDB {
+class MongoDB {
   constructor() {
-    this.db = new DatabaseSync(DB_PATH)
-    this.db.exec('PRAGMA journal_mode = WAL;')
-    this.db.exec('PRAGMA foreign_keys = ON;')
-    for (const collection of Object.keys(COLLECTIONS)) {
-      this.db.exec(`CREATE TABLE IF NOT EXISTS "${collection}" (id TEXT PRIMARY KEY, doc TEXT NOT NULL)`)
-      this.#seedIfEmpty(collection)
-    }
+    this.client = null
+    this.db = null
+    this._ready = null
+  }
+
+  async connect() {
+    if (this.db) return this.db
+    if (this._ready) return this._ready
+
+    this._ready = (async () => {
+      this.client = new MongoClient(MONGODB_URI)
+      await this.client.connect()
+      this.db = this.client.db(DB_NAME)
+      console.log(`[DB] Connected to MongoDB: ${DB_NAME}`)
+
+      for (const collection of Object.keys(COLLECTIONS)) {
+        const col = this.db.collection(collection)
+        await col.createIndex({ _docId: 1 }, { unique: true })
+        await this.#seedIfEmpty(collection)
+      }
+      return this.db
+    })()
+
+    return this._ready
   }
 
   idKey(collection) {
     return COLLECTIONS[collection] || 'id'
   }
 
-  // Load the matching .json seed file into an empty table.
-  #seedIfEmpty(collection) {
-    const count = this.db.prepare(`SELECT COUNT(*) AS n FROM "${collection}"`).get().n
+  async #seedIfEmpty(collection) {
+    const col = this.db.collection(collection)
+    const count = await col.countDocuments()
     if (count > 0) return
+
     const seedPath = path.join(DATA_DIR, `${collection}.json`)
     if (!fs.existsSync(seedPath)) return
+
     let rows
     try {
       rows = JSON.parse(fs.readFileSync(seedPath, 'utf-8'))
@@ -64,41 +69,34 @@ class SqliteDB {
       return
     }
     if (!Array.isArray(rows) || rows.length === 0) return
-    this.#replaceAll(collection, rows)
+
+    const idKey = this.idKey(collection)
+    const docs = rows.map(row => ({ ...row, _docId: String(row[idKey]) }))
+    await col.insertMany(docs)
     console.log(`[DB] Seeded "${collection}" with ${rows.length} row(s) from ${collection}.json`)
   }
 
-  #replaceAll(collection, rows) {
-    const idKey = this.idKey(collection)
-    const insert = this.db.prepare(`INSERT OR REPLACE INTO "${collection}" (id, doc) VALUES (?, ?)`)
-    this.db.exec('BEGIN')
-    try {
-      this.db.exec(`DELETE FROM "${collection}"`)
-      for (const row of rows) {
-        insert.run(String(row[idKey]), JSON.stringify(row))
-      }
-      this.db.exec('COMMIT')
-    } catch (err) {
-      this.db.exec('ROLLBACK')
-      throw err
-    }
-  }
-
-  read(collection) {
+  async read(collection) {
     if (!COLLECTIONS[collection]) return []
     try {
-      return this.db.prepare(`SELECT doc FROM "${collection}"`).all().map((r) => JSON.parse(r.doc))
+      const docs = await this.db.collection(collection).find({}).toArray()
+      return docs.map(d => { const { _id, _docId, ...rest } = d; return rest })
     } catch (err) {
       console.error(`[DB] Error reading collection "${collection}":`, err.message)
       return []
     }
   }
 
-  // Replace the whole collection (used rarely, e.g. the password migration).
-  write(collection, data) {
+  async write(collection, data) {
     if (!COLLECTIONS[collection] || !Array.isArray(data)) return false
     try {
-      this.#replaceAll(collection, data)
+      const col = this.db.collection(collection)
+      const idKey = this.idKey(collection)
+      await col.deleteMany({})
+      if (data.length > 0) {
+        const docs = data.map(row => ({ ...row, _docId: String(row[idKey]) }))
+        await col.insertMany(docs)
+      }
       return true
     } catch (err) {
       console.error(`[DB] Error writing collection "${collection}":`, err.message)
@@ -106,39 +104,41 @@ class SqliteDB {
     }
   }
 
-  findById(collection, id) {
+  async findById(collection, id) {
     if (!COLLECTIONS[collection]) return null
-    const row = this.db.prepare(`SELECT doc FROM "${collection}" WHERE id = ?`).get(String(id))
-    return row ? JSON.parse(row.doc) : null
+    const doc = await this.db.collection(collection).findOne({ _docId: String(id) })
+    if (!doc) return null
+    const { _id, _docId, ...rest } = doc
+    return rest
   }
 
-  findOne(collection, predicate) {
-    return this.read(collection).find(predicate) || null
+  async findOne(collection, predicate) {
+    const all = await this.read(collection)
+    return all.find(predicate) || null
   }
 
-  insert(collection, item) {
+  async insert(collection, item) {
     const idKey = this.idKey(collection)
-    this.db
-      .prepare(`INSERT INTO "${collection}" (id, doc) VALUES (?, ?)`)
-      .run(String(item[idKey]), JSON.stringify(item))
+    await this.db.collection(collection).insertOne({ ...item, _docId: String(item[idKey]) })
     return item
   }
 
-  update(collection, id, updates) {
-    const existing = this.findById(collection, id)
+  async update(collection, id, updates) {
+    const existing = await this.findById(collection, id)
     if (!existing) return null
     const merged = { ...existing, ...updates, updatedAt: new Date().toISOString() }
-    this.db
-      .prepare(`UPDATE "${collection}" SET doc = ? WHERE id = ?`)
-      .run(JSON.stringify(merged), String(id))
+    await this.db.collection(collection).replaceOne(
+      { _docId: String(id) },
+      { ...merged, _docId: String(id) }
+    )
     return merged
   }
 
-  delete(collection, id) {
-    const result = this.db.prepare(`DELETE FROM "${collection}" WHERE id = ?`).run(String(id))
-    return result.changes > 0
+  async delete(collection, id) {
+    const result = await this.db.collection(collection).deleteOne({ _docId: String(id) })
+    return result.deletedCount > 0
   }
 }
 
-export const db = new SqliteDB()
+export const db = new MongoDB()
 export default db

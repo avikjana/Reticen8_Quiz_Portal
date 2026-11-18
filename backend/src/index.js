@@ -1,6 +1,8 @@
+import db from './db/index.js'
 import createApp from './app.js'
 import UserModel from './models/user.model.js'
 
+await db.connect()
 await UserModel.migratePlaintextPasswords()
 
 const PORT = process.env.PORT || 5000
@@ -11,7 +13,8 @@ app.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════════════╗
 ║   🚀 Reticen8 Academy Enterprise Backend API Server Running       ║
-║   🔗 Local: http://localhost:${PORT}                                ║
+║   🔗 Local: http://localhost:${PORT}                              ║
+║   🗄️  Database: MongoDB Atlas                                     ║
 ╠═══════════════════════════════════════════════════════════════════╣
 ║   🛡️ Auth Routes:                                                 ║
 ║      - POST /api/auth/login    (Admin, Employee, Partner)         ║

@@ -8,9 +8,9 @@ import { adminCreateUserSchema } from '../validation/schemas.js'
 
 export class AdminController {
   static async getOverview(req, res) {
-    const users = UserModel.getAll()
-    const courses = CourseModel.getAll()
-    const allEnrollments = EnrollmentModel.getAll().filter(e => e.status !== 'dropped')
+    const users = await UserModel.getAll()
+    const courses = await CourseModel.getAll()
+    const allEnrollments = (await EnrollmentModel.getAll()).filter(e => e.status !== 'dropped')
 
     return {
       success: true,
@@ -34,23 +34,25 @@ export class AdminController {
   }
 
   static async getUsers(req, res) {
-    const users = UserModel.getAll().map(UserModel.sanitize)
-    const allEnrollments = EnrollmentModel.getAll().filter(e => e.status !== 'dropped')
+    const users = (await UserModel.getAll()).map(UserModel.sanitize)
+    const allEnrollments = (await EnrollmentModel.getAll()).filter(e => e.status !== 'dropped')
 
-    const enriched = users.map(u => {
+    const enriched = []
+    for (const u of users) {
       const userEnrollments = allEnrollments.filter(e => e.userId === u.id)
-      const courses = userEnrollments.map(e => {
-        const course = CourseModel.findById(e.courseId)
-        return {
+      const courses = []
+      for (const e of userEnrollments) {
+        const course = await CourseModel.findById(e.courseId)
+        courses.push({
           enrollmentId: e.id,
           courseId: e.courseId,
           courseTitle: course?.title || e.courseId,
           status: e.status,
           enrolledAt: e.enrolledAt,
-        }
-      })
-      return { ...u, enrolledCourses: courses }
-    })
+        })
+      }
+      enriched.push({ ...u, enrolledCourses: courses })
+    }
 
     return { success: true, users: enriched }
   }
@@ -58,7 +60,7 @@ export class AdminController {
   static async createUser(req, res) {
     const { name, email, password, role, roleTitle, department } = validate(adminCreateUserSchema, req.body)
 
-    const existing = UserModel.findByEmail(email)
+    const existing = await UserModel.findByEmail(email)
     if (existing) {
       throw new AppError('A user with this email already exists.', 409)
     }
@@ -75,27 +77,29 @@ export class AdminController {
     if (!id) throw new AppError('User ID is required', 400)
     if (id === req.user.id) throw new AppError("You can't delete your own account.", 400)
 
-    const target = UserModel.findById(id)
+    const target = await UserModel.findById(id)
     if (!target) throw new AppError('User not found', 404)
 
     if (target.role === 'Administrator') {
-      const admins = UserModel.getAll().filter((u) => u.role === 'Administrator')
+      const admins = (await UserModel.getAll()).filter((u) => u.role === 'Administrator')
       if (admins.length <= 1) throw new AppError("You can't delete the last administrator.", 400)
     }
 
-    const success = UserModel.delete(id)
+    const success = await UserModel.delete(id)
     return { success, message: success ? 'User removed' : 'User not found' }
   }
 
   static async getCourses(req, res) {
-    const courses = CourseModel.getAll()
-    const allEnrollments = EnrollmentModel.getAll().filter(e => e.status !== 'dropped')
+    const courses = await CourseModel.getAll()
+    const allEnrollments = (await EnrollmentModel.getAll()).filter(e => e.status !== 'dropped')
 
-    const enriched = courses.map(c => {
+    const enriched = []
+    for (const c of courses) {
       const courseEnrollments = allEnrollments.filter(e => e.courseId === c.id)
-      const enrolledUsers = courseEnrollments.map(e => {
-        const user = UserModel.findById(e.userId)
-        return {
+      const enrolledUsers = []
+      for (const e of courseEnrollments) {
+        const user = await UserModel.findById(e.userId)
+        enrolledUsers.push({
           enrollmentId: e.id,
           userId: e.userId,
           userName: user?.name || 'Unknown',
@@ -103,9 +107,9 @@ export class AdminController {
           userRole: user?.role || 'Unknown',
           status: e.status,
           enrolledAt: e.enrolledAt,
-        }
-      })
-      return {
+        })
+      }
+      enriched.push({
         id: c.id,
         title: c.title,
         shortDesc: c.shortDesc,
@@ -119,8 +123,8 @@ export class AdminController {
         createdAt: c.createdAt,
         enrolledCount: enrolledUsers.length,
         enrolledUsers,
-      }
-    })
+      })
+    }
 
     return { success: true, courses: enriched }
   }
@@ -129,7 +133,7 @@ export class AdminController {
     const { title, shortDesc, description, difficulty, category, duration, certificationCode } = req.body || {}
     if (!title) throw new AppError('Course title is required.', 400)
 
-    const course = CourseModel.create({
+    const course = await CourseModel.create({
       title,
       shortDesc: shortDesc || '',
       description: description || '',
@@ -150,10 +154,10 @@ export class AdminController {
     const { courseId } = req.params || {}
     if (!courseId) throw new AppError('Course ID is required.', 400)
 
-    const course = CourseModel.findById(courseId)
+    const course = await CourseModel.findById(courseId)
     if (!course) throw new AppError('Course not found.', 404)
 
-    const success = CourseModel.delete(courseId)
+    const success = await CourseModel.delete(courseId)
     return { success, message: success ? `Course "${course.title}" removed.` : 'Course not found.' }
   }
 
@@ -161,13 +165,14 @@ export class AdminController {
     const { enrollmentId } = req.params || {}
     if (!enrollmentId) throw new AppError('Enrollment ID is required.', 400)
 
-    const enrollment = EnrollmentModel.getAll().find(e => e.id === enrollmentId)
+    const allEnrollments = await EnrollmentModel.getAll()
+    const enrollment = allEnrollments.find(e => e.id === enrollmentId)
     if (!enrollment) throw new AppError('Enrollment not found.', 404)
 
-    db.update('enrollments', enrollmentId, { status: 'dropped' })
+    await db.update('enrollments', enrollmentId, { status: 'dropped' })
 
-    const user = UserModel.findById(enrollment.userId)
-    const course = CourseModel.findById(enrollment.courseId)
+    const user = await UserModel.findById(enrollment.userId)
+    const course = await CourseModel.findById(enrollment.courseId)
 
     return {
       success: true,

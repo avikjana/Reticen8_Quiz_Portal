@@ -17,7 +17,7 @@ export class UserController {
       throw new AppError('Authentication required', 401)
     }
     const { name, department, roleTitle } = req.body || {}
-    const updated = UserModel.update(req.user.id, { name, department, roleTitle })
+    const updated = await UserModel.update(req.user.id, { name, department, roleTitle })
     return {
       success: true,
       profile: UserModel.sanitize(updated),

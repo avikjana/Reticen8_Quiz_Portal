@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "google-auth-library": "^10.9.1",
+    "mongodb": "^7.9.0",
     "zod": "^3.25.76"
   }
 }

@@ -33,7 +33,7 @@ export const authenticate = async (req, res, next) => {
 
   // Always load the user fresh so deleted/disabled accounts and role changes
   // take effect immediately rather than when the token expires.
-  const user = UserModel.findById(payload.sub)
+  const user = await UserModel.findById(payload.sub)
   if (!user || (user.status && user.status !== 'ACTIVE')) {
     throw new AppError('This account is no longer active.', 401)
   }

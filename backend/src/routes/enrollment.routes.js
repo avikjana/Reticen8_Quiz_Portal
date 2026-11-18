@@ -6,7 +6,6 @@ import { authenticate } from '../middlewares/auth.middleware.js'
 import AppError from '../utils/AppError.js'
 
 export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
-  // All enrollment routes require authentication
   if (!pathname.startsWith('/api/enrollments')) return null
 
   await authenticate(req, res)
@@ -16,14 +15,14 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
     const { courseId } = req.body || {}
     if (!courseId) throw new AppError('courseId is required.', 400)
 
-    const course = CourseModel.findById(courseId)
+    const course = await CourseModel.findById(courseId)
     if (!course) throw new AppError('Course not found.', 404)
 
     if (!CourseModel.isVisibleTo(course, req.user.role)) {
       throw new AppError(`This course is not available for ${req.user.role} accounts.`, 403)
     }
 
-    const enrollment = EnrollmentModel.enroll(req.user.id, courseId)
+    const enrollment = await EnrollmentModel.enroll(req.user.id, courseId)
     if (!enrollment) {
       throw new AppError('You are already enrolled in this course.', 409)
     }
@@ -37,12 +36,12 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
 
   // GET /api/enrollments — list my enrollments (with course details)
   if (pathname === '/api/enrollments' && method === 'GET') {
-    const enrollments = EnrollmentModel.getByUser(req.user.id)
+    const enrollments = await EnrollmentModel.getByUser(req.user.id)
 
-    // Attach course info to each enrollment
-    const enriched = enrollments.map((e) => {
-      const course = CourseModel.findById(e.courseId)
-      return {
+    const enriched = []
+    for (const e of enrollments) {
+      const course = await CourseModel.findById(e.courseId)
+      enriched.push({
         ...e,
         course: course
           ? {
@@ -59,8 +58,8 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
               certificationCode: course.certificationCode,
             }
           : null,
-      }
-    })
+      })
+    }
 
     return { success: true, data: enriched }
   }
@@ -71,7 +70,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
     const courseId = decodeURIComponent(checkMatch[1])
     return {
       success: true,
-      enrolled: EnrollmentModel.isEnrolled(req.user.id, courseId),
+      enrolled: await EnrollmentModel.isEnrolled(req.user.id, courseId),
     }
   }
 
@@ -80,14 +79,14 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
   if (learnMatch && method === 'GET') {
     const courseId = decodeURIComponent(learnMatch[1])
 
-    if (!EnrollmentModel.isEnrolled(req.user.id, courseId)) {
+    if (!(await EnrollmentModel.isEnrolled(req.user.id, courseId))) {
       throw new AppError('You must enroll in this course to access the learning material.', 403)
     }
 
-    const course = CourseModel.findById(courseId)
+    const course = await CourseModel.findById(courseId)
     if (!course) throw new AppError('Course not found.', 404)
 
-    const enrollment = EnrollmentModel.findByUserAndCourse(req.user.id, courseId)
+    const enrollment = await EnrollmentModel.findByUserAndCourse(req.user.id, courseId)
 
     return {
       success: true,
@@ -104,15 +103,16 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
     if (!courseId) throw new AppError('courseId is required.', 400)
     if (!rating || rating < 1 || rating > 5) throw new AppError('Rating must be between 1 and 5.', 400)
 
-    if (!EnrollmentModel.isEnrolled(req.user.id, courseId)) {
+    if (!(await EnrollmentModel.isEnrolled(req.user.id, courseId))) {
       throw new AppError('You must be enrolled in this course to leave feedback.', 403)
     }
 
-    const existing = db.read('feedback').find(
+    const allFeedback = await db.read('feedback')
+    const existing = allFeedback.find(
       f => f.userId === req.user.id && f.courseId === courseId
     )
     if (existing) {
-      db.update('feedback', existing.id, {
+      await db.update('feedback', existing.id, {
         rating,
         comment: comment || '',
         recommend: recommend ?? true,
@@ -122,7 +122,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
     }
 
     const now = new Date().toISOString()
-    db.insert('feedback', {
+    await db.insert('feedback', {
       id: `fb-${crypto.randomUUID()}`,
       userId: req.user.id,
       courseId,
@@ -140,7 +140,8 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
   const feedbackMatch = pathname.match(/^\/api\/enrollments\/feedback\/(.+)$/)
   if (feedbackMatch && method === 'GET') {
     const courseId = decodeURIComponent(feedbackMatch[1])
-    const feedback = db.read('feedback').find(
+    const allFeedback = await db.read('feedback')
+    const feedback = allFeedback.find(
       f => f.userId === req.user.id && f.courseId === courseId
     )
     return { success: true, data: feedback || null }
@@ -151,7 +152,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
   if (deleteMatch && method === 'DELETE') {
     const courseId = decodeURIComponent(deleteMatch[1])
 
-    if (!EnrollmentModel.unenroll(req.user.id, courseId)) {
+    if (!(await EnrollmentModel.unenroll(req.user.id, courseId))) {
       throw new AppError('You are not enrolled in this course.', 404)
     }
 

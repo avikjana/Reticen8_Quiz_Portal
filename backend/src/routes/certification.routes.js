@@ -8,13 +8,13 @@ export const handleCertificationRoutes = async (req, res, pathname, method) => {
 
   // Public overview (home page cards)
   if (pathname === '/api/certifications') {
-    return { success: true, data: CertificationModel.getAll().map(CertificationModel.toSummary) }
+    return { success: true, data: (await CertificationModel.getAll()).map(CertificationModel.toSummary) }
   }
 
   // Full certification guide — signed-in members only
   if (pathname === '/api/certifications/guide') {
     await authenticate(req, res)
-    return { success: true, data: CertificationModel.getAll() }
+    return { success: true, data: await CertificationModel.getAll() }
   }
 
   // Public credential verification (e.g. for employers). Rate limited so
@@ -22,7 +22,7 @@ export const handleCertificationRoutes = async (req, res, pathname, method) => {
   if (pathname.startsWith('/api/credentials/')) {
     rateLimit(`verify:ip:${clientIp(req)}`, { limit: 30 })
     const id = decodeURIComponent(pathname.replace('/api/credentials/', ''))
-    const credential = CertificationModel.findCredential(id)
+    const credential = await CertificationModel.findCredential(id)
     if (!credential) {
       throw new AppError('No credential found with this ID. Check the ID and try again.', 404)
     }

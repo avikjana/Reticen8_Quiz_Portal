@@ -1,31 +1,26 @@
 import db from '../db/index.js'
 
 export class CourseModel {
-  static getAll() {
-    return db.read('courses')
+  static async getAll() {
+    return await db.read('courses')
   }
 
-  static findById(id) {
-    return db.findById('courses', id)
+  static async findById(id) {
+    return await db.findById('courses', id)
   }
 
-  // Which roles may see a course is set per course by its `audience` list in
-  // courses.json (e.g. ["Employee", "Partner"]). Administrators see everything,
-  // and a course with no `audience` is open to every role.
   static isVisibleTo(course, role) {
     if (role === 'Administrator') return true
     if (!Array.isArray(course.audience) || course.audience.length === 0) return true
     return course.audience.includes(role)
   }
 
-  // Courses for a signed-in role. Signed-out visitors (no role) see the whole
-  // public catalog.
-  static getVisibleTo(role) {
-    const all = db.read('courses')
+  static async getVisibleTo(role) {
+    const all = await db.read('courses')
     return role ? all.filter((c) => CourseModel.isVisibleTo(c, role)) : all
   }
 
-  static create(courseData) {
+  static async create(courseData) {
     const newCourse = {
       id: courseData.id || `course-${Date.now().toString(36)}`,
       title: courseData.title,
@@ -42,20 +37,20 @@ export class CourseModel {
       studentsCount: 0,
       certificationCode: courseData.certificationCode || 'RCFA',
       certificationTitle: courseData.certificationTitle || '',
-      badge: '🛡️',
+      badge: '\u{1F6E1}️',
       skills: courseData.skills || [],
-      curriculum: [], // Awaiting user course design
+      curriculum: [],
       createdAt: new Date().toISOString(),
     }
-    return db.insert('courses', newCourse)
+    return await db.insert('courses', newCourse)
   }
 
-  static update(id, updates) {
-    return db.update('courses', id, updates)
+  static async update(id, updates) {
+    return await db.update('courses', id, updates)
   }
 
-  static delete(id) {
-    return db.delete('courses', id)
+  static async delete(id) {
+    return await db.delete('courses', id)
   }
 }
 

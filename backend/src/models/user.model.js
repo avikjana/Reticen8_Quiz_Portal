@@ -8,8 +8,6 @@ export const ROLES = {
   PARTNER: 'Partner',
 }
 
-// Roles a visitor may pick for themselves on the public sign-up form.
-// Administrators can only be created by an existing administrator.
 export const SELF_SIGNUP_ROLES = [ROLES.EMPLOYEE, ROLES.PARTNER]
 
 const DEFAULT_PERMISSIONS = {
@@ -21,33 +19,31 @@ const DEFAULT_PERMISSIONS = {
 const normaliseEmail = (email) => String(email || '').toLowerCase().trim()
 
 export class UserModel {
-  static getAll() {
-    return db.read('users')
+  static async getAll() {
+    return await db.read('users')
   }
 
-  static findById(id) {
-    return db.findById('users', id)
+  static async findById(id) {
+    return await db.findById('users', id)
   }
 
-  static findByEmail(email) {
+  static async findByEmail(email) {
     const cleanEmail = normaliseEmail(email)
-    return db.findOne('users', (u) => normaliseEmail(u.email) === cleanEmail)
+    return await db.findOne('users', (u) => normaliseEmail(u.email) === cleanEmail)
   }
 
-  static findByGoogleId(googleId) {
-    return db.findOne('users', (u) => u.googleId === googleId)
+  static async findByGoogleId(googleId) {
+    return await db.findOne('users', (u) => u.googleId === googleId)
   }
 
-  static findByEmailAndRole(email, role) {
+  static async findByEmailAndRole(email, role) {
     const cleanEmail = normaliseEmail(email)
-    return db.findOne(
+    return await db.findOne(
       'users',
       (u) => normaliseEmail(u.email) === cleanEmail && u.role.toLowerCase() === role.toLowerCase()
     )
   }
 
-  // `password` is plain text here; only its hash is stored. Omit it for
-  // Google-only accounts.
   static async create(userData) {
     const role = Object.values(ROLES).includes(userData.role) ? userData.role : ROLES.EMPLOYEE
     const now = new Date().toISOString()
@@ -68,29 +64,26 @@ export class UserModel {
       createdAt: now,
       updatedAt: now,
     }
-    return db.insert('users', newUser)
+    return await db.insert('users', newUser)
   }
 
-  static update(id, updates) {
-    // Drop undefined values so partial updates don't wipe existing fields
+  static async update(id, updates) {
     const clean = Object.fromEntries(Object.entries(updates).filter(([, v]) => v !== undefined))
-    return db.update('users', id, clean)
+    return await db.update('users', id, clean)
   }
 
-  static delete(id) {
-    return db.delete('users', id)
+  static async delete(id) {
+    return await db.delete('users', id)
   }
 
   static sanitize(user) {
     if (!user) return null
-    // eslint-disable-next-line no-unused-vars
     const { password, passwordHash, ...safeUser } = user
     return safeUser
   }
 
-  // One-time migration: hash any legacy plain-text `password` fields in users.json.
   static async migratePlaintextPasswords() {
-    const users = db.read('users')
+    const users = await db.read('users')
     let changed = 0
     for (const u of users) {
       if (typeof u.password === 'string' && !isHashed(u.password)) {
@@ -105,7 +98,7 @@ export class UserModel {
       }
     }
     if (changed) {
-      db.write('users', users)
+      await db.write('users', users)
       console.log(`[auth] Migrated ${changed} plain-text password(s) to scrypt hashes.`)
     }
   }
