@@ -4,15 +4,15 @@ import { hashPassword, isHashed } from '../utils/password.js'
 
 export const ROLES = {
   ADMIN: 'Administrator',
-  EMPLOYEE: 'Employee',
+  CUSTOMER: 'Customer',
   PARTNER: 'Partner',
 }
 
-export const SELF_SIGNUP_ROLES = [ROLES.EMPLOYEE, ROLES.PARTNER]
+export const SELF_SIGNUP_ROLES = [ROLES.CUSTOMER, ROLES.PARTNER]
 
 const DEFAULT_PERMISSIONS = {
   [ROLES.ADMIN]: ['all', 'system_admin', 'user_management', 'audit_logs', 'lab_provisioning'],
-  [ROLES.EMPLOYEE]: ['engineer_labs', 'internal_curriculum', 'firewall_sandbox', 'exam_vouchers'],
+  [ROLES.CUSTOMER]: ['customer_labs', 'internal_curriculum', 'firewall_sandbox', 'exam_vouchers'],
   [ROLES.PARTNER]: ['partner_portal', 'seat_allocation', 'discounted_vouchers', 'co_branding'],
 }
 
@@ -45,7 +45,7 @@ export class UserModel {
   }
 
   static async create(userData) {
-    const role = Object.values(ROLES).includes(userData.role) ? userData.role : ROLES.EMPLOYEE
+    const role = Object.values(ROLES).includes(userData.role) ? userData.role : ROLES.CUSTOMER
     const now = new Date().toISOString()
     const newUser = {
       id: `usr-${crypto.randomUUID()}`,

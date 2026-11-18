@@ -1,6 +1,6 @@
 import CourseModel from '../models/course.model.js'
 
-export class EmployeeController {
+export class CustomerController {
   static async getDashboard(req, res) {
     const user = req.user
     const courses = await CourseModel.getVisibleTo(req.user.role)
@@ -8,7 +8,7 @@ export class EmployeeController {
     return {
       success: true,
       data: {
-        employee: user,
+        customer: user,
         enrolledCourses: courses.map((c) => ({
           id: c.id,
           title: c.title,
@@ -41,4 +41,4 @@ export class EmployeeController {
   }
 }
 
-export default EmployeeController
+export default CustomerController

@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import tls from 'node:tls'
 import { fileURLToPath } from 'node:url'
 import { MongoClient } from 'mongodb'
 
@@ -33,7 +34,11 @@ class MongoDB {
     if (this._ready) return this._ready
 
     this._ready = (async () => {
-      this.client = new MongoClient(MONGODB_URI)
+      this.client = new MongoClient(MONGODB_URI, {
+        tls: true,
+        tlsAllowInvalidCertificates: false,
+        secureContext: tls.createSecureContext({ securityLevel: 1 }),
+      })
       await this.client.connect()
       this.db = this.client.db(DB_NAME)
       console.log(`[DB] Connected to MongoDB: ${DB_NAME}`)

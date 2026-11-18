@@ -96,7 +96,7 @@ export default function ForgotPassword() {
         <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-500 mb-6">
           <span className="font-bold text-slate-700 block mb-1">Demo Environment Credentials:</span>
           Admin: <code className="text-purple-700">admin@reticen8.com</code> / <code className="text-purple-700">AdminPassword123!</code><br />
-          Employee: <code className="text-emerald-700">employee@reticen8.com</code> / <code className="text-emerald-700">EmployeePassword123!</code><br />
+          Customer: <code className="text-emerald-700">customer@reticen8.com</code> / <code className="text-emerald-700">CustomerPassword123!</code><br />
           Partner: <code className="text-blue-700">partner@reticen8.com</code> / <code className="text-blue-700">PartnerPassword123!</code>
         </div>
         )}

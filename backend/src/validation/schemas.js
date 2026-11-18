@@ -19,7 +19,7 @@ const strongPassword = z
 
 const name = z.string({ required_error: 'Name is required' }).trim().min(1, 'Name is required').max(80)
 const optionalText = z.string().trim().max(120).optional()
-const role = z.enum(['Administrator', 'Employee', 'Partner'])
+const role = z.enum(['Administrator', 'Customer', 'Partner'])
 
 export const loginSchema = z.object({
   email,
@@ -31,7 +31,7 @@ export const registerSchema = z.object({
   name,
   email,
   password: strongPassword,
-  role: role.optional().default('Employee'),
+  role: role.optional().default('Customer'),
   roleTitle: optionalText,
   department: optionalText,
 })
@@ -52,7 +52,7 @@ export const adminCreateUserSchema = z.object({
   name,
   email,
   password: strongPassword,
-  role: role.default('Employee'),
+  role: role.default('Customer'),
   roleTitle: optionalText,
   department: optionalText,
 })

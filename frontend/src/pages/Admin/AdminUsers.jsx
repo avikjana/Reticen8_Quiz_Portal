@@ -20,7 +20,7 @@ const roleBadge = (role) =>
     ? 'bg-blue-100 text-blue-800 border-blue-200'
     : 'bg-emerald-100 text-emerald-800 border-emerald-200'
 
-const EMPTY_FORM = { name: '', email: '', password: '', role: 'Employee', department: '' }
+const EMPTY_FORM = { name: '', email: '', password: '', role: 'Customer', department: '' }
 
 function UserRow({ u, currentUser, onDelete, deletingId, onRemoveEnrollment }) {
   const [expanded, setExpanded] = useState(false)
@@ -234,7 +234,7 @@ export default function AdminUsers() {
           {[
             { label: 'Total Users', count: users.length, color: 'bg-slate-100 text-slate-700' },
             { label: 'Administrators', count: users.filter(u => u.role === 'Administrator').length, color: 'bg-purple-100 text-purple-700' },
-            { label: 'Employees', count: users.filter(u => u.role === 'Employee').length, color: 'bg-emerald-100 text-emerald-700' },
+            { label: 'Customers', count: users.filter(u => u.role === 'Customer').length, color: 'bg-emerald-100 text-emerald-700' },
             { label: 'Partners', count: users.filter(u => u.role === 'Partner').length, color: 'bg-blue-100 text-blue-700' },
           ].map(s => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
@@ -258,7 +258,7 @@ export default function AdminUsers() {
           </div>
 
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
-            {['All', 'Administrator', 'Employee', 'Partner'].map((role) => (
+            {['All', 'Administrator', 'Customer', 'Partner'].map((role) => (
               <button
                 key={role}
                 onClick={() => setRoleFilter(role)}

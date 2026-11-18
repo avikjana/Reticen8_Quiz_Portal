@@ -20,7 +20,7 @@ const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'))
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'))
 const AdminUsers = lazy(() => import('./pages/Admin/AdminUsers'))
 const AdminCourses = lazy(() => import('./pages/Admin/AdminCourses'))
-const EmployeeDashboard = lazy(() => import('./pages/Employee/EmployeeDashboard'))
+const CustomerDashboard = lazy(() => import('./pages/Customer/CustomerDashboard'))
 const PartnerDashboard = lazy(() => import('./pages/Partner/PartnerDashboard'))
 
 // Helper component to auto-scroll to top on route change
@@ -48,7 +48,7 @@ const ROUTE_TITLES = {
   '/admin': 'Admin Dashboard',
   '/admin/users': 'Manage Users',
   '/admin/courses': 'Manage Courses',
-  '/employee': 'Employee Dashboard',
+  '/customer': 'Customer Dashboard',
   '/partner': 'Partner Portal',
 }
 const SELF_TITLED = ['/courses/', '/certifications', '/learn/']
@@ -118,12 +118,12 @@ function App() {
             }
           />
 
-          {/* Employee / Engineer Routes */}
+          {/* Customer Routes */}
           <Route
-            path="/employee"
+            path="/customer"
             element={
               <ProtectedRoute>
-                <EmployeeDashboard />
+                <CustomerDashboard />
               </ProtectedRoute>
             }
           />

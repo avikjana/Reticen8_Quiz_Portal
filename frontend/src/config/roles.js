@@ -1,5 +1,3 @@
-// Single source of truth for the three account types: labels, colours and
-// (in development builds only) the demo sign-in details.
 import { Shield, Briefcase, Users } from 'lucide-react'
 
 const dev = (value) => (import.meta.env.DEV ? value : '')
@@ -9,8 +7,8 @@ export const ROLE_CATEGORIES = [
     id: 'Administrator',
     label: 'Administrator',
     shortLabel: 'Admin',
-    roleTag: 'System & Security Admin',
-    desc: 'Full enterprise control, audit logs, and user provisioning.',
+    roleTag: 'Administrator',
+    desc: '',
     icon: Shield,
     color: 'purple',
     badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
@@ -20,16 +18,16 @@ export const ROLE_CATEGORIES = [
     textClass: 'text-purple-700',
     dashboardPath: '/admin',
     dashboardLabel: 'Admin Dashboard',
-    selfSignup: false, // admins are created by an existing admin
+    selfSignup: false,
     demoEmail: dev('admin@reticen8.com'),
     demoPass: dev('AdminPassword123!'),
   },
   {
-    id: 'Employee',
-    label: 'Employee',
-    shortLabel: 'Engineer',
-    roleTag: 'Security Engineer',
-    desc: 'Internal firewall labs, threat defense curriculum, and sandboxes.',
+    id: 'Customer',
+    label: 'Customer',
+    shortLabel: 'Customer',
+    roleTag: 'Customer',
+    desc: '',
     icon: Briefcase,
     color: 'emerald',
     badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
@@ -37,19 +35,19 @@ export const ROLE_CATEGORIES = [
     ringClass: 'focus:ring-brand-600/20 focus:border-brand-600',
     avatarClass: 'bg-emerald-100 text-brand-600',
     textClass: 'text-brand-600',
-    dashboardPath: '/employee',
-    dashboardLabel: 'Employee Dashboard',
+    dashboardPath: '/customer',
+    dashboardLabel: 'Customer Dashboard',
     selfSignup: true,
-    signupRoleTitle: 'Security Operations Engineer',
-    demoEmail: dev('employee@reticen8.com'),
-    demoPass: dev('EmployeePassword123!'),
+    signupRoleTitle: 'Customer',
+    demoEmail: dev('customer@reticen8.com'),
+    demoPass: dev('CustomerPassword123!'),
   },
   {
     id: 'Partner',
     label: 'Partner',
     shortLabel: 'Partner',
-    roleTag: 'Authorized Training Partner',
-    desc: 'Partner academy portal, seat management, and co-branded credentials.',
+    roleTag: 'Partner',
+    desc: '',
     icon: Users,
     color: 'blue',
     badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -60,16 +58,15 @@ export const ROLE_CATEGORIES = [
     dashboardPath: '/partner',
     dashboardLabel: 'Partner Portal',
     selfSignup: true,
-    signupRoleTitle: 'Authorized Training Partner',
-    // On the sign-up form the Partner box shows only this title
-    signupTag: 'Authorized Partner',
+    signupRoleTitle: 'Partner',
+    signupTag: 'Partner',
     signupTitleOnly: true,
     demoEmail: dev('partner@reticen8.com'),
     demoPass: dev('PartnerPassword123!'),
   },
 ]
 
-export const DEFAULT_ROLE = 'Employee'
+export const DEFAULT_ROLE = 'Customer'
 
 export const getRole = (id) =>
   ROLE_CATEGORIES.find((c) => c.id === id) || ROLE_CATEGORIES.find((c) => c.id === DEFAULT_ROLE)

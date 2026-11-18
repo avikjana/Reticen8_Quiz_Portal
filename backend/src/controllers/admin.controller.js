@@ -18,7 +18,7 @@ export class AdminController {
         totalUsers: users.length,
         usersByRole: {
           administrators: users.filter((u) => u.role === 'Administrator').length,
-          employees: users.filter((u) => u.role === 'Employee').length,
+          customers: users.filter((u) => u.role === 'Customer').length,
           partners: users.filter((u) => u.role === 'Partner').length,
         },
         totalCourses: courses.length,

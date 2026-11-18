@@ -3,21 +3,21 @@ import { ROLE_CATEGORIES, SIGNUP_CATEGORIES, getRole, dashboardPathFor, DEFAULT_
 
 describe('roles config', () => {
   it('defines the three roles', () => {
-    expect(ROLE_CATEGORIES.map((r) => r.id)).toEqual(['Administrator', 'Employee', 'Partner'])
+    expect(ROLE_CATEGORIES.map((r) => r.id)).toEqual(['Administrator', 'Customer', 'Partner'])
   })
 
   it('does not let visitors sign up as Administrator', () => {
-    expect(SIGNUP_CATEGORIES.map((r) => r.id)).toEqual(['Employee', 'Partner'])
+    expect(SIGNUP_CATEGORIES.map((r) => r.id)).toEqual(['Customer', 'Partner'])
   })
 
   it('maps each role to its dashboard', () => {
     expect(dashboardPathFor('Administrator')).toBe('/admin')
-    expect(dashboardPathFor('Employee')).toBe('/employee')
+    expect(dashboardPathFor('Customer')).toBe('/customer')
     expect(dashboardPathFor('Partner')).toBe('/partner')
   })
 
   it('falls back to the default role for unknown input', () => {
     expect(getRole('Nonsense').id).toBe(DEFAULT_ROLE)
-    expect(dashboardPathFor(undefined)).toBe('/employee')
+    expect(dashboardPathFor(undefined)).toBe('/customer')
   })
 })

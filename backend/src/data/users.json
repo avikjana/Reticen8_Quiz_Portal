@@ -24,13 +24,13 @@
   {
     "id": "usr-emp-02",
     "name": "Avik Jana",
-    "email": "employee@reticen8.com",
-    "role": "Employee",
-    "roleTitle": "Lead Security Engineer",
+    "email": "customer@reticen8.com",
+    "role": "Customer",
+    "roleTitle": "Customer",
     "avatar": "A",
     "department": "Security Operations Center (SOC)",
     "permissions": [
-      "engineer_labs",
+      "customer_labs",
       "internal_curriculum",
       "firewall_sandbox",
       "exam_vouchers"

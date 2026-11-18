@@ -22,7 +22,7 @@ const categories = ROLE_CATEGORIES
 export default function LoginModal() {
   const { isLoginModalOpen, closeLoginModal, login, loginModalDefaultCategory } = useAuth()
 
-  const [selectedCategory, setSelectedCategory] = useState(loginModalDefaultCategory || 'Employee')
+  const [selectedCategory, setSelectedCategory] = useState(loginModalDefaultCategory || 'Customer')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -304,7 +304,7 @@ export default function LoginModal() {
           <OrDivider />
           <GoogleSignInButton
             text="signin_with"
-            role={selectedCategory === 'Partner' ? 'Partner' : 'Employee'}
+            role={selectedCategory === 'Partner' ? 'Partner' : 'Customer'}
             onSuccess={() => {
               setErrorMsg('')
               closeLoginModal()

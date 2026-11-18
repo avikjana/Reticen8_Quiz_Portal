@@ -29,7 +29,7 @@ export default function SignUp() {
   const gatedPage = describeGatedPage(from)
   const { register } = useAuth()
 
-  const [selectedCategory, setSelectedCategory] = useState('Employee')
+  const [selectedCategory, setSelectedCategory] = useState('Customer')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [department, setDepartment] = useState('')
@@ -154,23 +154,11 @@ export default function SignUp() {
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-8 space-y-4">
           {/* Active Category Tag */}
-          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-brand-600 flex items-center justify-center font-bold">
-                <IconComponent size={16} />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-slate-800">{activeCategory.signupTag || activeCategory.roleTag}</div>
-                {!activeCategory.signupTitleOnly && (
-                  <div className="text-[10px] text-slate-500">{activeCategory.desc}</div>
-                )}
-              </div>
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 text-brand-600 flex items-center justify-center font-bold">
+              <IconComponent size={16} />
             </div>
-            {!activeCategory.signupTitleOnly && (
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${activeCategory.badgeClass}`}>
-                {activeCategory.label}
-              </span>
-            )}
+            <span className="text-xs font-bold text-slate-800">{activeCategory.label}</span>
           </div>
 
           {errorMsg && (

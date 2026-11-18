@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => storage.getItem(TOKEN_KEY) || null)
   const [user, setUser] = useState(() => (storage.getItem(TOKEN_KEY) ? readStoredUser() : null))
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
-  const [loginModalDefaultCategory, setLoginModalDefaultCategory] = useState('Employee')
+  const [loginModalDefaultCategory, setLoginModalDefaultCategory] = useState('Customer')
 
   useEffect(() => {
     if (user) storage.setItem(USER_KEY, JSON.stringify(user))
@@ -144,7 +144,7 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const openLoginModal = (category = 'Employee') => {
+  const openLoginModal = (category = 'Customer') => {
     setLoginModalDefaultCategory(category)
     setIsLoginModalOpen(true)
   }

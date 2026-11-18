@@ -27,9 +27,9 @@ export default function Login() {
   const goAfterLogin = (u) => navigate(pathAfterAuth(from, u.role), { replace: true })
   const { login } = useAuth()
 
-  const [selectedCategory, setSelectedCategory] = useState('Employee')
-  const [email, setEmail] = useState(import.meta.env.DEV ? 'employee@reticen8.com' : '')
-  const [password, setPassword] = useState(import.meta.env.DEV ? 'EmployeePassword123!' : '')
+  const [selectedCategory, setSelectedCategory] = useState('Customer')
+  const [email, setEmail] = useState(import.meta.env.DEV ? 'customer@reticen8.com' : '')
+  const [password, setPassword] = useState(import.meta.env.DEV ? 'CustomerPassword123!' : '')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -79,7 +79,7 @@ export default function Login() {
       <div className="w-full max-w-md mx-auto lg:mr-0 bg-white rounded-3xl shadow-[var(--shadow-lift)] ring-1 ring-slate-200/80 overflow-hidden text-slate-900 relative">
         {/* Header */}
         <div className="p-8 pb-5 bg-gradient-to-b from-slate-50 to-white border-b border-slate-100">
-          <Logo size="sm" label="Identity Portal" asLink={false} className="mb-3" />
+          <Logo size="sm" label="" asLink={false} className="mb-3" />
 
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">
             Sign In to Your Account
@@ -135,21 +135,11 @@ export default function Login() {
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-8 pt-6 space-y-4">
           {/* Active Category Description */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
             <div className="p-2 rounded-lg bg-white border border-slate-200 text-slate-700 flex-shrink-0 shadow-2xs">
               <IconComponent size={18} />
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-900">{activeCategory.label} Portal</span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${activeCategory.badgeClass}`}>
-                  {activeCategory.roleTag}
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                {activeCategory.desc}
-              </p>
-            </div>
+            <span className="text-xs font-bold text-slate-900">{activeCategory.label}</span>
           </div>
 
           {errorMsg && (
@@ -255,7 +245,7 @@ export default function Login() {
           <OrDivider />
           <GoogleSignInButton
             text="signin_with"
-            role={selectedCategory === 'Partner' ? 'Partner' : 'Employee'}
+            role={selectedCategory === 'Partner' ? 'Partner' : 'Customer'}
             onSuccess={(u) => {
               setErrorMsg('')
               setSuccessMsg(`Welcome, ${u.name}! Signed in with Google.`)

@@ -2,7 +2,7 @@ import http from 'node:http'
 import { logRequest } from './utils/logger.js'
 import handleAuthRoutes from './routes/auth.routes.js'
 import handleAdminRoutes from './routes/admin.routes.js'
-import handleEmployeeRoutes from './routes/employee.routes.js'
+import handleCustomerRoutes from './routes/customer.routes.js'
 import handlePartnerRoutes from './routes/partner.routes.js'
 import handleUserRoutes from './routes/user.routes.js'
 import handleCourseRoutes from './routes/course.routes.js'
@@ -105,7 +105,7 @@ export const createApp = () => {
 
       result = await handleAuthRoutes(req, res, pathname, method)
       if (result === null) result = await handleAdminRoutes(req, res, pathname, method)
-      if (result === null) result = await handleEmployeeRoutes(req, res, pathname, method)
+      if (result === null) result = await handleCustomerRoutes(req, res, pathname, method)
       if (result === null) result = await handlePartnerRoutes(req, res, pathname, method)
       if (result === null) result = await handleUserRoutes(req, res, pathname, method)
       if (result === null) result = await handleCourseRoutes(req, res, pathname, method)

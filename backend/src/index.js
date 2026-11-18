@@ -17,7 +17,7 @@ app.listen(PORT, () => {
 ║   🗄️  Database: MongoDB Atlas                                     ║
 ╠═══════════════════════════════════════════════════════════════════╣
 ║   🛡️ Auth Routes:                                                 ║
-║      - POST /api/auth/login    (Admin, Employee, Partner)         ║
+║      - POST /api/auth/login    (Admin, Customer, Partner)         ║
 ║      - POST /api/auth/register (New User Registration)            ║
 ║      - POST /api/auth/google   (Sign in with Google)              ║
 ║      - GET  /api/auth/me       (Active Session Inspection)        ║
@@ -26,7 +26,7 @@ app.listen(PORT, () => {
 ║   👔 Role Routes:                                                 ║
 ║      - GET  /api/admin/overview                                   ║
 ║      - GET  /api/admin/users                                      ║
-║      - GET  /api/employee/dashboard                               ║
+║      - GET  /api/customer/dashboard                               ║
 ║      - GET  /api/partner/dashboard                                ║
 ║      - GET  /api/courses                                          ║
 ╚═══════════════════════════════════════════════════════════════════╝

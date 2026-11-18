@@ -76,7 +76,7 @@ export class AuthController {
   static async register(req) {
     rateLimit(`register:ip:${clientIp(req)}`, { limit: 10, windowMs: 60 * 60 * 1000 })
 
-    // Schema trims/validates and defaults role to Employee
+    // Schema trims/validates and defaults role to Customer
     const { name, email, password, role, roleTitle, department } = validate(registerSchema, req.body)
 
     if (!SELF_SIGNUP_ROLES.includes(role)) {
@@ -116,7 +116,7 @@ export class AuthController {
           authProviders: [...new Set([...(existing.authProviders || ['password']), 'google'])],
         })
       } else {
-        const newRole = SELF_SIGNUP_ROLES.includes(role) ? role : 'Employee'
+        const newRole = SELF_SIGNUP_ROLES.includes(role) ? role : 'Customer'
         user = await UserModel.create({
           name: profile.name,
           email: profile.email,
@@ -206,8 +206,8 @@ export class AuthController {
           selfSignup: false,
         },
         {
-          id: 'Employee',
-          label: 'Employee',
+          id: 'Customer',
+          label: 'Customer',
           description: 'Internal security operations, firewall sandbox labs, and technical training.',
           badge: '💼',
           color: 'emerald',

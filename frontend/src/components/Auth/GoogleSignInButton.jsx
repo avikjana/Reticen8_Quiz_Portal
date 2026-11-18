@@ -30,12 +30,12 @@ function loadGoogleScript() {
  * verifies it and returns our own session token.
  *
  * Props:
- *  - role:      'Employee' | 'Partner' — role given to brand-new accounts
+ *  - role:      'Customer' | 'Partner' — role given to brand-new accounts
  *  - onSuccess: (user) => void
  *  - onError:   (message) => void
  *  - text:      'signin_with' | 'signup_with' | 'continue_with'
  */
-export default function GoogleSignInButton({ role = 'Employee', onSuccess, onError, text = 'continue_with' }) {
+export default function GoogleSignInButton({ role = 'Customer', onSuccess, onError, text = 'continue_with' }) {
   const { loginWithGoogle } = useAuth()
   const containerRef = useRef(null)
   const [busy, setBusy] = useState(false)

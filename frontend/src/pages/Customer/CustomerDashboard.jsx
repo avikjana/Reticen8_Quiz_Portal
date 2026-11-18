@@ -6,7 +6,7 @@ import Footer from '../../components/Footer'
 import useApi from '../../hooks/useApi'
 import { ErrorState, PageSpinner } from '../../components/ui/DataState'
 
-export default function EmployeeDashboard() {
+export default function CustomerDashboard() {
   const { user } = useAuth()
   const { data: enrollments, loading, error, reload } = useApi('/enrollments')
   const enrolled = enrollments || []
@@ -20,13 +20,13 @@ export default function EmployeeDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200">
           <div>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 mb-2 inline-block">
-              Employee &amp; Engineer Learning Portal
+              Customer Learning Portal
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
             </h1>
             <p className="text-xs text-slate-500 mt-1">
-              Internal Technical Training &amp; Firewall Engineering Competencies
+              Your cybersecurity training courses and certifications
             </p>
           </div>
         </div>

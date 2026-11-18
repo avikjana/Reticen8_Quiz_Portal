@@ -73,7 +73,7 @@ export default function AdminDashboard() {
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
                 {stats?.usersByRole?.administrators ?? 0} Admin
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-2" />
-                {stats?.usersByRole?.employees ?? 0} Employee
+                {stats?.usersByRole?.customers ?? 0} Customer
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 ml-2" />
                 {stats?.usersByRole?.partners ?? 0} Partner
               </div>
