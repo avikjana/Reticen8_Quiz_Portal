@@ -48,6 +48,8 @@ class MongoDB {
         await col.createIndex({ _docId: 1 }, { unique: true })
         await this.#seedIfEmpty(collection)
       }
+
+      await this.#syncCurriculum()
       return this.db
     })()
 
@@ -79,6 +81,23 @@ class MongoDB {
     const docs = rows.map(row => ({ ...row, _docId: String(row[idKey]) }))
     await col.insertMany(docs)
     console.log(`[DB] Seeded "${collection}" with ${rows.length} row(s) from ${collection}.json`)
+  }
+
+  async #syncCurriculum() {
+    const seedPath = path.join(DATA_DIR, 'courses.json')
+    if (!fs.existsSync(seedPath)) return
+    let rows
+    try { rows = JSON.parse(fs.readFileSync(seedPath, 'utf-8')) } catch { return }
+    if (!Array.isArray(rows)) return
+
+    const col = this.db.collection('courses')
+    for (const course of rows) {
+      await col.updateOne(
+        { _docId: String(course.id) },
+        { $set: { curriculum: course.curriculum, lessonsCount: course.lessonsCount, modulesCount: course.modulesCount } }
+      )
+    }
+    console.log('[DB] Synced course curriculum from courses.json')
   }
 
   async read(collection) {

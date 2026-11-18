@@ -184,7 +184,7 @@
     "duration": "TBD",
     "estimatedWeeks": "Self-paced",
     "modulesCount": 6,
-    "lessonsCount": 63,
+    "lessonsCount": 67,
     "rating": 4.9,
     "studentsCount": 980,
     "certificationCode": "RCFP",
@@ -202,20 +202,24 @@
     ],
     "curriculum": [
       {
-        "title": "Module 1: Network Foundation and Firewall Configuration",
+        "title": "Module 1: Network Overview and Interface Concepts",
         "chapters": [
-          "Introduction to Reticen8 NGFW Architecture",
-          "Initial Setup and Dashboard Overview",
-          "Interface Configuration and Assignment",
-          "LAN, WAN, and OPT Interface Setup",
-          "DHCP Server and Relay Configuration",
-          "DNS Resolver and Forwarder Setup",
-          "Firewall Rule Fundamentals",
-          "Creating and Managing Firewall Rules",
-          "NAT Configuration (Port Forward, Outbound, 1:1)",
-          "Aliases and Rule Organization",
-          "Floating Rules and Rule Precedence",
-          "Network Troubleshooting Tools"
+          "Why This Module Comes First",
+          "Learning Objectives — Seven Core Competencies",
+          "The Four Object Kinds: Physical Port, Device, Logical Interface, and VRF",
+          "The Reference Topology: Office, WAN, Guest, Servers, and Branch Networks",
+          "Devices — Bridge Configuration and Transparent Forwarding",
+          "Devices — VLAN Configuration: Tagged and Untagged Traffic",
+          "Devices — Bond Configuration and Link Aggregation",
+          "VRFs: Routing Tables, Not Policy",
+          "Logical Interfaces — Protocols, Addressing, and Field Details",
+          "Choosing the Right Object: The Decision Table",
+          "Staged Edits and the Confirmation Window",
+          "The Safe Build Order for Any New Network",
+          "Reading the Interface List and the Eight-Point Fault Sequence",
+          "Guided Laboratory Exercises: Document, Build, and Tag",
+          "Knowledge Check — Module 1 Assessment",
+          "Key Terms Glossary"
         ]
       },
       {
