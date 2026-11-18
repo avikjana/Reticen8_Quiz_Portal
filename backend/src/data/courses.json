@@ -204,22 +204,70 @@
       {
         "title": "Module 1: Network Overview and Interface Concepts",
         "chapters": [
-          "Why This Module Comes First",
-          "Learning Objectives — Seven Core Competencies",
-          "The Four Object Kinds: Physical Port, Device, Logical Interface, and VRF",
-          "The Reference Topology: Office, WAN, Guest, Servers, and Branch Networks",
-          "Devices — Bridge Configuration and Transparent Forwarding",
-          "Devices — VLAN Configuration: Tagged and Untagged Traffic",
-          "Devices — Bond Configuration and Link Aggregation",
-          "VRFs: Routing Tables, Not Policy",
-          "Logical Interfaces — Protocols, Addressing, and Field Details",
-          "Choosing the Right Object: The Decision Table",
-          "Staged Edits and the Confirmation Window",
-          "The Safe Build Order for Any New Network",
-          "Reading the Interface List and the Eight-Point Fault Sequence",
-          "Guided Laboratory Exercises: Document, Build, and Tag",
-          "Knowledge Check — Module 1 Assessment",
-          "Key Terms Glossary"
+          {
+            "title": "Why This Module Comes First",
+            "content": "Network is how the appliance connects to cables, hands out addresses, answers names and chooses a path. The firewall, which decides what may use those paths, is a separate set of pages. Almost every later page in Network, Firewall and VPN stores the name of an object created here, so an error made on this screen surfaces much later as a DHCP scope, a zone or a route that looks correct and still passes nothing.\n\nA packet moves through the appliance in a fixed order:\n\n**Physical port → Device (bridge / VLAN / bond) → Logical interface (address) → Route or Multi-WAN**\n\nDHCP then numbers the other hosts, DNS resolves names to those addresses, and a static route or Multi-WAN chooses the next hop.\n\n> **Important:** The address you are using to view the admin UI is the one that can lock you out. Interface apply keeps a confirmation window for exactly that reason. Confirm only after the page loads on the new address."
+          },
+          {
+            "title": "Learning Objectives — Seven Core Competencies",
+            "content": ""
+          },
+          {
+            "title": "The Four Object Kinds: Physical Port, Device, Logical Interface, and VRF",
+            "content": ""
+          },
+          {
+            "title": "The Reference Topology: Office, WAN, Guest, Servers, and Branch Networks",
+            "content": ""
+          },
+          {
+            "title": "Devices — Bridge Configuration and Transparent Forwarding",
+            "content": ""
+          },
+          {
+            "title": "Devices — VLAN Configuration: Tagged and Untagged Traffic",
+            "content": ""
+          },
+          {
+            "title": "Devices — Bond Configuration and Link Aggregation",
+            "content": ""
+          },
+          {
+            "title": "VRFs: Routing Tables, Not Policy",
+            "content": ""
+          },
+          {
+            "title": "Logical Interfaces — Protocols, Addressing, and Field Details",
+            "content": ""
+          },
+          {
+            "title": "Choosing the Right Object: The Decision Table",
+            "content": ""
+          },
+          {
+            "title": "Staged Edits and the Confirmation Window",
+            "content": ""
+          },
+          {
+            "title": "The Safe Build Order for Any New Network",
+            "content": ""
+          },
+          {
+            "title": "Reading the Interface List and the Eight-Point Fault Sequence",
+            "content": ""
+          },
+          {
+            "title": "Guided Laboratory Exercises: Document, Build, and Tag",
+            "content": ""
+          },
+          {
+            "title": "Knowledge Check — Module 1 Assessment",
+            "content": ""
+          },
+          {
+            "title": "Key Terms Glossary",
+            "content": ""
+          }
         ]
       },
       {

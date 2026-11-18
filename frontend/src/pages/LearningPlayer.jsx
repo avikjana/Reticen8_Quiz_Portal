@@ -431,7 +431,9 @@ function LearningView({ course }) {
   }, [completedChapters, course.id])
 
   const currentModule = curriculum[activeModule]
-  const currentChapter = currentModule?.chapters?.[activeChapter]
+  const currentChapterRaw = currentModule?.chapters?.[activeChapter]
+  const currentChapter = typeof currentChapterRaw === 'object' ? currentChapterRaw.title : currentChapterRaw
+  const currentChapterContent = typeof currentChapterRaw === 'object' ? currentChapterRaw.content : ''
 
   const markComplete = () => {
     const key = chapterKey(activeModule, activeChapter)
@@ -728,31 +730,58 @@ function LearningView({ course }) {
 
                     <h3 className="text-lg font-bold text-slate-900 mb-3">{currentChapter}</h3>
 
-                    <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                      This chapter covers the concepts and practical knowledge of <strong>{currentChapter}</strong> as
-                      part of the <em>{currentModule?.title}</em> module. Study the material below, then mark it
-                      complete to track your progress.
-                    </p>
+                    {currentChapterContent ? (
+                      <div className="text-sm text-slate-700 leading-relaxed space-y-4">
+                        {currentChapterContent.split('\n\n').map((block, i) => {
+                          if (block.startsWith('> ')) {
+                            const text = block.replace(/^> \*\*(.+?):\*\*\s*/, '').trim()
+                            const label = block.match(/^> \*\*(.+?):\*\*/)?.[1]
+                            return (
+                              <div key={i} className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+                                {label && <span className="font-bold">{label}: </span>}
+                                {text}
+                              </div>
+                            )
+                          }
+                          return (
+                            <p key={i} className="m-0" dangerouslySetInnerHTML={{
+                              __html: block
+                                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                                .replace(/\n/g, '<br />')
+                            }} />
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                          This chapter covers the concepts and practical knowledge of <strong>{currentChapter}</strong> as
+                          part of the <em>{currentModule?.title}</em> module. Study the material below, then mark it
+                          complete to track your progress.
+                        </p>
 
-                    <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-6">
-                      <h4 className="text-sm font-bold text-slate-800 mb-3">Key Learning Objectives</h4>
-                      <ul className="space-y-2 text-sm text-slate-600 list-none p-0 m-0">
-                        <li className="flex items-start gap-2">
-                          <CheckCircle2 size={14} className="text-brand-600 shrink-0 mt-0.5" />
-                          <span>Understand the core principles of {currentChapter.toLowerCase()}</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <CheckCircle2 size={14} className="text-brand-600 shrink-0 mt-0.5" />
-                          <span>Apply theoretical knowledge to real-world enterprise scenarios</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <CheckCircle2 size={14} className="text-brand-600 shrink-0 mt-0.5" />
-                          <span>Identify security implications and best practices</span>
-                        </li>
-                      </ul>
-                    </div>
+                        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-6">
+                          <h4 className="text-sm font-bold text-slate-800 mb-3">Key Learning Objectives</h4>
+                          <ul className="space-y-2 text-sm text-slate-600 list-none p-0 m-0">
+                            <li className="flex items-start gap-2">
+                              <CheckCircle2 size={14} className="text-brand-600 shrink-0 mt-0.5" />
+                              <span>Understand the core principles of {currentChapter?.toLowerCase()}</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <CheckCircle2 size={14} className="text-brand-600 shrink-0 mt-0.5" />
+                              <span>Apply theoretical knowledge to real-world enterprise scenarios</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <CheckCircle2 size={14} className="text-brand-600 shrink-0 mt-0.5" />
+                              <span>Identify security implications and best practices</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </>
+                    )}
 
-                    <div className="flex items-center gap-3 text-xs text-slate-400 mb-2">
+                    <div className="flex items-center gap-3 text-xs text-slate-400 mb-2 mt-6">
                       <span className="flex items-center gap-1"><Clock size={12} /> Estimated: 20–30 min</span>
                       <span className="flex items-center gap-1"><BookOpen size={12} /> Reading + Interactive</span>
                     </div>
@@ -916,7 +945,7 @@ function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedCh
                         <div className="w-3.5 h-3.5 rounded-full border border-slate-300 ml-px" />
                       )}
                     </div>
-                    <span className="truncate">{chapter}</span>
+                    <span className="truncate">{typeof chapter === 'object' ? chapter.title : chapter}</span>
                   </button>
                 </li>
               )
