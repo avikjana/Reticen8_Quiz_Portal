@@ -491,7 +491,7 @@ function CertificationsView({ certificationsData }) {
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div className="space-y-1">
                       <p className="text-sm italic text-slate-600 font-semibold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                        M. Reticen
+                        Chandan Singh
                       </p>
                       <div className="w-full h-px bg-slate-300 mx-auto" />
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">CEO</p>
@@ -499,7 +499,7 @@ function CertificationsView({ certificationsData }) {
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm italic text-slate-600 font-semibold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                        S. Verma
+                        Rituparna SinghaRoy
                       </p>
                       <div className="w-full h-px bg-slate-300 mx-auto" />
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Director</p>
@@ -507,7 +507,7 @@ function CertificationsView({ certificationsData }) {
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm italic text-slate-600 font-semibold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                        R. Kapoor
+                        Debdatta Singharoy
                       </p>
                       <div className="w-full h-px bg-slate-300 mx-auto" />
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Head Examiner</p>

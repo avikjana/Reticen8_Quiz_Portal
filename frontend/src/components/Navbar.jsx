@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { Search, Globe, HelpCircle, Menu } from 'lucide-react'
+import { Search, Globe, HelpCircle, Menu, Sun, Moon } from 'lucide-react'
 import Logo from './ui/Logo'
 import ExploreMenu from './navbar/ExploreMenu'
 import UserMenu from './navbar/UserMenu'
@@ -25,6 +25,25 @@ export default function Navbar() {
     navigate(`/courses?search=${encodeURIComponent(searchQuery.trim())}`)
     closeMobileMenu()
   }
+
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('r8-theme') || 'system' } catch { return 'system' }
+  })
+  const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'dark') {
+      root.setAttribute('data-theme', 'dark')
+    } else if (theme === 'light') {
+      root.setAttribute('data-theme', 'light')
+    } else {
+      root.removeAttribute('data-theme')
+    }
+    try { localStorage.setItem('r8-theme', theme) } catch {}
+  }, [theme])
+
+  const toggleTheme = () => setTheme(isDark ? 'light' : 'dark')
 
   // Compact the header once the page is scrolled
   useEffect(() => {
@@ -114,6 +133,24 @@ export default function Navbar() {
             >
               <Globe size={18} />
               <span className="text-xs font-semibold hidden md:inline">EN</span>
+            </button>
+
+            {/* Dark / Light mode toggle */}
+            <button
+              onClick={toggleTheme}
+              className="relative inline-flex items-center w-14 h-7 rounded-full border border-slate-200 bg-slate-100 hover:bg-slate-200 transition-colors p-0.5"
+              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              <span
+                className={`absolute top-0.5 w-6 h-6 rounded-full shadow-sm flex items-center justify-center transition-all duration-300 ${
+                  isDark
+                    ? 'translate-x-7 bg-slate-800'
+                    : 'translate-x-0 bg-white'
+                }`}
+              >
+                {isDark ? <Moon size={13} className="text-amber-300" /> : <Sun size={13} className="text-amber-500" />}
+              </span>
             </button>
 
             {/* Help */}
