@@ -435,6 +435,27 @@ function LearningView({ course }) {
   const currentChapter = typeof currentChapterRaw === 'object' ? currentChapterRaw.title : currentChapterRaw
   const currentChapterContent = typeof currentChapterRaw === 'object' ? currentChapterRaw.content : ''
 
+  const chapterContentRef = useRef(null)
+  const [scrollProgress, setScrollProgress] = useState(0)
+
+  useEffect(() => {
+    setScrollProgress(0)
+    const onScroll = () => {
+      const el = chapterContentRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const viewH = window.innerHeight
+      const totalH = el.scrollHeight
+      const scrolled = Math.max(0, -rect.top + viewH * 0.3)
+      const scrollable = totalH - viewH * 0.5
+      if (scrollable <= 0) { setScrollProgress(1); return }
+      setScrollProgress(Math.min(1, Math.max(0, scrolled / scrollable)))
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [activeModule, activeChapter])
+
   const markComplete = () => {
     const key = chapterKey(activeModule, activeChapter)
     const next = { ...completedChapters, [key]: true }
@@ -715,7 +736,7 @@ function LearningView({ course }) {
               </div>
 
               {/* Chapter content area */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+              <div ref={chapterContentRef} className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
                 <div className="p-8 sm:p-10">
                   <div className="prose prose-slate max-w-none">
                     <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200">
@@ -923,6 +944,46 @@ function LearningView({ course }) {
               )}
             </motion.div>
           </AnimatePresence>
+
+          {/* Floating scroll progress button */}
+          {!completedChapters[chapterKey(activeModule, activeChapter)] && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="fixed bottom-8 right-8 z-30"
+            >
+              <button
+                onClick={() => { if (scrollProgress >= 1) markComplete() }}
+                disabled={scrollProgress < 1}
+                className={`relative w-16 h-16 rounded-full shadow-lg transition-all duration-300 ${
+                  scrollProgress >= 1
+                    ? 'bg-brand-600 hover:bg-brand-700 cursor-pointer scale-110'
+                    : 'bg-white border border-slate-200 cursor-default'
+                }`}
+                title={scrollProgress >= 1 ? 'Mark as Complete' : `${Math.round(scrollProgress * 100)}% read`}
+              >
+                <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 64 64">
+                  <circle cx="32" cy="32" r="28" fill="none" stroke={scrollProgress >= 1 ? 'rgba(255,255,255,0.2)' : '#e2e8f0'} strokeWidth="4" />
+                  <circle
+                    cx="32" cy="32" r="28" fill="none"
+                    stroke={scrollProgress >= 1 ? '#ffffff' : '#10b981'}
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 28}`}
+                    strokeDashoffset={`${2 * Math.PI * 28 * (1 - scrollProgress)}`}
+                    className="transition-all duration-200"
+                  />
+                </svg>
+                <span className={`relative z-10 text-xs font-bold ${scrollProgress >= 1 ? 'text-white' : 'text-slate-700'}`}>
+                  {scrollProgress >= 1 ? (
+                    <CheckCircle2 size={22} className="mx-auto" />
+                  ) : (
+                    `${Math.round(scrollProgress * 100)}%`
+                  )}
+                </span>
+              </button>
+            </motion.div>
+          )}
         </main>
       </div>
     </div>
