@@ -184,7 +184,7 @@
     "duration": "TBD",
     "estimatedWeeks": "Self-paced",
     "modulesCount": 6,
-    "lessonsCount": 67,
+    "lessonsCount": 66,
     "rating": 4.9,
     "studentsCount": 980,
     "certificationCode": "RCFP",
@@ -254,11 +254,123 @@
           },
           {
             "title": "Knowledge Check",
-            "content": "Ten questions. Pass mark 70%. Answers and explanations follow in the next chapter — attempt all ten before looking.\n\n**Q1.** A DHCP scope form asks for a device. The office LAN is logical interface lan on bridge br-lan. What do you enter?\nA. lan\nB. br-lan\nC. eth0\nD. 192.168.99.1\n\n**Q2.** Two cables run from the appliance to the same office switch and should behave as a single uplink. Which object do you create?\nA. A VLAN on each port\nB. A VRF containing both ports\nC. A bond\nD. Two logical interfaces with equal metrics\n\n**Q3.** Where does the IP address live once a physical port has been made a member of a bridge?\nA. On the physical port\nB. On the bridge device itself\nC. On the logical interface whose device is the bridge\nD. On the firewall zone\n\n**Q4.** An administrator applies a new LAN address, cannot reach the UI, and reboots the appliance during the confirmation window. What happens?\nA. The previous address is restored by the rollback\nB. The new design stays in place\nC. The appliance boots with no address\nD. Both addresses are kept as primary and secondary\n\n**Q5.** Which statement about a VRF is correct?\nA. It decides which packets are permitted between networks\nB. It is a routing table; ports assigned to it leave the table holding the office default gateway\nC. Creating one automatically removes the matching firewall zone\nD. It replaces the need for a logical interface on that port\n\n**Q6.** The wan row shows an address but no gateway. What is the most likely consequence?\nA. The LAN cannot hand out DHCP leases\nB. Internet traffic has nowhere to go, and Multi-WAN shows a link that cannot carry traffic\nC. The firewall blocks all outbound sessions\nD. The interface will roll back at the next reboot\n\n**Q7.** What is the valid range for a VLAN ID on this appliance?\nA. 0–4095\nB. 1–4094\nC. 1–1005\nD. 2–4096\n\n**Q8.** On the office LAN interface, the IPv4 gateway field is cleared and saved. At the next apply, what does the appliance do?\nA. Keeps the previous gateway until it is replaced\nB. Removes the previous gateway\nC. Copies the gateway from wan\nD. Rejects the save as incomplete\n\n**Q9.** A port is to be used only as a member of a bond. Which protocol belongs on it?\nA. Static with a /32 address\nB. DHCP\nC. None (unmanaged)\nD. PPPoE\n\n**Q10.** Both an interface change and a firewall change are pending. What is the correct order?\nA. Apply the firewall first, then the interface, confirming once at the end\nB. Apply both, then confirm the single combined window\nC. Confirm the interface window first from a path that still works, then apply the firewall and confirm its own window\nD. Reboot, which commits both safely"
-          },
-          {
-            "title": "Answer Key",
-            "content": "| Q | Answer | Explanation |\n| --- | --- | --- |\n| 1 | B | DHCP binds the device name. Zones store the logical name; the two are different objects. |\n| 2 | C | A bond joins this appliance to one other switch over several cables as one link. A bridge joins hosts to each other. |\n| 3 | C | Once a port is a bridge member, the address for that network lives on the logical interface whose device is the bridge. |\n| 4 | B | A reboot during the confirmation window does not roll the change back. The window must be allowed to expire. |\n| 5 | B | A VRF is a routing table; a firewall zone is policy. Creating a VRF leaves zones untouched. |\n| 6 | B | An address without a gateway means the circuit is up but the internet has no next hop. |\n| 7 | B | The ID is 1 through 4094, and it must match the number the switch tags. |\n| 8 | B | Empty means removed: an empty gateway, DNS list or metric removes the previous value. |\n| 9 | C | Protocol none (shown in some builds as unmanaged) is for a port that is only a bridge or bond member. |\n| 10 | C | They are two separate windows. Confirm the interface first from a surviving path, then apply and confirm the firewall. |"
+            "type": "quiz",
+            "content": "Ten questions. Pass mark 70% (7 of 10). Select your answer for each question, then submit to see your score.",
+            "quiz": {
+              "passmark": 70,
+              "questions": [
+                {
+                  "q": "A DHCP scope form asks for a device. The office LAN is logical interface lan on bridge br-lan. What do you enter?",
+                  "options": [
+                    "lan",
+                    "br-lan",
+                    "eth0",
+                    "192.168.99.1"
+                  ],
+                  "answer": 1,
+                  "explanation": "DHCP binds the device name. Zones store the logical name; the two are different objects."
+                },
+                {
+                  "q": "Two cables run from the appliance to the same office switch and should behave as a single uplink. Which object do you create?",
+                  "options": [
+                    "A VLAN on each port",
+                    "A VRF containing both ports",
+                    "A bond",
+                    "Two logical interfaces with equal metrics"
+                  ],
+                  "answer": 2,
+                  "explanation": "A bond joins this appliance to one other switch over several cables as one link. A bridge joins hosts to each other."
+                },
+                {
+                  "q": "Where does the IP address live once a physical port has been made a member of a bridge?",
+                  "options": [
+                    "On the physical port",
+                    "On the bridge device itself",
+                    "On the logical interface whose device is the bridge",
+                    "On the firewall zone"
+                  ],
+                  "answer": 2,
+                  "explanation": "Once a port is a bridge member, the address for that network lives on the logical interface whose device is the bridge."
+                },
+                {
+                  "q": "An administrator applies a new LAN address, cannot reach the UI, and reboots the appliance during the confirmation window. What happens?",
+                  "options": [
+                    "The previous address is restored by the rollback",
+                    "The new design stays in place",
+                    "The appliance boots with no address",
+                    "Both addresses are kept as primary and secondary"
+                  ],
+                  "answer": 1,
+                  "explanation": "A reboot during the confirmation window does not roll the change back. The window must be allowed to expire."
+                },
+                {
+                  "q": "Which statement about a VRF is correct?",
+                  "options": [
+                    "It decides which packets are permitted between networks",
+                    "It is a routing table; ports assigned to it leave the table holding the office default gateway",
+                    "Creating one automatically removes the matching firewall zone",
+                    "It replaces the need for a logical interface on that port"
+                  ],
+                  "answer": 1,
+                  "explanation": "A VRF is a routing table; a firewall zone is policy. Creating a VRF leaves zones untouched."
+                },
+                {
+                  "q": "The wan row shows an address but no gateway. What is the most likely consequence?",
+                  "options": [
+                    "The LAN cannot hand out DHCP leases",
+                    "Internet traffic has nowhere to go, and Multi-WAN shows a link that cannot carry traffic",
+                    "The firewall blocks all outbound sessions",
+                    "The interface will roll back at the next reboot"
+                  ],
+                  "answer": 1,
+                  "explanation": "An address without a gateway means the circuit is up but the internet has no next hop."
+                },
+                {
+                  "q": "What is the valid range for a VLAN ID on this appliance?",
+                  "options": [
+                    "0–4095",
+                    "1–4094",
+                    "1–1005",
+                    "2–4096"
+                  ],
+                  "answer": 1,
+                  "explanation": "The ID is 1 through 4094, and it must match the number the switch tags."
+                },
+                {
+                  "q": "On the office LAN interface, the IPv4 gateway field is cleared and saved. At the next apply, what does the appliance do?",
+                  "options": [
+                    "Keeps the previous gateway until it is replaced",
+                    "Removes the previous gateway",
+                    "Copies the gateway from wan",
+                    "Rejects the save as incomplete"
+                  ],
+                  "answer": 1,
+                  "explanation": "Empty means removed: an empty gateway, DNS list or metric removes the previous value."
+                },
+                {
+                  "q": "A port is to be used only as a member of a bond. Which protocol belongs on it?",
+                  "options": [
+                    "Static with a /32 address",
+                    "DHCP",
+                    "None (unmanaged)",
+                    "PPPoE"
+                  ],
+                  "answer": 2,
+                  "explanation": "Protocol none (shown in some builds as unmanaged) is for a port that is only a bridge or bond member."
+                },
+                {
+                  "q": "Both an interface change and a firewall change are pending. What is the correct order?",
+                  "options": [
+                    "Apply the firewall first, then the interface, confirming once at the end",
+                    "Apply both, then confirm the single combined window",
+                    "Confirm the interface window first from a path that still works, then apply the firewall and confirm its own window",
+                    "Reboot, which commits both safely"
+                  ],
+                  "answer": 2,
+                  "explanation": "They are two separate windows. Confirm the interface first from a surviving path, then apply and confirm the firewall."
+                }
+              ]
+            }
           },
           {
             "title": "Key Terms",

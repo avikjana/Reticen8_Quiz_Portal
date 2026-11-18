@@ -434,27 +434,9 @@ function LearningView({ course }) {
   const currentChapterRaw = currentModule?.chapters?.[activeChapter]
   const currentChapter = typeof currentChapterRaw === 'object' ? currentChapterRaw.title : currentChapterRaw
   const currentChapterContent = typeof currentChapterRaw === 'object' ? currentChapterRaw.content : ''
+  const currentChapterType = typeof currentChapterRaw === 'object' ? currentChapterRaw.type : null
+  const currentChapterQuiz = typeof currentChapterRaw === 'object' ? currentChapterRaw.quiz : null
 
-  const chapterContentRef = useRef(null)
-  const [scrollProgress, setScrollProgress] = useState(0)
-
-  useEffect(() => {
-    setScrollProgress(0)
-    const onScroll = () => {
-      const el = chapterContentRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const viewH = window.innerHeight
-      const totalH = el.scrollHeight
-      const scrolled = Math.max(0, -rect.top + viewH * 0.3)
-      const scrollable = totalH - viewH * 0.5
-      if (scrollable <= 0) { setScrollProgress(1); return }
-      setScrollProgress(Math.min(1, Math.max(0, scrolled / scrollable)))
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [activeModule, activeChapter])
 
   const markComplete = () => {
     const key = chapterKey(activeModule, activeChapter)
@@ -736,7 +718,7 @@ function LearningView({ course }) {
               </div>
 
               {/* Chapter content area */}
-              <div ref={chapterContentRef} className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
                 <div className="p-8 sm:p-10">
                   <div className="prose prose-slate max-w-none">
                     <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200">
@@ -751,7 +733,13 @@ function LearningView({ course }) {
 
                     <h3 className="text-lg font-bold text-slate-900 mb-3">{currentChapter}</h3>
 
-                    {currentChapterContent ? (
+                    {currentChapterType === 'quiz' && currentChapterQuiz ? (
+                      <QuizRenderer
+                        quiz={currentChapterQuiz}
+                        intro={currentChapterContent}
+                        chapterKey={chapterKey(activeModule, activeChapter)}
+                      />
+                    ) : currentChapterContent ? (
                       <div className="text-sm text-slate-700 leading-relaxed space-y-4">
                         {currentChapterContent.split('\n\n').map((block, i) => {
                           const fmt = (s) => s
@@ -945,45 +933,6 @@ function LearningView({ course }) {
             </motion.div>
           </AnimatePresence>
 
-          {/* Floating scroll progress button */}
-          {!completedChapters[chapterKey(activeModule, activeChapter)] && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="fixed bottom-8 right-8 z-30"
-            >
-              <button
-                onClick={() => { if (scrollProgress >= 1) markComplete() }}
-                disabled={scrollProgress < 1}
-                className={`relative w-16 h-16 rounded-full shadow-lg transition-all duration-300 ${
-                  scrollProgress >= 1
-                    ? 'bg-brand-600 hover:bg-brand-700 cursor-pointer scale-110'
-                    : 'bg-white border border-slate-200 cursor-default'
-                }`}
-                title={scrollProgress >= 1 ? 'Mark as Complete' : `${Math.round(scrollProgress * 100)}% read`}
-              >
-                <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 64 64">
-                  <circle cx="32" cy="32" r="28" fill="none" stroke={scrollProgress >= 1 ? 'rgba(255,255,255,0.2)' : '#e2e8f0'} strokeWidth="4" />
-                  <circle
-                    cx="32" cy="32" r="28" fill="none"
-                    stroke={scrollProgress >= 1 ? '#ffffff' : '#10b981'}
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 28}`}
-                    strokeDashoffset={`${2 * Math.PI * 28 * (1 - scrollProgress)}`}
-                    className="transition-all duration-200"
-                  />
-                </svg>
-                <span className={`relative z-10 text-xs font-bold ${scrollProgress >= 1 ? 'text-white' : 'text-slate-700'}`}>
-                  {scrollProgress >= 1 ? (
-                    <CheckCircle2 size={22} className="mx-auto" />
-                  ) : (
-                    `${Math.round(scrollProgress * 100)}%`
-                  )}
-                </span>
-              </button>
-            </motion.div>
-          )}
         </main>
       </div>
     </div>
@@ -1077,6 +1026,172 @@ function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedCh
           </motion.ul>
         )}
       </AnimatePresence>
+    </div>
+  )
+}
+
+function QuizRenderer({ quiz, intro, chapterKey: cKey }) {
+  const [selected, setSelected] = useState({})
+  const [submitted, setSubmitted] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(15 * 60)
+  const [timerActive, setTimerActive] = useState(true)
+
+  useEffect(() => {
+    setSelected({})
+    setSubmitted(false)
+    setTimeLeft(15 * 60)
+    setTimerActive(true)
+  }, [cKey])
+
+  useEffect(() => {
+    if (!timerActive || submitted) return
+    if (timeLeft <= 0) {
+      setSubmitted(true)
+      setTimerActive(false)
+      return
+    }
+    const id = setInterval(() => setTimeLeft(t => t - 1), 1000)
+    return () => clearInterval(id)
+  }, [timerActive, submitted, timeLeft])
+
+  const mins = Math.floor(timeLeft / 60)
+  const secs = timeLeft % 60
+  const timerColor = timeLeft <= 60 ? 'text-rose-600 bg-rose-50 border-rose-200' : timeLeft <= 180 ? 'text-amber-600 bg-amber-50 border-amber-200' : 'text-slate-700 bg-slate-50 border-slate-200'
+
+  const { questions, passmark } = quiz
+  const total = questions.length
+  const answered = Object.keys(selected).length
+  const score = submitted ? questions.reduce((s, q, i) => s + (selected[i] === q.answer ? 1 : 0), 0) : 0
+  const pct = Math.round((score / total) * 100)
+  const passed = pct >= passmark
+
+  const labels = ['A', 'B', 'C', 'D']
+
+  return (
+    <div className="space-y-6 text-sm">
+      <div className="flex items-center justify-between">
+        <p className="text-slate-600 m-0">{intro}</p>
+        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-mono text-sm font-bold shrink-0 ${timerColor}`}>
+          <Clock size={16} />
+          <span>{String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}</span>
+        </div>
+      </div>
+
+      {submitted && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-5 rounded-xl border flex items-center justify-between ${
+            passed ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'
+          }`}
+        >
+          <div>
+            <p className={`text-base font-bold ${passed ? 'text-emerald-800' : 'text-rose-800'}`}>
+              {passed ? 'Congratulations! You passed!' : 'Not quite — review and try again.'}
+            </p>
+            <p className={`text-xs mt-1 ${passed ? 'text-emerald-600' : 'text-rose-600'}`}>
+              You scored {score}/{total} ({pct}%). Pass mark: {passmark}%.
+            </p>
+          </div>
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center text-lg font-black ${
+            passed ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
+          }`}>
+            {pct}%
+          </div>
+        </motion.div>
+      )}
+
+      {questions.map((q, qi) => {
+        const userPick = selected[qi]
+        const isCorrect = submitted && userPick === q.answer
+        const isWrong = submitted && userPick !== undefined && userPick !== q.answer
+        return (
+          <div key={qi} className={`p-5 rounded-xl border transition-colors ${
+            submitted
+              ? isCorrect ? 'bg-emerald-50/50 border-emerald-200' : isWrong ? 'bg-rose-50/50 border-rose-200' : 'bg-slate-50 border-slate-200'
+              : 'bg-white border-slate-200'
+          }`}>
+            <p className="font-bold text-slate-900 mb-3">
+              <span className="text-brand-600 mr-2">Q{qi + 1}.</span>
+              {q.q}
+            </p>
+            <div className="space-y-2">
+              {q.options.map((opt, oi) => {
+                const isSelected = userPick === oi
+                const isAnswer = q.answer === oi
+                let optClass = 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 cursor-pointer'
+                if (!submitted && isSelected) {
+                  optClass = 'border-brand-500 bg-brand-50 ring-1 ring-brand-500 cursor-pointer'
+                }
+                if (submitted) {
+                  if (isAnswer) optClass = 'border-emerald-400 bg-emerald-50 ring-1 ring-emerald-400'
+                  else if (isSelected && !isAnswer) optClass = 'border-rose-400 bg-rose-50 ring-1 ring-rose-400'
+                  else optClass = 'border-slate-200 bg-slate-50 opacity-60'
+                }
+                return (
+                  <button
+                    key={oi}
+                    onClick={() => !submitted && setSelected({ ...selected, [qi]: oi })}
+                    disabled={submitted}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all ${optClass}`}
+                  >
+                    <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
+                      submitted && isAnswer ? 'bg-emerald-500 text-white'
+                        : submitted && isSelected && !isAnswer ? 'bg-rose-500 text-white'
+                        : !submitted && isSelected ? 'bg-brand-600 text-white'
+                        : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {labels[oi]}
+                    </span>
+                    <span className="text-slate-700">{opt}</span>
+                    {submitted && isAnswer && (
+                      <CheckCircle2 size={16} className="ml-auto text-emerald-500 shrink-0" />
+                    )}
+                    {submitted && isSelected && !isAnswer && (
+                      <X size={16} className="ml-auto text-rose-500 shrink-0" />
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+            {submitted && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="mt-3 pt-3 border-t border-slate-200"
+              >
+                <p className="text-xs text-slate-600">
+                  <span className="font-bold text-slate-800">Explanation: </span>
+                  {q.explanation}
+                </p>
+              </motion.div>
+            )}
+          </div>
+        )
+      })}
+
+      <div className="flex items-center justify-between pt-2">
+        <p className="text-xs text-slate-400">{answered}/{total} questions answered</p>
+        {!submitted ? (
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => { setSubmitted(true); setTimerActive(false) }}
+            disabled={answered < total}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <Zap size={16} />
+            Submit Quiz
+          </motion.button>
+        ) : (
+          <button
+            onClick={() => { setSelected({}); setSubmitted(false); setTimeLeft(15 * 60); setTimerActive(true) }}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition-colors"
+          >
+            Retry Quiz
+          </button>
+        )}
+      </div>
     </div>
   )
 }
