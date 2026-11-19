@@ -1126,16 +1126,18 @@ function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedCh
 }
 
 function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
+  const [started, setStarted] = useState(false)
   const [selected, setSelected] = useState({})
   const [submitted, setSubmitted] = useState(false)
   const [timeLeft, setTimeLeft] = useState(15 * 60)
-  const [timerActive, setTimerActive] = useState(true)
+  const [timerActive, setTimerActive] = useState(false)
 
   useEffect(() => {
+    setStarted(false)
     setSelected({})
     setSubmitted(false)
     setTimeLeft(15 * 60)
-    setTimerActive(true)
+    setTimerActive(false)
   }, [cKey])
 
   useEffect(() => {
@@ -1161,6 +1163,66 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
   const passed = pct >= passmark
 
   const labels = ['A', 'B', 'C', 'D']
+
+  if (!started) {
+    return (
+      <div className="space-y-6 text-base">
+        <p className="text-slate-600">{intro}</p>
+
+        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-5">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center">
+              <FileText size={24} />
+            </div>
+            <div>
+              <h4 className="text-lg font-bold text-slate-900">Knowledge Check</h4>
+              <p className="text-xs text-slate-500">Test your understanding of this module</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3 bg-white rounded-xl border border-slate-200 text-center">
+              <p className="text-lg font-black text-slate-900">{total}</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Questions</p>
+            </div>
+            <div className="p-3 bg-white rounded-xl border border-slate-200 text-center">
+              <p className="text-lg font-black text-slate-900">15:00</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Time Limit</p>
+            </div>
+            <div className="p-3 bg-white rounded-xl border border-slate-200 text-center">
+              <p className="text-lg font-black text-brand-600">{passmark}%</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pass Mark</p>
+            </div>
+            <div className="p-3 bg-white rounded-xl border border-slate-200 text-center">
+              <p className="text-lg font-black text-slate-900">MCQ</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Format</p>
+            </div>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800 space-y-1.5">
+            <p className="font-bold flex items-center gap-2"><Clock size={15} /> Quiz Rules</p>
+            <ul className="text-xs space-y-1 pl-5 list-disc marker:text-amber-400 text-amber-700">
+              <li>The 15-minute timer starts as soon as you click <strong>Start Quiz</strong></li>
+              <li>All questions must be answered before submitting</li>
+              <li>The quiz auto-submits when the timer reaches zero</li>
+              <li>You need <strong>{passmark}%</strong> or higher to pass</li>
+              <li>You can retry the quiz if you don't pass</li>
+            </ul>
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => { setStarted(true); setTimerActive(true) }}
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-base font-bold transition-colors shadow-md"
+          >
+            <Zap size={20} />
+            Start Quiz
+          </motion.button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6 text-base">
@@ -1285,7 +1347,7 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
           </motion.button>
         ) : (
           <button
-            onClick={() => { setSelected({}); setSubmitted(false); setTimeLeft(15 * 60); setTimerActive(true) }}
+            onClick={() => { setStarted(false); setSelected({}); setSubmitted(false); setTimeLeft(15 * 60); setTimerActive(false) }}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition-colors"
           >
             Retry Quiz
