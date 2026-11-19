@@ -3,12 +3,14 @@ import { Link, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle2,
-  Clock, FileText, X, GraduationCap, LayoutList, Zap, Trophy, Star, Lock
+  Clock, FileText, X, GraduationCap, LayoutList, Zap, Trophy, Star, Lock,
+  MessageCircle, Send
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import useApi from '../hooks/useApi'
 import api from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { ErrorState, NotFoundState, PageSpinner } from '../components/ui/DataState'
 
@@ -405,6 +407,7 @@ function FeedbackModal({ courseId, courseTitle, onClose }) {
 
 function LearningView({ course }) {
   usePageTitle(`Learn: ${course.title}`)
+  const { user } = useAuth()
 
   const curriculum = course.curriculum || []
   const [activeModule, setActiveModule] = useState(0)
@@ -1025,6 +1028,11 @@ function LearningView({ course }) {
 
         </main>
       </div>
+
+      {/* Chat with Admin */}
+      {user && user.role !== 'Administrator' && (
+        <ChatDrawer courseId={course.id} user={user} />
+      )}
     </div>
   )
 }
@@ -1355,5 +1363,160 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
         )}
       </div>
     </div>
+  )
+}
+
+function ChatDrawer({ courseId, user }) {
+  const [open, setOpen] = useState(false)
+  const [messages, setMessages] = useState([])
+  const [text, setText] = useState('')
+  const [sending, setSending] = useState(false)
+  const [unread, setUnread] = useState(0)
+  const bottomRef = useRef(null)
+  const prevCountRef = useRef(0)
+
+  const fetchMessages = async () => {
+    try {
+      const { data } = await api.get(`/chat/${encodeURIComponent(courseId)}`)
+      setMessages(data || [])
+      if (!open && data.length > prevCountRef.current) {
+        setUnread(u => u + (data.length - prevCountRef.current))
+      }
+      prevCountRef.current = data.length
+    } catch {}
+  }
+
+  useEffect(() => {
+    fetchMessages()
+    const id = setInterval(fetchMessages, 5000)
+    return () => clearInterval(id)
+  }, [courseId])
+
+  useEffect(() => {
+    if (open) {
+      setUnread(0)
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [open, messages.length])
+
+  const send = async (e) => {
+    e.preventDefault()
+    if (!text.trim() || sending) return
+    setSending(true)
+    try {
+      await api.post('/chat', { courseId, message: text.trim() })
+      setText('')
+      await fetchMessages()
+    } catch {}
+    setSending(false)
+  }
+
+  const roleColor = (role) => {
+    if (role === 'Administrator') return 'bg-purple-100 text-purple-700'
+    if (role === 'Partner') return 'bg-blue-100 text-blue-700'
+    return 'bg-emerald-100 text-emerald-700'
+  }
+
+  return (
+    <>
+      {/* Floating chat button */}
+      <motion.button
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setOpen(!open)}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-action-600 hover:bg-action-700 text-white shadow-xl flex items-center justify-center transition-colors"
+        aria-label="Chat with Admin"
+      >
+        {open ? <X size={22} /> : <MessageCircle size={22} />}
+        {!open && unread > 0 && (
+          <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center">
+            {unread > 9 ? '9+' : unread}
+          </span>
+        )}
+      </motion.button>
+
+      {/* Chat panel */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden"
+            style={{ height: '480px' }}
+          >
+            {/* Header */}
+            <div className="theme-fixed bg-slate-900 text-white px-5 py-4 flex items-center gap-3 shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-action-600 flex items-center justify-center">
+                <MessageCircle size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold">Chat with Admin</p>
+                <p className="text-[10px] text-slate-400">Ask questions about this course</p>
+              </div>
+              <button onClick={() => setOpen(false)} className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors">
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+              {messages.length === 0 && (
+                <div className="text-center py-10">
+                  <MessageCircle size={32} className="text-slate-300 mx-auto mb-3" />
+                  <p className="text-xs text-slate-400 font-medium">No messages yet</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Send a message to connect with an Administrator</p>
+                </div>
+              )}
+              {messages.map((msg) => {
+                const isMe = msg.userId === user.id
+                return (
+                  <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${roleColor(msg.userRole)}`}>
+                        {msg.userRole === 'Administrator' ? 'Admin' : msg.userName?.split(' ')[0]}
+                      </span>
+                      <span className="text-[9px] text-slate-400">
+                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <div className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                      isMe
+                        ? 'bg-action-600 text-white rounded-br-md'
+                        : 'bg-white border border-slate-200 text-slate-800 rounded-bl-md'
+                    }`}>
+                      {msg.message}
+                    </div>
+                  </div>
+                )
+              })}
+              <div ref={bottomRef} />
+            </div>
+
+            {/* Input */}
+            <form onSubmit={send} className="p-3 border-t border-slate-200 bg-white flex items-center gap-2 shrink-0">
+              <input
+                type="text"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Type a message..."
+                maxLength={1000}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-action-500 focus:ring-1 focus:ring-action-500 transition-colors"
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                type="submit"
+                disabled={!text.trim() || sending}
+                className="w-10 h-10 rounded-xl bg-action-600 hover:bg-action-700 text-white flex items-center justify-center transition-colors disabled:opacity-40 shrink-0"
+              >
+                <Send size={16} />
+              </motion.button>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }

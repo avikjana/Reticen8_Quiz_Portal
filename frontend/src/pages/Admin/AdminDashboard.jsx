@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import {
-  Users, BookOpen, AlertCircle, CheckCircle2, ArrowRight, GraduationCap
+  Users, BookOpen, AlertCircle, CheckCircle2, ArrowRight, GraduationCap, MessageCircle
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Navbar from '../../components/Navbar'
@@ -40,6 +40,13 @@ export default function AdminDashboard() {
             >
               <BookOpen size={14} />
               <span>Manage Courses</span>
+            </Link>
+            <Link
+              to="/admin/chat"
+              className="flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm"
+            >
+              <MessageCircle size={14} />
+              <span>Messages</span>
             </Link>
             <Link
               to="/admin/users"

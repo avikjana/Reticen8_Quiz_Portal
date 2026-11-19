@@ -20,6 +20,7 @@ const COLLECTIONS = {
   resetTokens: 'token',
   enrollments: 'id',
   feedback: 'id',
+  chatMessages: 'id',
 }
 
 class MongoDB {
