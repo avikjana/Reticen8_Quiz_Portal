@@ -1,20 +1,20 @@
 import CourseModel from '../models/course.model.js'
+import EnrollmentModel from '../models/enrollment.model.js'
 import { authenticate, authenticateOptional } from '../middlewares/auth.middleware.js'
 import AppError from '../utils/AppError.js'
 
 export const handleCourseRoutes = async (req, res, pathname, method) => {
   if (pathname === '/api/courses' && method === 'GET') {
-    // Catalog (everything except the lesson-by-lesson curriculum).
-    // Visitors see the full catalog; signed-in users see the courses their
-    // role is allowed to take (e.g. Partners only see partner courses).
     await authenticateOptional(req, res)
-    return {
-      success: true,
-      data: (await CourseModel.getVisibleTo(req.user?.role)).map(({ curriculum, ...summary }) => ({
-        ...summary,
-        modulesCount: summary.modulesCount || (curriculum ? curriculum.length : 0),
-      })),
-    }
+    const courses = (await CourseModel.getVisibleTo(req.user?.role)).map(({ curriculum, ...summary }) => ({
+      ...summary,
+      modulesCount: summary.modulesCount || (curriculum ? curriculum.length : 0),
+    }))
+    const enriched = await Promise.all(courses.map(async (c) => ({
+      ...c,
+      studentsCount: await EnrollmentModel.countByCourse(c.id),
+    })))
+    return { success: true, data: enriched }
   }
 
   // Full course content is for signed-in members only
@@ -28,7 +28,7 @@ export const handleCourseRoutes = async (req, res, pathname, method) => {
     }
     return {
       success: true,
-      data: course,
+      data: { ...course, studentsCount: await EnrollmentModel.countByCourse(course.id) },
     }
   }
 

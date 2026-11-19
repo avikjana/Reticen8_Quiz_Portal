@@ -150,7 +150,7 @@ function CourseDetailView({ course }) {
                 <div className="flex items-center gap-1.5 text-amber-400 font-bold">
                   <Star size={16} className="fill-amber-400" />
                   <span>{course.rating} / 5.0</span>
-                  <span className="text-slate-400 font-normal">({course.studentsCount.toLocaleString()} enrolled)</span>
+                  <span className="text-slate-400 font-normal">({(course.studentsCount || 0).toLocaleString()} enrolled)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock size={16} />
@@ -524,7 +524,7 @@ function CurriculumView({ course }) {
                 className="w-full flex items-center gap-4 p-5 text-left"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">
-                  {String(mod.module).padStart(2, '0')}
+                  {String(mod.module ?? idx + 1).padStart(2, '0')}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-sm font-bold text-slate-900 truncate">{mod.title}</h4>
@@ -549,9 +549,9 @@ function CurriculumView({ course }) {
                         <div className="w-6 h-6 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
                           <Play size={10} className="ml-0.5" />
                         </div>
-                        <span className="text-xs text-slate-700 font-medium">{chapter}</span>
+                        <span className="text-xs text-slate-700 font-medium">{typeof chapter === 'object' ? chapter.title : chapter}</span>
                         <span className="ml-auto text-[10px] text-slate-400 font-mono shrink-0">
-                          {String(mod.module).padStart(2, '0')}.{String(cIdx + 1).padStart(2, '0')}
+                          {String(mod.module ?? idx + 1).padStart(2, '0')}.{String(cIdx + 1).padStart(2, '0')}
                         </span>
                       </div>
                     ))}

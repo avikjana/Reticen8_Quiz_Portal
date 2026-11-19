@@ -443,7 +443,7 @@ export default function Courses() {
                       <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500 font-medium">
                         <span className="flex items-center gap-1 text-amber-600 font-bold">
                           <Star size={13} className="fill-amber-500 text-amber-500" />
-                          {course.rating} ({course.studentsCount.toLocaleString()} learners)
+                          {course.rating} ({(course.studentsCount || 0).toLocaleString()} enrolled)
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1"><BookOpen size={13} /> {course.modulesCount} Modules</span>
