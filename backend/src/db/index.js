@@ -51,6 +51,7 @@ class MongoDB {
       }
 
       await this.#syncCurriculum()
+      await this.db.collection('quizAttempts').createIndex({ userId: 1, courseId: 1, moduleIndex: 1 }, { unique: true })
       return this.db
     })()
 

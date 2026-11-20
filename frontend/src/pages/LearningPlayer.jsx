@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle2,
   Clock, FileText, X, GraduationCap, LayoutList, Zap, Trophy, Star, Lock,
-  MessageCircle, Send, Cable, Layers, Network, Globe
+  MessageCircle, Send, Cable, Layers, Network, Globe, AlertCircle
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -427,6 +427,13 @@ function LearningView({ course }) {
       return saved ? JSON.parse(saved) : {}
     } catch { return {} }
   })
+  const [quizAttempts, setQuizAttempts] = useState({})
+
+  useEffect(() => {
+    api.get(`/quiz/attempts/${encodeURIComponent(course.id)}`).then(r => {
+      if (r.success) setQuizAttempts(r.attempts)
+    }).catch(() => {})
+  }, [course.id])
 
   const chapterKey = (mIdx, cIdx) => `${mIdx}-${cIdx}`
   const progress = calcProgress(curriculum, completedChapters, chapterKey)
@@ -794,6 +801,10 @@ function LearningView({ course }) {
                         intro={currentChapterContent}
                         chapterKey={chapterKey(activeModule, activeChapter)}
                         onPass={handleQuizPass}
+                        courseId={course.id}
+                        moduleIndex={activeModule}
+                        attemptInfo={quizAttempts[activeModule]}
+                        onAttemptUpdate={(modIdx, info) => setQuizAttempts(prev => ({ ...prev, [modIdx]: info }))}
                       />
                     ) : currentChapterType === 'video' && currentChapterVideoId ? (
                       <div className="space-y-6">
@@ -1303,12 +1314,18 @@ function AnimationRenderer({ steps, description }) {
   )
 }
 
-function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
+function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass, courseId, moduleIndex, attemptInfo, onAttemptUpdate }) {
   const [started, setStarted] = useState(false)
   const [selected, setSelected] = useState({})
   const [submitted, setSubmitted] = useState(false)
   const [timeLeft, setTimeLeft] = useState(15 * 60)
   const [timerActive, setTimerActive] = useState(false)
+
+  const attemptsUsed = attemptInfo?.attemptsUsed || 0
+  const maxAttempts = attemptInfo?.maxAttempts || 2
+  const isLocked = attemptInfo?.locked || false
+  const alreadyPassed = attemptInfo?.passed || false
+  const attemptsRemaining = Math.max(0, maxAttempts - attemptsUsed)
 
   useEffect(() => {
     setStarted(false)
@@ -1329,6 +1346,15 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
     return () => clearInterval(id)
   }, [timerActive, submitted, timeLeft])
 
+  const recordAttempt = async (didPass) => {
+    try {
+      const r = await api.post('/quiz/attempt', { courseId, moduleIndex, passed: didPass })
+      if (r.success && onAttemptUpdate) {
+        onAttemptUpdate(moduleIndex, { attemptsUsed: r.attemptsUsed, maxAttempts: r.maxAttempts, passed: r.passed, locked: r.locked })
+      }
+    } catch {}
+  }
+
   const mins = Math.floor(timeLeft / 60)
   const secs = timeLeft % 60
   const timerColor = timeLeft <= 60 ? 'text-rose-600 bg-rose-50 border-rose-200' : timeLeft <= 180 ? 'text-amber-600 bg-amber-50 border-amber-200' : 'text-slate-700 bg-slate-50 border-slate-200'
@@ -1341,6 +1367,36 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
   const passed = pct >= passmark
 
   const labels = ['A', 'B', 'C', 'D']
+
+  if (isLocked && !alreadyPassed) {
+    return (
+      <div className="space-y-6 text-base">
+        <p className="text-slate-600">{intro}</p>
+        <div className="bg-rose-50 rounded-2xl border-2 border-rose-200 p-6 sm:p-8 space-y-5">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
+              <Lock size={24} />
+            </div>
+            <div>
+              <h4 className="text-lg font-bold text-rose-900">Quiz Locked</h4>
+              <p className="text-xs text-rose-600">Maximum attempts reached ({attemptsUsed}/{maxAttempts})</p>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl border border-rose-200 p-5 space-y-3">
+            <p className="text-sm text-slate-700 leading-relaxed">
+              You have used all <strong>{maxAttempts}</strong> attempts for this Knowledge Check without passing. To try again, please contact your <strong>Administrator</strong> to request an attempt reset.
+            </p>
+            <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
+              <MessageCircle size={16} className="text-amber-600 shrink-0" />
+              <p className="text-xs text-amber-800">
+                <strong>Tip:</strong> Use the chat feature at the bottom-right to message your administrator directly, or email your academy administrator.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!started) {
     return (
@@ -1372,10 +1428,30 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pass Mark</p>
             </div>
             <div className="p-3 bg-white rounded-xl border border-slate-200 text-center">
-              <p className="text-lg font-black text-slate-900">MCQ</p>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Format</p>
+              <p className={`text-lg font-black ${attemptsRemaining <= 1 ? 'text-amber-600' : 'text-slate-900'}`}>{attemptsRemaining}/{maxAttempts}</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Attempts Left</p>
             </div>
           </div>
+
+          {attemptsUsed > 0 && !alreadyPassed && (
+            <div className={`p-3 rounded-xl border flex items-center gap-2.5 text-xs font-medium ${
+              attemptsRemaining <= 1 ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-amber-50 border-amber-200 text-amber-700'
+            }`}>
+              <AlertCircle size={15} className="shrink-0" />
+              <span>
+                {attemptsRemaining === 1
+                  ? 'This is your last attempt! If you don\'t pass, you\'ll need to contact an administrator to retry.'
+                  : `You have ${attemptsRemaining} attempt(s) remaining.`}
+              </span>
+            </div>
+          )}
+
+          {alreadyPassed && (
+            <div className="p-3 rounded-xl border bg-emerald-50 border-emerald-200 flex items-center gap-2.5 text-xs font-medium text-emerald-700">
+              <CheckCircle2 size={15} className="shrink-0" />
+              <span>You've already passed this quiz! You can retake it for practice.</span>
+            </div>
+          )}
 
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800 space-y-1.5">
             <p className="font-bold flex items-center gap-2"><Clock size={15} /> Quiz Rules</p>
@@ -1384,7 +1460,7 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
               <li>All questions must be answered before submitting</li>
               <li>The quiz auto-submits when the timer reaches zero</li>
               <li>You need <strong>{passmark}%</strong> or higher to pass</li>
-              <li>You can retry the quiz if you don't pass</li>
+              <li>You have a maximum of <strong>{maxAttempts} attempts</strong> — after that, an administrator must reset your quiz</li>
             </ul>
           </div>
 
@@ -1515,7 +1591,9 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
               setSubmitted(true)
               setTimerActive(false)
               const sc = questions.reduce((s, q, i) => s + (selected[i] === q.answer ? 1 : 0), 0)
-              if (Math.round((sc / total) * 100) >= passmark && onPass) onPass()
+              const didPass = Math.round((sc / total) * 100) >= passmark
+              recordAttempt(didPass)
+              if (didPass && onPass) onPass()
             }}
             disabled={answered < total}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
@@ -1523,6 +1601,11 @@ function QuizRenderer({ quiz, intro, chapterKey: cKey, onPass }) {
             <Zap size={16} />
             Submit Quiz
           </motion.button>
+        ) : !passed && attemptsRemaining <= 1 && !alreadyPassed ? (
+          <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium">
+            <Lock size={14} />
+            <span>No attempts remaining — contact your administrator</span>
+          </div>
         ) : (
           <button
             onClick={() => { setStarted(false); setSelected({}); setSubmitted(false); setTimeLeft(15 * 60); setTimerActive(false) }}

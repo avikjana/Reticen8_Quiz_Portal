@@ -21,6 +21,7 @@ const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'))
 const AdminUsers = lazy(() => import('./pages/Admin/AdminUsers'))
 const AdminCourses = lazy(() => import('./pages/Admin/AdminCourses'))
 const AdminChat = lazy(() => import('./pages/Admin/AdminChat'))
+const AdminQuizAttempts = lazy(() => import('./pages/Admin/AdminQuizAttempts'))
 const CustomerDashboard = lazy(() => import('./pages/Customer/CustomerDashboard'))
 const PartnerDashboard = lazy(() => import('./pages/Partner/PartnerDashboard'))
 
@@ -124,6 +125,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['Administrator']}>
                 <AdminChat />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/quiz-attempts"
+            element={
+              <ProtectedRoute allowedRoles={['Administrator']}>
+                <AdminQuizAttempts />
               </ProtectedRoute>
             }
           />
