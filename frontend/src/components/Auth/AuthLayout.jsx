@@ -30,9 +30,9 @@ function Photo({ src, className }) {
  */
 export default function AuthLayout({
   eyebrow = 'Reticen8 Academy',
-  title = 'Build your skills. Build your future.',
-  subtitle = 'Sign in to continue your cybersecurity learning journey.',
-  points = ['Hands-on firewall labs', 'Certification-aligned courses', 'Track your progress'],
+  title = 'Your firewall. Your training.',
+  subtitle = 'Access official Reticen8 training — product walkthroughs, hands-on labs and certification pathways built by the team behind your firewall.',
+  points = ['Product-aligned courses from the OEM', 'Hands-on firewall labs', 'Partner certification pathways'],
   children,
 }) {
   const [first, ...rest] = title.split('. ')

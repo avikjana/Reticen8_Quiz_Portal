@@ -135,9 +135,9 @@ export default function HeroSection() {
               transition={{ duration: 0.5 }}
               className="text-[2.5rem] leading-[1.05] sm:text-6xl xl:text-7xl font-bold text-slate-900 tracking-tight sm:leading-[1.05]"
             >
-              Build your skills.
+              Master your firewall.
               <br />
-              <span className="text-gradient">Build your future.</span>
+              <span className="text-gradient">Secure your network.</span>
             </motion.h1>
 
             <motion.p
@@ -146,7 +146,7 @@ export default function HeroSection() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="mt-6 text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl font-normal"
             >
-              Free online courses. In-person learning. Certification-aligned pathways designed to help you stand out in the job market. From Next-Generation Firewalls and Threat Prevention to VPN Architectures and Security Operations, it's all here.
+              Official training from Reticen8 — the OEM behind your firewall. Product-aligned courses for customers to get the most out of their deployment, and certification pathways to empower our partners with deep technical expertise.
             </motion.p>
 
             <motion.p
@@ -155,7 +155,7 @@ export default function HeroSection() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="mt-4 text-sm sm:text-base text-slate-700 font-medium"
             >
-              Are you ready to begin, change, or propel your career?
+              Learn directly from the engineers who built it.
             </motion.p>
 
             {/* CTAs: Clean rounded-full pill buttons */}

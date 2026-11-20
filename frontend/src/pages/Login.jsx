@@ -8,7 +8,6 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  KeyRound,
 } from 'lucide-react'
 import { ROLE_CATEGORIES, getRole } from '../config/roles'
 import Logo from '../components/ui/Logo'
@@ -28,8 +27,8 @@ export default function Login() {
   const { login } = useAuth()
 
   const [selectedCategory, setSelectedCategory] = useState('Customer')
-  const [email, setEmail] = useState(import.meta.env.DEV ? 'customer@reticen8.com' : '')
-  const [password, setPassword] = useState(import.meta.env.DEV ? 'CustomerPassword123!' : '')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -41,11 +40,6 @@ export default function Login() {
   const handleCategorySwitch = (catId) => {
     setSelectedCategory(catId)
     setErrorMsg('')
-    const target = categories.find((c) => c.id === catId)
-    if (target) {
-      setEmail(target.demoEmail)
-      setPassword(target.demoPass)
-    }
   }
 
   const handleSubmit = async (e) => {
@@ -72,9 +66,9 @@ export default function Login() {
 
   return (
     <AuthLayout
-      eyebrow="Welcome back"
-      title="Build your skills. Build your future."
-      subtitle="Sign in to pick up where you left off — courses, hands-on firewall labs and certification guides are all waiting for you."
+      eyebrow="Reticen8 Academy"
+      title="Your firewall. Your training."
+      subtitle="Sign in to access official Reticen8 training — product walkthroughs, hands-on labs and certification pathways built by the team behind your firewall."
     >
       <div className="w-full max-w-md mx-auto lg:mr-0 bg-white rounded-3xl shadow-[var(--shadow-lift)] ring-1 ring-slate-200/80 overflow-hidden text-slate-900 relative">
         {/* Header */}
@@ -176,27 +170,12 @@ export default function Login() {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-slate-700">Password</label>
-              <div className="flex items-center gap-3">
-                <Link
-                  to="/forgot-password"
-                  className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 hover:underline"
-                >
-                  Forgot Password?
-                </Link>
-                {import.meta.env.DEV && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail(activeCategory.demoEmail)
-                    setPassword(activeCategory.demoPass)
-                  }}
-                  className="text-[11px] font-bold text-brand-600 hover:underline flex items-center gap-1"
-                >
-                  <KeyRound size={12} />
-                  <span>Fill Demo Password</span>
-                </button>
-                )}
-              </div>
+              <Link
+                to="/forgot-password"
+                className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 hover:underline"
+              >
+                Forgot Password?
+              </Link>
             </div>
             <div className="relative">
               <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />

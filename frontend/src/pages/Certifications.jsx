@@ -383,11 +383,6 @@ function CertificationsView({ certificationsData }) {
             </p>
           )}
 
-          {import.meta.env.DEV && (
-            <div className="mt-4 text-xs text-slate-500">
-              Test serial: <code className="bg-slate-800 px-2 py-0.5 rounded text-emerald-400 font-mono">R8-2026-RCFP-8492</code>
-            </div>
-          )}
         </div>
       </section>
 

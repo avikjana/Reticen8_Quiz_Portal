@@ -36,6 +36,41 @@
         "chapters": [
           "What is Network Security?",
           "Importance of Network Security",
+          {
+            "title": "Network Interface Pipeline",
+            "type": "animation",
+            "content": "Understand how traffic flows through a Reticen8 firewall — from the physical port through device grouping (bridge, VLAN, bond), to the logical interface where addressing happens, and finally to routing or Multi-WAN decisions.",
+            "steps": [
+              {
+                "id": "physical",
+                "label": "Physical Port",
+                "icon": "ethernet",
+                "detail": "The actual hardware NIC — igb0, igb1, ix0, etc. Each port is a raw L2 connection to the network. No IP, no config — just electrical/optical signals.",
+                "examples": ["igb0", "igb1", "ix0", "em0"]
+              },
+              {
+                "id": "device",
+                "label": "Device",
+                "icon": "layers",
+                "detail": "One or more physical ports are grouped into a logical device. A bridge bundles ports into one L2 domain, a VLAN tags traffic for segmentation, and a bond (LACP/failover) aggregates for bandwidth or redundancy.",
+                "examples": ["bridge0 (Bridge)", "vlan100 (VLAN)", "lagg0 (Bond/LACP)"]
+              },
+              {
+                "id": "interface",
+                "label": "Logical Interface",
+                "icon": "network",
+                "detail": "The addressable identity — where you assign an IPv4/IPv6 address, set MTU, enable DHCP, and attach firewall rules. This is what the OS routes through.",
+                "examples": ["LAN — 192.168.1.1/24", "WAN — DHCP from ISP", "OPT1 — 10.0.50.1/24"]
+              },
+              {
+                "id": "routing",
+                "label": "Route / Multi-WAN",
+                "icon": "globe",
+                "detail": "The interface feeds into the routing table or a Multi-WAN gateway group. Static routes, default gateways, policy routing and failover/load-balance groups decide where packets go next.",
+                "examples": ["Default GW → WAN_DHCP", "Policy route → WAN2", "Gateway Group (Failover)"]
+              }
+            ]
+          },
           "CIA Triad (Confidentiality, Integrity, Availability)",
           "Security Principles and Concepts",
           "Network Security Challenges"

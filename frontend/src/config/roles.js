@@ -1,7 +1,5 @@
 import { Shield, Briefcase, Users } from 'lucide-react'
 
-const dev = (value) => (import.meta.env.DEV ? value : '')
-
 export const ROLE_CATEGORIES = [
   {
     id: 'Administrator',
@@ -19,8 +17,6 @@ export const ROLE_CATEGORIES = [
     dashboardPath: '/admin',
     dashboardLabel: 'Admin Dashboard',
     selfSignup: false,
-    demoEmail: dev('admin@reticen8.com'),
-    demoPass: dev('AdminPassword123!'),
   },
   {
     id: 'Customer',
@@ -39,8 +35,6 @@ export const ROLE_CATEGORIES = [
     dashboardLabel: 'Customer Dashboard',
     selfSignup: true,
     signupRoleTitle: 'Customer',
-    demoEmail: dev('customer@reticen8.com'),
-    demoPass: dev('CustomerPassword123!'),
   },
   {
     id: 'Partner',
@@ -61,8 +55,6 @@ export const ROLE_CATEGORIES = [
     signupRoleTitle: 'Partner',
     signupTag: 'Partner',
     signupTitleOnly: true,
-    demoEmail: dev('partner@reticen8.com'),
-    demoPass: dev('PartnerPassword123!'),
   },
 ]
 

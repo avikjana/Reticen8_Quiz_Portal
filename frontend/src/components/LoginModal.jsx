@@ -10,7 +10,6 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  KeyRound,
 } from 'lucide-react'
 import { ROLE_CATEGORIES, getRole } from '../config/roles'
 import Logo from './ui/Logo'
@@ -40,25 +39,15 @@ export default function LoginModal() {
     return () => document.removeEventListener('keydown', onKey)
   }, [isLoginModalOpen, closeLoginModal])
 
-  // Sync category when opened with specific parameter
   useEffect(() => {
     if (loginModalDefaultCategory) {
       setSelectedCategory(loginModalDefaultCategory)
-      const currentCat = categories.find((c) => c.id === loginModalDefaultCategory) || getRole()
-      setEmail(currentCat.demoEmail)
-      setPassword(currentCat.demoPass)
     }
   }, [loginModalDefaultCategory, isLoginModalOpen])
 
-  // When switching category tabs, auto-fill the demo credentials for that category
   const handleCategorySwitch = (catId) => {
     setSelectedCategory(catId)
     setErrorMsg('')
-    const target = categories.find((c) => c.id === catId)
-    if (target) {
-      setEmail(target.demoEmail)
-      setPassword(target.demoPass)
-    }
   }
 
   const activeCategory = categories.find((c) => c.id === selectedCategory) || getRole()
@@ -232,19 +221,6 @@ export default function LoginModal() {
                 >
                   Forgot Password?
                 </a>
-                {import.meta.env.DEV && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail(activeCategory.demoEmail)
-                    setPassword(activeCategory.demoPass)
-                  }}
-                  className="text-[11px] font-bold text-brand-600 hover:underline flex items-center gap-1"
-                >
-                  <KeyRound size={12} />
-                  <span>Fill Demo Password</span>
-                </button>
-                )}
               </div>
             </div>
             <div className="relative">

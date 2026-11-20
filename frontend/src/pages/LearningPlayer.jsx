@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, BookOpen, ChevronDown, ChevronRight, Play, CheckCircle2,
   Clock, FileText, X, GraduationCap, LayoutList, Zap, Trophy, Star, Lock,
-  MessageCircle, Send
+  MessageCircle, Send, Cable, Layers, Network, Globe
 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -452,6 +452,7 @@ function LearningView({ course }) {
   const currentChapterType = typeof currentChapterRaw === 'object' ? currentChapterRaw.type : null
   const currentChapterQuiz = typeof currentChapterRaw === 'object' ? currentChapterRaw.quiz : null
   const currentChapterVideoId = typeof currentChapterRaw === 'object' ? currentChapterRaw.videoId : null
+  const currentChapterSteps = typeof currentChapterRaw === 'object' ? currentChapterRaw.steps : null
 
   const moduleHasQuiz = (mIdx) => {
     const mod = curriculum[mIdx]
@@ -825,6 +826,8 @@ function LearningView({ course }) {
                           </div>
                         )}
                       </div>
+                    ) : currentChapterType === 'animation' && currentChapterSteps ? (
+                      <AnimationRenderer steps={currentChapterSteps} description={currentChapterContent} />
                     ) : currentChapterContent ? (
                       <div className="text-base text-slate-700 leading-relaxed space-y-4">
                         {currentChapterContent.split('\n\n').map((block, i) => {
@@ -1122,6 +1125,9 @@ function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedCh
                     {typeof chapter === 'object' && chapter.type === 'video' && (
                       <Play size={10} className="text-rose-500 shrink-0 ml-auto" />
                     )}
+                    {typeof chapter === 'object' && chapter.type === 'animation' && (
+                      <Zap size={10} className="text-amber-500 shrink-0 ml-auto" />
+                    )}
                   </button>
                 </li>
               )
@@ -1129,6 +1135,170 @@ function ModuleSidebarItem({ mod, mIdx, activeModule, activeChapter, completedCh
           </motion.ul>
         )}
       </AnimatePresence>
+    </div>
+  )
+}
+
+const STEP_ICONS = { ethernet: Cable, layers: Layers, network: Network, globe: Globe }
+const STEP_COLORS = [
+  { bg: 'bg-sky-100', text: 'text-sky-700', border: 'border-sky-300', ring: 'ring-sky-400', bar: 'bg-sky-500' },
+  { bg: 'bg-violet-100', text: 'text-violet-700', border: 'border-violet-300', ring: 'ring-violet-400', bar: 'bg-violet-500' },
+  { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300', ring: 'ring-amber-400', bar: 'bg-amber-500' },
+  { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-300', ring: 'ring-emerald-400', bar: 'bg-emerald-500' },
+]
+
+function AnimationRenderer({ steps, description }) {
+  const [active, setActive] = useState(-1)
+  const [autoPlay, setAutoPlay] = useState(false)
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+    if (!autoPlay) { clearInterval(intervalRef.current); return }
+    setActive(0)
+    intervalRef.current = setInterval(() => {
+      setActive(prev => {
+        if (prev >= steps.length - 1) { setAutoPlay(false); return prev }
+        return prev + 1
+      })
+    }, 2500)
+    return () => clearInterval(intervalRef.current)
+  }, [autoPlay, steps.length])
+
+  const handleStepClick = (i) => { setAutoPlay(false); setActive(i === active ? -1 : i) }
+
+  return (
+    <div className="space-y-6">
+      {description && <p className="text-base text-slate-600 leading-relaxed">{description}</p>}
+
+      <div className="flex items-center gap-3 mb-2">
+        <button
+          onClick={() => { setAutoPlay(!autoPlay); if (active === steps.length - 1) setActive(-1) }}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-action-600 hover:bg-action-700 text-white text-xs font-bold transition-colors shadow-sm"
+        >
+          <Play size={14} />
+          {autoPlay ? 'Pause' : active >= 0 ? 'Replay' : 'Animate Pipeline'}
+        </button>
+        {active >= 0 && (
+          <span className="text-xs text-slate-500 font-medium">
+            Step {active + 1} of {steps.length}
+          </span>
+        )}
+      </div>
+
+      {/* Pipeline connector bar */}
+      <div className="relative">
+        <div className="hidden sm:flex items-center justify-between px-6 mb-2">
+          {steps.map((_, i) => (
+            <div key={i} className="flex items-center flex-1">
+              <div className={`w-3 h-3 rounded-full border-2 transition-all duration-500 ${i <= active ? `${STEP_COLORS[i].bar} border-transparent scale-125` : 'bg-white border-slate-300'}`} />
+              {i < steps.length - 1 && (
+                <div className="flex-1 h-0.5 mx-1 rounded-full bg-slate-200 overflow-hidden">
+                  <motion.div
+                    className={STEP_COLORS[i].bar}
+                    initial={{ width: '0%' }}
+                    animate={{ width: i < active ? '100%' : '0%' }}
+                    transition={{ duration: 0.6, ease: 'easeInOut' }}
+                    style={{ height: '100%' }}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Step cards */}
+        <div className="grid sm:grid-cols-4 gap-3">
+          {steps.map((step, i) => {
+            const Icon = STEP_ICONS[step.icon] || Cable
+            const c = STEP_COLORS[i] || STEP_COLORS[0]
+            const isActive = i === active
+            return (
+              <motion.button
+                key={step.id}
+                onClick={() => handleStepClick(i)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1, duration: 0.4 }}
+                className={`text-left p-4 rounded-2xl border-2 transition-all duration-300 ${
+                  isActive
+                    ? `${c.bg} ${c.border} ring-2 ${c.ring} shadow-md scale-[1.03]`
+                    : i <= active
+                    ? `${c.bg}/50 ${c.border}/50`
+                    : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                }`}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors duration-300 ${
+                  isActive ? `${c.bg} ${c.text}` : i <= active ? `${c.bg}/70 ${c.text}/70` : 'bg-slate-100 text-slate-400'
+                }`}>
+                  <Icon size={20} />
+                </div>
+                <div className={`text-xs font-bold mb-1 transition-colors ${isActive ? c.text : i <= active ? `${c.text}/80` : 'text-slate-700'}`}>
+                  {step.label}
+                </div>
+                <div className="text-[10px] text-slate-500 leading-snug line-clamp-2">
+                  {step.examples?.[0]}
+                </div>
+              </motion.button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Expanded detail panel */}
+      <AnimatePresence mode="wait">
+        {active >= 0 && steps[active] && (
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 12, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -8, height: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="overflow-hidden"
+          >
+            <div className={`p-6 rounded-2xl border-2 ${STEP_COLORS[active].border} ${STEP_COLORS[active].bg}`}>
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-white/80 ${STEP_COLORS[active].text} shadow-sm`}>
+                  {(() => { const I = STEP_ICONS[steps[active].icon] || Cable; return <I size={24} /> })()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className={`text-lg font-bold ${STEP_COLORS[active].text} mb-2`}>
+                    {steps[active].label}
+                  </h4>
+                  <p className="text-sm text-slate-700 leading-relaxed mb-4">
+                    {steps[active].detail}
+                  </p>
+                  {steps[active].examples?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {steps[active].examples.map((ex, j) => (
+                        <span key={j} className="inline-flex items-center px-3 py-1.5 rounded-lg bg-white/70 border border-white text-xs font-mono font-medium text-slate-700 shadow-2xs">
+                          {ex}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Arrow flow diagram (mobile-friendly vertical) */}
+      <div className="sm:hidden mt-4 flex flex-col items-center gap-1">
+        {steps.map((step, i) => {
+          const c = STEP_COLORS[i]
+          return (
+            <div key={step.id} className="flex flex-col items-center w-full">
+              <div className={`w-full p-3 rounded-xl border ${i <= active ? `${c.bg} ${c.border}` : 'bg-slate-50 border-slate-200'} text-center`}>
+                <span className={`text-xs font-bold ${i <= active ? c.text : 'text-slate-500'}`}>{step.label}</span>
+              </div>
+              {i < steps.length - 1 && (
+                <div className={`w-0.5 h-5 ${i < active ? c.bar : 'bg-slate-200'} transition-colors duration-500`} />
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
