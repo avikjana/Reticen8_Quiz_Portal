@@ -9,7 +9,9 @@ export class CertificationModel {
 
   static async findById(id) {
     const key = String(id).toLowerCase()
-    return await db.findOne('certifications', (c) => c.id === key || c.code.toLowerCase() === key)
+    return await db.findOne('certifications', {
+      $or: [{ _docId: key }, { code: { $regex: new RegExp(`^${key}$`, 'i') } }]
+    })
   }
 
   static toSummary(cert) {
@@ -18,7 +20,7 @@ export class CertificationModel {
 
   static async findCredential(credentialId) {
     const key = String(credentialId).trim().toUpperCase()
-    return await db.findOne('credentials', (c) => c.credentialId.toUpperCase() === key)
+    return await db.findOne('credentials', { credentialId: key })
   }
 }
 

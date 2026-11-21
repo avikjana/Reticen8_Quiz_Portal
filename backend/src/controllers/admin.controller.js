@@ -8,21 +8,27 @@ import { adminCreateUserSchema } from '../validation/schemas.js'
 
 export class AdminController {
   static async getOverview(req, res) {
-    const users = await UserModel.getAll()
-    const courses = await CourseModel.getAll()
-    const allEnrollments = (await EnrollmentModel.getAll()).filter(e => e.status !== 'dropped')
+    // Run all counts in parallel instead of loading full collections
+    const [totalUsers, adminCount, customerCount, partnerCount, totalCourses, totalEnrollments] = await Promise.all([
+      db.countDocs('users', {}),
+      db.countDocs('users', { role: 'Administrator' }),
+      db.countDocs('users', { role: 'Customer' }),
+      db.countDocs('users', { role: 'Partner' }),
+      db.countDocs('courses', {}),
+      db.countDocs('enrollments', { status: { $ne: 'dropped' } }),
+    ])
 
     return {
       success: true,
       data: {
-        totalUsers: users.length,
+        totalUsers,
         usersByRole: {
-          administrators: users.filter((u) => u.role === 'Administrator').length,
-          customers: users.filter((u) => u.role === 'Customer').length,
-          partners: users.filter((u) => u.role === 'Partner').length,
+          administrators: adminCount,
+          customers: customerCount,
+          partners: partnerCount,
         },
-        totalCourses: courses.length,
-        totalEnrollments: allEnrollments.length,
+        totalCourses,
+        totalEnrollments,
         systemHealth: {
           status: 'Operational',
           uptime: process.uptime(),
@@ -34,25 +40,34 @@ export class AdminController {
   }
 
   static async getUsers(req, res) {
-    const users = (await UserModel.getAll()).map(UserModel.sanitize)
-    const allEnrollments = (await EnrollmentModel.getAll()).filter(e => e.status !== 'dropped')
+    // Load users and enrollments in parallel, then pre-load courses into a map
+    const [rawUsers, allEnrollments, allCourses] = await Promise.all([
+      UserModel.getAll(),
+      db.findMany('enrollments', { status: { $ne: 'dropped' } }),
+      CourseModel.getAll(),
+    ])
 
-    const enriched = []
-    for (const u of users) {
-      const userEnrollments = allEnrollments.filter(e => e.userId === u.id)
-      const courses = []
-      for (const e of userEnrollments) {
-        const course = await CourseModel.findById(e.courseId)
-        courses.push({
-          enrollmentId: e.id,
-          courseId: e.courseId,
-          courseTitle: course?.title || e.courseId,
-          status: e.status,
-          enrolledAt: e.enrolledAt,
-        })
-      }
-      enriched.push({ ...u, enrolledCourses: courses })
+    const users = rawUsers.map(UserModel.sanitize)
+    const courseMap = new Map(allCourses.map(c => [c.id, c]))
+
+    // Group enrollments by userId for O(1) lookup
+    const enrollmentsByUser = new Map()
+    for (const e of allEnrollments) {
+      if (!enrollmentsByUser.has(e.userId)) enrollmentsByUser.set(e.userId, [])
+      enrollmentsByUser.get(e.userId).push(e)
     }
+
+    const enriched = users.map(u => {
+      const userEnrollments = enrollmentsByUser.get(u.id) || []
+      const courses = userEnrollments.map(e => ({
+        enrollmentId: e.id,
+        courseId: e.courseId,
+        courseTitle: courseMap.get(e.courseId)?.title || e.courseId,
+        status: e.status,
+        enrolledAt: e.enrolledAt,
+      }))
+      return { ...u, enrolledCourses: courses }
+    })
 
     return { success: true, users: enriched }
   }
@@ -81,8 +96,8 @@ export class AdminController {
     if (!target) throw new AppError('User not found', 404)
 
     if (target.role === 'Administrator') {
-      const admins = (await UserModel.getAll()).filter((u) => u.role === 'Administrator')
-      if (admins.length <= 1) throw new AppError("You can't delete the last administrator.", 400)
+      const adminCount = await db.countDocs('users', { role: 'Administrator' })
+      if (adminCount <= 1) throw new AppError("You can't delete the last administrator.", 400)
     }
 
     const success = await UserModel.delete(id)
@@ -90,16 +105,27 @@ export class AdminController {
   }
 
   static async getCourses(req, res) {
-    const courses = await CourseModel.getAll()
-    const allEnrollments = (await EnrollmentModel.getAll()).filter(e => e.status !== 'dropped')
+    // Load all data in parallel, build lookup maps
+    const [courses, allEnrollments, allUsers] = await Promise.all([
+      CourseModel.getAll(),
+      db.findMany('enrollments', { status: { $ne: 'dropped' } }),
+      UserModel.getAll(),
+    ])
 
-    const enriched = []
-    for (const c of courses) {
-      const courseEnrollments = allEnrollments.filter(e => e.courseId === c.id)
-      const enrolledUsers = []
-      for (const e of courseEnrollments) {
-        const user = await UserModel.findById(e.userId)
-        enrolledUsers.push({
+    const userMap = new Map(allUsers.map(u => [u.id, UserModel.sanitize(u)]))
+
+    // Group enrollments by courseId
+    const enrollmentsByCourse = new Map()
+    for (const e of allEnrollments) {
+      if (!enrollmentsByCourse.has(e.courseId)) enrollmentsByCourse.set(e.courseId, [])
+      enrollmentsByCourse.get(e.courseId).push(e)
+    }
+
+    const enriched = courses.map(c => {
+      const courseEnrollments = enrollmentsByCourse.get(c.id) || []
+      const enrolledUsers = courseEnrollments.map(e => {
+        const user = userMap.get(e.userId)
+        return {
           enrollmentId: e.id,
           userId: e.userId,
           userName: user?.name || 'Unknown',
@@ -107,9 +133,9 @@ export class AdminController {
           userRole: user?.role || 'Unknown',
           status: e.status,
           enrolledAt: e.enrolledAt,
-        })
-      }
-      enriched.push({
+        }
+      })
+      return {
         id: c.id,
         title: c.title,
         shortDesc: c.shortDesc,
@@ -123,8 +149,8 @@ export class AdminController {
         createdAt: c.createdAt,
         enrolledCount: enrolledUsers.length,
         enrolledUsers,
-      })
-    }
+      }
+    })
 
     return { success: true, courses: enriched }
   }
@@ -165,14 +191,15 @@ export class AdminController {
     const { enrollmentId } = req.params || {}
     if (!enrollmentId) throw new AppError('Enrollment ID is required.', 400)
 
-    const allEnrollments = await EnrollmentModel.getAll()
-    const enrollment = allEnrollments.find(e => e.id === enrollmentId)
+    const enrollment = await db.findById('enrollments', enrollmentId)
     if (!enrollment) throw new AppError('Enrollment not found.', 404)
 
     await db.update('enrollments', enrollmentId, { status: 'dropped' })
 
-    const user = await UserModel.findById(enrollment.userId)
-    const course = await CourseModel.findById(enrollment.courseId)
+    const [user, course] = await Promise.all([
+      UserModel.findById(enrollment.userId),
+      CourseModel.findById(enrollment.courseId),
+    ])
 
     return {
       success: true,

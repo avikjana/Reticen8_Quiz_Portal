@@ -34,24 +34,17 @@ export class EnrollmentModel {
   }
 
   static async getByUser(userId, { includeDropped = false } = {}) {
-    const all = await db.read('enrollments')
-    return all.filter(
-      (e) =>
-        e.userId === userId &&
-        (includeDropped || e.status !== STATUS.DROPPED)
-    )
+    const query = { userId }
+    if (!includeDropped) query.status = { $ne: STATUS.DROPPED }
+    return await db.findMany('enrollments', query)
   }
 
   static async getByCourse(courseId) {
-    const all = await db.read('enrollments')
-    return all.filter((e) => e.courseId === courseId && e.status !== STATUS.DROPPED)
+    return await db.findMany('enrollments', { courseId, status: { $ne: STATUS.DROPPED } })
   }
 
   static async findByUserAndCourse(userId, courseId) {
-    return await db.findOne(
-      'enrollments',
-      (e) => e.userId === userId && e.courseId === courseId
-    )
+    return await db.findOne('enrollments', { userId, courseId })
   }
 
   static async unenroll(userId, courseId) {
@@ -62,8 +55,7 @@ export class EnrollmentModel {
   }
 
   static async countByCourse(courseId) {
-    const enrollments = await EnrollmentModel.getByCourse(courseId)
-    return enrollments.length
+    return await db.countDocs('enrollments', { courseId, status: { $ne: STATUS.DROPPED } })
   }
 
   static async isEnrolled(userId, courseId) {

@@ -36,12 +36,16 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
 
   // GET /api/enrollments — list my enrollments (with course details)
   if (pathname === '/api/enrollments' && method === 'GET') {
-    const enrollments = await EnrollmentModel.getByUser(req.user.id)
+    const [enrollments, allCourses] = await Promise.all([
+      EnrollmentModel.getByUser(req.user.id),
+      CourseModel.getAll(),
+    ])
 
-    const enriched = []
-    for (const e of enrollments) {
-      const course = await CourseModel.findById(e.courseId)
-      enriched.push({
+    const courseMap = new Map(allCourses.map(c => [c.id, c]))
+
+    const enriched = enrollments.map(e => {
+      const course = courseMap.get(e.courseId)
+      return {
         ...e,
         course: course
           ? {
@@ -58,8 +62,8 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
               certificationCode: course.certificationCode,
             }
           : null,
-      })
-    }
+      }
+    })
 
     return { success: true, data: enriched }
   }
@@ -107,10 +111,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
       throw new AppError('You must be enrolled in this course to leave feedback.', 403)
     }
 
-    const allFeedback = await db.read('feedback')
-    const existing = allFeedback.find(
-      f => f.userId === req.user.id && f.courseId === courseId
-    )
+    const existing = await db.findOne('feedback', { userId: req.user.id, courseId })
     if (existing) {
       await db.update('feedback', existing.id, {
         rating,
@@ -140,10 +141,7 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
   const feedbackMatch = pathname.match(/^\/api\/enrollments\/feedback\/(.+)$/)
   if (feedbackMatch && method === 'GET') {
     const courseId = decodeURIComponent(feedbackMatch[1])
-    const allFeedback = await db.read('feedback')
-    const feedback = allFeedback.find(
-      f => f.userId === req.user.id && f.courseId === courseId
-    )
+    const feedback = await db.findOne('feedback', { userId: req.user.id, courseId })
     return { success: true, data: feedback || null }
   }
 

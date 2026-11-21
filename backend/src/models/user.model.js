@@ -29,19 +29,19 @@ export class UserModel {
 
   static async findByEmail(email) {
     const cleanEmail = normaliseEmail(email)
-    return await db.findOne('users', (u) => normaliseEmail(u.email) === cleanEmail)
+    return await db.findOne('users', { email: cleanEmail })
   }
 
   static async findByGoogleId(googleId) {
-    return await db.findOne('users', (u) => u.googleId === googleId)
+    return await db.findOne('users', { googleId })
   }
 
   static async findByEmailAndRole(email, role) {
     const cleanEmail = normaliseEmail(email)
-    return await db.findOne(
-      'users',
-      (u) => normaliseEmail(u.email) === cleanEmail && u.role.toLowerCase() === role.toLowerCase()
-    )
+    return await db.findOne('users', {
+      email: cleanEmail,
+      role: { $regex: new RegExp(`^${role}$`, 'i') }
+    })
   }
 
   static async create(userData) {

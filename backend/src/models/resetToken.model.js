@@ -25,10 +25,7 @@ export const ResetTokenModel = {
   },
 
   async clearForUser(userId) {
-    const tokens = await db.read('resetTokens')
-    for (const t of tokens) {
-      if (t.userId === userId) await db.delete('resetTokens', t.token)
-    }
+    await db.db.collection('resetTokens').deleteMany({ userId })
   },
 }
 
