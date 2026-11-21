@@ -8,24 +8,26 @@ import { adminCreateUserSchema } from '../validation/schemas.js'
 
 export class AdminController {
   static async getOverview(req, res) {
-    // Run all counts in parallel instead of loading full collections
-    const [totalUsers, adminCount, customerCount, partnerCount, totalCourses, totalEnrollments] = await Promise.all([
-      db.countDocs('users', {}),
-      db.countDocs('users', { role: 'Administrator' }),
-      db.countDocs('users', { role: 'Customer' }),
-      db.countDocs('users', { role: 'Partner' }),
+    // 2 aggregations + 1 count instead of 6 separate countDocuments
+    const [usersByRole, totalCourses, totalEnrollments] = await Promise.all([
+      db.cachedAggregate('users', [
+        { $group: { _id: '$role', count: { $sum: 1 } } }
+      ]),
       db.countDocs('courses', {}),
       db.countDocs('enrollments', { status: { $ne: 'dropped' } }),
     ])
+
+    const roleMap = Object.fromEntries(usersByRole.map(r => [r._id, r.count]))
+    const totalUsers = usersByRole.reduce((sum, r) => sum + r.count, 0)
 
     return {
       success: true,
       data: {
         totalUsers,
         usersByRole: {
-          administrators: adminCount,
-          customers: customerCount,
-          partners: partnerCount,
+          administrators: roleMap['Administrator'] || 0,
+          customers: roleMap['Customer'] || 0,
+          partners: roleMap['Partner'] || 0,
         },
         totalCourses,
         totalEnrollments,

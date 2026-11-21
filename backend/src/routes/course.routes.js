@@ -1,23 +1,24 @@
 import CourseModel from '../models/course.model.js'
 import EnrollmentModel from '../models/enrollment.model.js'
+import db from '../db/index.js'
 import { authenticate, authenticateOptional } from '../middlewares/auth.middleware.js'
 import AppError from '../utils/AppError.js'
 
 export const handleCourseRoutes = async (req, res, pathname, method) => {
   if (pathname === '/api/courses' && method === 'GET') {
     await authenticateOptional(req, res)
-    const courses = (await CourseModel.getVisibleTo(req.user?.role)).map(({ curriculum, ...summary }) => ({
+    const [allCourses, countMap] = await Promise.all([
+      CourseModel.getVisibleTo(req.user?.role),
+      db.aggregateEnrollmentCounts(),
+    ])
+    const courses = allCourses.map(({ curriculum, ...summary }) => ({
       ...summary,
       modulesCount: summary.modulesCount || (curriculum ? curriculum.length : 0),
+      studentsCount: countMap.get(summary.id) || 0,
     }))
-    const enriched = await Promise.all(courses.map(async (c) => ({
-      ...c,
-      studentsCount: await EnrollmentModel.countByCourse(c.id),
-    })))
-    return { success: true, data: enriched }
+    return { success: true, data: courses }
   }
 
-  // Full course content is for signed-in members only
   if (pathname.startsWith('/api/courses/') && method === 'GET') {
     await authenticate(req, res)
     const id = decodeURIComponent(pathname.replace('/api/courses/', ''))
@@ -26,9 +27,10 @@ export const handleCourseRoutes = async (req, res, pathname, method) => {
     if (!CourseModel.isVisibleTo(course, req.user.role)) {
       throw new AppError(`This course isn't available for ${req.user.role} accounts.`, 403)
     }
+    const count = await EnrollmentModel.countByCourse(course.id)
     return {
       success: true,
-      data: { ...course, studentsCount: await EnrollmentModel.countByCourse(course.id) },
+      data: { ...course, studentsCount: count },
     }
   }
 

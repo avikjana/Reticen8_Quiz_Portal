@@ -14,22 +14,25 @@ import errorHandler from './middlewares/error.middleware.js'
 import AppError from './utils/AppError.js'
 import db from './db/index.js'
 
-// Parse JSON request bodies safely
-const MAX_BODY_BYTES = 1024 * 1024 // 1 MB
+const MAX_BODY_BYTES = 1024 * 1024
 
 const parseRequestBody = (req) => {
   return new Promise((resolve, reject) => {
-    let body = ''
+    const chunks = []
+    let size = 0
     req.on('data', (chunk) => {
-      body += chunk.toString()
-      if (body.length > MAX_BODY_BYTES) {
+      size += chunk.length
+      if (size > MAX_BODY_BYTES) {
         reject(new AppError('Request body too large', 413))
         req.destroy()
+        return
       }
+      chunks.push(chunk)
     })
     req.on('end', () => {
       try {
-        resolve(body ? JSON.parse(body) : {})
+        const raw = Buffer.concat(chunks).toString()
+        resolve(raw ? JSON.parse(raw) : {})
       } catch {
         resolve({})
       }
@@ -37,25 +40,48 @@ const parseRequestBody = (req) => {
   })
 }
 
-// Allowed browser origins (comma-separated), e.g. "http://localhost:5173,https://academy.reticen8.com"
 const ALLOWED_ORIGINS = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean)
 
-// Set standard CORS & headers
+const CORS_HEADERS_BASE = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Connection': 'keep-alive',
+  Vary: 'Origin',
+}
+
 export const setCorsHeaders = (res, statusCode = 200) => {
   res.writeHead(statusCode, {
-    'Content-Type': 'application/json',
+    ...CORS_HEADERS_BASE,
     'Access-Control-Allow-Origin': res.corsOrigin || ALLOWED_ORIGINS[0],
-    Vary: 'Origin',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   })
 }
 
+// Prefix-based route dispatch — avoids calling handlers that can't match
+const ROUTE_TABLE = [
+  { prefix: '/api/auth', handler: handleAuthRoutes },
+  { prefix: '/api/admin', handler: handleAdminRoutes },
+  { prefix: '/api/customer', handler: handleCustomerRoutes },
+  { prefix: '/api/partner', handler: handlePartnerRoutes },
+  { prefix: '/api/users', handler: handleUserRoutes },
+  { prefix: '/api/courses', handler: handleCourseRoutes },
+  { prefix: '/api/certifications', handler: handleCertificationRoutes },
+  { prefix: '/api/enrollments', handler: handleEnrollmentRoutes },
+  { prefix: '/api/chat', handler: handleChatRoutes },
+  { prefix: '/api/quiz', handler: handleQuizRoutes },
+]
+
+const HEALTH_JSON = JSON.stringify({
+  status: 'OK',
+  service: 'Reticen8 Academy REST API',
+})
+
 export const createApp = () => {
-  return http.createServer(async (req, res) => {
+  const server = http.createServer(async (req, res) => {
+    const start = performance.now()
     const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`)
     const pathname = urlObj.pathname
     const method = req.method
@@ -65,7 +91,6 @@ export const createApp = () => {
 
     logRequest(req, res)
 
-    // Handle CORS preflight
     if (method === 'OPTIONS') {
       setCorsHeaders(res, 204)
       res.end()
@@ -73,62 +98,54 @@ export const createApp = () => {
     }
 
     try {
-      // Parse body for write methods
       if (['POST', 'PUT', 'PATCH'].includes(method)) {
         req.body = await parseRequestBody(req)
       } else {
         req.body = {}
       }
 
-      // 1. Health check
+      // Fast health check — no DB
       if (pathname === '/api/health' && method === 'GET') {
         setCorsHeaders(res, 200)
-        res.end(
-          JSON.stringify({
-            status: 'OK',
-            service: 'Reticen8 Academy REST API',
-            uptime: process.uptime(),
-            timestamp: new Date().toISOString(),
-          })
-        )
+        res.end(HEALTH_JSON)
         return
       }
 
-      // 2. Statistics check
       if (pathname === '/api/statistics' && method === 'GET') {
         const stats = await db.read('statistics')
         setCorsHeaders(res, 200)
         res.end(JSON.stringify({ success: true, data: stats }))
+        console.log(`[PERF] ${method} ${pathname} ${(performance.now() - start).toFixed(1)}ms`)
         return
       }
 
-      // 3. Route Handlers
+      // Dispatch by prefix — try matching handlers, fall through on null
       let result = null
+      for (const route of ROUTE_TABLE) {
+        if (pathname.startsWith(route.prefix)) {
+          result = await route.handler(req, res, pathname, method)
+          if (result !== null) break
+        }
+      }
 
-      result = await handleAuthRoutes(req, res, pathname, method)
-      if (result === null) result = await handleAdminRoutes(req, res, pathname, method)
-      if (result === null) result = await handleCustomerRoutes(req, res, pathname, method)
-      if (result === null) result = await handlePartnerRoutes(req, res, pathname, method)
-      if (result === null) result = await handleUserRoutes(req, res, pathname, method)
-      if (result === null) result = await handleCourseRoutes(req, res, pathname, method)
-      if (result === null) result = await handleCertificationRoutes(req, res, pathname, method)
-      if (result === null) result = await handleEnrollmentRoutes(req, res, pathname, method)
-      if (result === null) result = await handleChatRoutes(req, res, pathname, method)
-      if (result === null) result = await handleQuizRoutes(req, res, pathname, method)
-
-      // 4. Return result if route matched
       if (result !== null) {
         setCorsHeaders(res, 200)
         res.end(JSON.stringify(result))
+        console.log(`[PERF] ${method} ${pathname} ${(performance.now() - start).toFixed(1)}ms`)
         return
       }
 
-      // 5. 404 Route Not Found
       throw new AppError(`Route ${method} ${pathname} not found`, 404)
     } catch (err) {
       errorHandler(err, req, res)
+      console.log(`[PERF] ${method} ${pathname} ${(performance.now() - start).toFixed(1)}ms ERR`)
     }
   })
+
+  server.keepAliveTimeout = 65000
+  server.headersTimeout = 66000
+
+  return server
 }
 
 export default createApp
