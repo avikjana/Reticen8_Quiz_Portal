@@ -26,7 +26,7 @@ function StatItem({ stat, started }) {
   const count = useCounter(stat.value, 1800, started)
 
   return (
-    <div className="h-full flex flex-col items-center justify-center text-center px-3 sm:px-4 py-7 sm:py-10 bg-white transition-colors hover:bg-emerald-50/40">
+    <div className="h-full flex flex-col items-center justify-center text-center px-3 sm:px-4 py-7 sm:py-10 bg-white transition-colors hover:bg-purple-50/40">
       <div className="font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-slate-900 leading-none tabular-nums">
         {count.toLocaleString()}
         <span className="text-brand-600 font-normal">{stat.suffix}</span>

@@ -1,6 +1,6 @@
 import UserModel, { SELF_SIGNUP_ROLES } from '../models/user.model.js'
 import AppError from '../utils/AppError.js'
-import { revokeToken, getBearerToken } from '../middlewares/auth.middleware.js'
+import { revokeToken, getBearerToken, invalidateAuthCache } from '../middlewares/auth.middleware.js'
 import { signToken, verifyToken } from '../utils/jwt.js'
 import { verifyPassword, fakeVerify, hashPassword } from '../utils/password.js'
 import { verifyGoogleCredential } from '../utils/google.js'
@@ -17,6 +17,9 @@ import ResetTokenModel from '../models/resetToken.model.js'
 import { sendPasswordResetEmail } from '../utils/email.js'
 
 const clientBaseUrl = () => (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',')[0].trim()
+
+// Only fetch the fields login needs — avoids pulling large/unused fields from MongoDB
+const LOGIN_PROJECTION = { id: 1, email: 1, role: 1, passwordHash: 1, status: 1, name: 1, picture: 1, avatar: 1, permissions: 1, roleTitle: 1, department: 1, authProviders: 1, googleId: 1, createdAt: 1, updatedAt: 1 }
 
 const issueSession = (user, message) => {
   const safeUser = UserModel.sanitize(user)
@@ -38,7 +41,7 @@ export class AuthController {
     rateLimit(`login:ip:${ip}`, { limit: 30 })
     rateLimit(`login:email:${cleanEmail}`, { limit: 10 })
 
-    const user = await UserModel.findByEmail(cleanEmail)
+    const user = await UserModel.findByEmail(cleanEmail, LOGIN_PROJECTION)
 
     if (!user) {
       await fakeVerify(password)
@@ -96,25 +99,23 @@ export class AuthController {
   }
 
   // POST /api/auth/google  { credential, role? }
-  // `credential` is the ID token returned by Google Identity Services.
   static async googleLogin(req) {
     rateLimit(`google:ip:${clientIp(req)}`, { limit: 30 })
 
     const { credential, role } = validate(googleSchema, req.body)
     const profile = await verifyGoogleCredential(credential)
 
-    let user = await UserModel.findByGoogleId(profile.googleId)
+    let user = await UserModel.findByGoogleId(profile.googleId, LOGIN_PROJECTION)
 
     if (!user) {
-      const existing = await UserModel.findByEmail(profile.email)
+      const existing = await UserModel.findByEmail(profile.email, LOGIN_PROJECTION)
       if (existing) {
-        // Google has verified ownership of this email, so it's safe to link
-        // the Google identity to the existing account.
         user = await UserModel.update(existing.id, {
           googleId: profile.googleId,
           picture: existing.picture || profile.picture,
           authProviders: [...new Set([...(existing.authProviders || ['password']), 'google'])],
         })
+        invalidateAuthCache(existing.id)
       } else {
         const newRole = SELF_SIGNUP_ROLES.includes(role) ? role : 'Customer'
         user = await UserModel.create({
@@ -175,7 +176,8 @@ export class AuthController {
     const passwordHash = await hashPassword(password)
     const authProviders = [...new Set([...(user.authProviders || []), 'password'])]
     await UserModel.update(userId, { passwordHash, authProviders })
-    await ResetTokenModel.clearForUser(userId) // invalidate any other outstanding links
+    await ResetTokenModel.clearForUser(userId)
+    invalidateAuthCache(userId)
 
     return { success: true, message: 'Your password has been reset. You can now sign in.' }
   }
@@ -193,36 +195,38 @@ export class AuthController {
     return { success: true, message: 'Signed out successfully' }
   }
 
-  static async getRoles() {
-    return {
-      success: true,
-      roles: [
-        {
-          id: 'Administrator',
-          label: 'Administrator',
-          description: 'Full enterprise control, audit logging, system settings, and user provisioning.',
-          badge: '🛡️',
-          color: 'purple',
-          selfSignup: false,
-        },
-        {
-          id: 'Customer',
-          label: 'Customer',
-          description: 'Internal security operations, firewall sandbox labs, and technical training.',
-          badge: '💼',
-          color: 'emerald',
-          selfSignup: true,
-        },
-        {
-          id: 'Partner',
-          label: 'Partner',
-          description: 'Authorized training partner portal, organization seats, and co-branded certifications.',
-          badge: '🤝',
-          color: 'blue',
-          selfSignup: true,
-        },
-      ],
-    }
+  static ROLES_RESPONSE = {
+    success: true,
+    roles: [
+      {
+        id: 'Administrator',
+        label: 'Administrator',
+        description: 'Full enterprise control, audit logging, system settings, and user provisioning.',
+        badge: '🛡️',
+        color: 'purple',
+        selfSignup: false,
+      },
+      {
+        id: 'Customer',
+        label: 'Customer',
+        description: 'Internal security operations, firewall sandbox labs, and technical training.',
+        badge: '💼',
+        color: 'emerald',
+        selfSignup: true,
+      },
+      {
+        id: 'Partner',
+        label: 'Partner',
+        description: 'Authorized training partner portal, organization seats, and co-branded certifications.',
+        badge: '🤝',
+        color: 'blue',
+        selfSignup: true,
+      },
+    ],
+  }
+
+  static getRoles() {
+    return AuthController.ROLES_RESPONSE
   }
 }
 

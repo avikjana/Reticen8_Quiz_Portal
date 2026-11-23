@@ -27,7 +27,7 @@ const partnerHighlights = [
     metric: '60+',
     label: 'Certified Orgs',
     badge: 'Enterprise Tier',
-    color: 'from-emerald-500 to-teal-700',
+    color: 'from-purple-500 to-purple-700',
   },
   {
     tier: 'Authorized Training Centers (ATC)',
@@ -63,13 +63,13 @@ export default function PartnerSection() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
                 <Globe2 size={14} />
                 <span>Global Ecosystem</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 Empowering Our{' '}
-                <span className="text-brand-600">Partner Ecosystem</span>
+                <span className="text-slate-900">Partner Ecosystem</span>
               </h2>
               <p className="mt-4 text-base text-slate-600 leading-relaxed font-normal">
                 Equip your engineering teams with the knowledge and practical expertise needed to deploy, configure, and manage Reticen8 cybersecurity solutions effectively for enterprise clients.
@@ -144,9 +144,9 @@ export default function PartnerSection() {
               ))}
 
               {/* Verified Trust Statement */}
-              <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200/60 flex items-center gap-3">
+              <div className="p-4 rounded-xl bg-purple-50/70 border border-purple-200/60 flex items-center gap-3">
                 <Sparkles size={18} className="text-brand-600 flex-shrink-0" />
-                <p className="text-xs text-emerald-900 leading-relaxed font-medium">
+                <p className="text-xs text-purple-900 leading-relaxed font-medium">
                   Reticen8 partner credentials are cryptographically verifiable and backed by our continuous enterprise syllabus.
                 </p>
               </div>

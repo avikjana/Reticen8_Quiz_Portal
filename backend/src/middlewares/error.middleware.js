@@ -1,11 +1,14 @@
 import AppError from '../utils/AppError.js'
 
-export const errorHandler = (err, req, res, next) => {
+export const errorHandler = (err, req, res) => {
   const statusCode = err.statusCode || 500
-  // Don't leak internal error details for unexpected (non-AppError) failures
   const message = err.isOperational ? err.message : 'Internal Server Error'
 
-  console.error(`[Error] ${statusCode} - ${message}`, err.isOperational ? err.details || '' : err)
+  if (!err.isOperational) {
+    console.error(`[Error] ${statusCode} - ${message}`, err)
+  }
+
+  if (res.headersSent) return
 
   res.writeHead(statusCode, {
     'Content-Type': 'application/json',
@@ -13,14 +16,9 @@ export const errorHandler = (err, req, res, next) => {
     Vary: 'Origin',
   })
 
-  res.end(
-    JSON.stringify({
-      success: false,
-      error: message,
-      details: err.details || null,
-      timestamp: new Date().toISOString(),
-    })
-  )
+  const body = { success: false, error: message }
+  if (err.details) body.details = err.details
+  res.end(JSON.stringify(body))
 }
 
 export default errorHandler

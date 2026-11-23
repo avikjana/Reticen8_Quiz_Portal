@@ -14,8 +14,8 @@ const features = [
     title: 'Guided Configuration Exercises',
     description:
       'Follow structured, step-by-step exercises to configure enterprise firewall policies, interfaces, routing, and security profiles in a risk-free virtualized sandbox.',
-    accent: '#16A34A',
-    lightBg: 'bg-emerald-50',
+    accent: '#7c3aed',
+    lightBg: 'bg-purple-50',
   },
   {
     icon: Bug,
@@ -58,13 +58,13 @@ export default function PracticalLearning() {
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-rose-500/80" />
                   <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                  <span className="w-3 h-3 rounded-full bg-purple-500/80" />
                   <span className="ml-3 text-xs font-mono text-slate-400">
                     reticen8-lab-host ~ session #4829
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-800/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="flex items-center gap-2 text-xs font-mono text-purple-400 bg-purple-950/60 px-2.5 py-1 rounded-full border border-purple-800/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
                   <span>NGFW ONLINE</span>
                 </div>
               </div>
@@ -75,7 +75,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('policy')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'policy'
-                      ? 'border-brand-600 text-emerald-400'
+                      ? 'border-brand-600 text-purple-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -85,7 +85,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('threats')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'threats'
-                      ? 'border-brand-600 text-emerald-400'
+                      ? 'border-brand-600 text-purple-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -95,7 +95,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('topology')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'topology'
-                      ? 'border-brand-600 text-emerald-400'
+                      ? 'border-brand-600 text-purple-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -114,9 +114,9 @@ export default function PracticalLearning() {
                         <span>ACTION</span>
                         <span>APP-FILTER</span>
                       </div>
-                      <div className="flex justify-between text-emerald-400">
+                      <div className="flex justify-between text-purple-400">
                         <span>101 WAN-to-LAN-Web</span>
-                        <span className="text-emerald-400 font-bold">ALLOW</span>
+                        <span className="text-purple-400 font-bold">ALLOW</span>
                         <span>HTTPS / TLS 1.3</span>
                       </div>
                       <div className="flex justify-between text-rose-400">
@@ -131,11 +131,11 @@ export default function PracticalLearning() {
                       </div>
                     </div>
 
-                    <div className="pt-3 text-emerald-400">
+                    <div className="pt-3 text-purple-400">
                       <p>$ r8-cli firewall rule verify --rule 101</p>
                       <p className="text-slate-400 mt-1">✓ State table inspected: 1,482 active connections</p>
                       <p className="text-slate-400">✓ IPS inspection enabled on ingress interface ge-0/0/0</p>
-                      <p className="text-emerald-300 font-bold mt-2">✓ Task Completed: Policy deployed without downtime.</p>
+                      <p className="text-purple-300 font-bold mt-2">✓ Task Completed: Policy deployed without downtime.</p>
                     </div>
                   </div>
                 )}
@@ -152,9 +152,9 @@ export default function PracticalLearning() {
                         <span>[BLOCKED] Brute force SSH attempt from 198.51.100.42</span>
                         <span className="text-[10px] text-rose-400">0.05ms</span>
                       </div>
-                      <div className="p-2.5 rounded bg-emerald-950/30 border border-emerald-900/50 flex justify-between items-center text-emerald-300">
+                      <div className="p-2.5 rounded bg-purple-950/30 border border-purple-900/50 flex justify-between items-center text-purple-300">
                         <span>[CLEARED] Encrypted zero-trust traffic verified</span>
-                        <span className="text-[10px] text-emerald-400">TLS 1.3</span>
+                        <span className="text-[10px] text-purple-400">TLS 1.3</span>
                       </div>
                     </div>
                   </div>
@@ -166,12 +166,12 @@ export default function PracticalLearning() {
                     <div className="grid grid-cols-2 gap-3 pt-2">
                       <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
                         <span className="text-slate-400 text-[11px] block">HEADQUARTERS</span>
-                        <span className="text-emerald-400 font-bold text-sm">UP (1 Gbps)</span>
+                        <span className="text-purple-400 font-bold text-sm">UP (1 Gbps)</span>
                         <span className="text-[10px] text-slate-500 block mt-1">Latency: 4.2ms</span>
                       </div>
                       <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
                         <span className="text-slate-400 text-[11px] block">CLOUD VPC (AWS)</span>
-                        <span className="text-emerald-400 font-bold text-sm">UP (500 Mbps)</span>
+                        <span className="text-purple-400 font-bold text-sm">UP (500 Mbps)</span>
                         <span className="text-[10px] text-slate-500 block mt-1">Latency: 11.8ms</span>
                       </div>
                     </div>
@@ -182,7 +182,7 @@ export default function PracticalLearning() {
               {/* Console Footer Stats */}
               <div className="px-6 py-3.5 bg-[#090D16] border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
                 <span>Lab Progress: 7 / 10 Tasks</span>
-                <span className="text-emerald-400 font-bold">Score: 94%</span>
+                <span className="text-purple-400 font-bold">Score: 94%</span>
               </div>
             </motion.div>
           </div>
@@ -194,13 +194,13 @@ export default function PracticalLearning() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
                 <FlaskConical size={14} />
                 <span>Hands-On Virtual Labs</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 Go Beyond Theory.{' '}
-                <span className="text-brand-600">Learn Through Practice.</span>
+                <span className="text-slate-900">Learn Through Practice.</span>
               </h2>
               <p className="mt-4 text-base text-slate-600 leading-relaxed font-normal">
                 Experience real-world enterprise firewall configuration scenarios and develop the muscle memory required to deploy, manage, and troubleshoot mission-critical security infrastructure.

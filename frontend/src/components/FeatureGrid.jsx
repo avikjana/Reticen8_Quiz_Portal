@@ -17,8 +17,8 @@ const features = [
     icon: BookOpen,
     title: 'Structured Learning Paths',
     description: 'Progressive technical pathways taking you from zero networking knowledge to seasoned enterprise firewall architect.',
-    accent: '#16A34A',
-    lightBg: 'bg-emerald-50',
+    accent: '#7c3aed',
+    lightBg: 'bg-purple-50',
   },
   {
     icon: Cpu,
@@ -59,8 +59,8 @@ const features = [
     icon: FileText,
     title: 'Technical Whitepapers & Docs',
     description: 'Direct access to official firewall configuration blueprints, RFC summaries, and hardening guides.',
-    accent: '#059669',
-    lightBg: 'bg-emerald-50',
+    accent: '#7c3aed',
+    lightBg: 'bg-purple-50',
   },
   {
     icon: TrendingUp,
@@ -86,13 +86,13 @@ export default function FeatureGrid() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-10 sm:mb-16"
         >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
             <Sparkles size={14} />
             <span>Platform Capabilities</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
             Everything You Need to{' '}
-            <span className="text-brand-600">Master Cybersecurity</span>
+            <span className="text-slate-900">Master Cybersecurity</span>
           </h2>
           <p className="mt-4 text-base text-slate-500 leading-relaxed font-normal">
             A comprehensive professional learning platform built from the ground up for cybersecurity engineers, partner organizations, and security teams.
@@ -110,7 +110,7 @@ export default function FeatureGrid() {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.45, delay: idx * 0.05 }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="group p-6 rounded-3xl bg-white ring-1 ring-slate-200/80 hover:ring-emerald-200 shadow-[var(--shadow-soft)] card-lift"
+                className="group p-6 rounded-3xl bg-white ring-1 ring-slate-200/80 hover:ring-purple-200 shadow-[var(--shadow-soft)] card-lift"
               >
                 <div
                   className={`w-12 h-12 rounded-xl ${item.lightBg} flex items-center justify-center mb-5`}

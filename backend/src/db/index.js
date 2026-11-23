@@ -217,29 +217,31 @@ class MongoDB {
     }
   }
 
-  async findById(collection, id) {
+  async findById(collection, id, projection) {
     if (!COLLECTIONS[collection]) return null
-    const cacheKey = `${collection}:id:${id}`
+    const cacheKey = `${collection}:id:${id}${projection ? ':p' : ''}`
     const ttl = this.#ttl(collection)
     if (ttl > 0) {
       const cached = this._cache.get(cacheKey, ttl)
       if (cached !== undefined) return cached
     }
-    const doc = await this.db.collection(collection).findOne({ _docId: String(id) })
+    const opts = projection ? { projection } : undefined
+    const doc = await this.db.collection(collection).findOne({ _docId: String(id) }, opts)
     const result = this.#strip(doc)
     if (ttl > 0) this._cache.set(cacheKey, result)
     return result
   }
 
-  async findOne(collection, predicate) {
+  async findOne(collection, predicate, projection) {
     if (typeof predicate === 'object' && predicate !== null && typeof predicate !== 'function') {
-      const cacheKey = `${collection}:q:${JSON.stringify(predicate)}`
+      const cacheKey = `${collection}:q:${JSON.stringify(predicate)}${projection ? ':p:' + JSON.stringify(projection) : ''}`
       const ttl = this.#ttl(collection)
       if (ttl > 0) {
         const cached = this._cache.get(cacheKey, ttl)
         if (cached !== undefined) return cached
       }
-      const doc = await this.db.collection(collection).findOne(predicate)
+      const opts = projection ? { projection } : undefined
+      const doc = await this.db.collection(collection).findOne(predicate, opts)
       const result = this.#strip(doc)
       if (ttl > 0) this._cache.set(cacheKey, result)
       return result

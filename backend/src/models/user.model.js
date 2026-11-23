@@ -23,17 +23,17 @@ export class UserModel {
     return await db.read('users')
   }
 
-  static async findById(id) {
-    return await db.findById('users', id)
+  static async findById(id, projection) {
+    return await db.findById('users', id, projection)
   }
 
-  static async findByEmail(email) {
+  static async findByEmail(email, projection) {
     const cleanEmail = normaliseEmail(email)
-    return await db.findOne('users', { email: cleanEmail })
+    return await db.findOne('users', { email: cleanEmail }, projection)
   }
 
-  static async findByGoogleId(googleId) {
-    return await db.findOne('users', { googleId })
+  static async findByGoogleId(googleId, projection) {
+    return await db.findOne('users', { googleId }, projection)
   }
 
   static async findByEmailAndRole(email, role) {

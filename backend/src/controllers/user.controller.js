@@ -1,5 +1,6 @@
 import UserModel from '../models/user.model.js'
 import AppError from '../utils/AppError.js'
+import { invalidateAuthCache } from '../middlewares/auth.middleware.js'
 
 export class UserController {
   static async getProfile(req, res) {
@@ -18,6 +19,7 @@ export class UserController {
     }
     const { name, department, roleTitle } = req.body || {}
     const updated = await UserModel.update(req.user.id, { name, department, roleTitle })
+    invalidateAuthCache(req.user.id)
     return {
       success: true,
       profile: UserModel.sanitize(updated),

@@ -23,7 +23,7 @@ export default function LearningPaths() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-10 sm:mb-14"
         >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
             <Compass size={14} />
             <span>Structured Curriculum</span>
           </div>

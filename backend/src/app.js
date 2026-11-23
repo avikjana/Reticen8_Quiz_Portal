@@ -12,9 +12,13 @@ import handleChatRoutes from './routes/chat.routes.js'
 import handleQuizRoutes from './routes/quiz.routes.js'
 import errorHandler from './middlewares/error.middleware.js'
 import AppError from './utils/AppError.js'
+import AuthController from './controllers/auth.controller.js'
 import db from './db/index.js'
 
 const MAX_BODY_BYTES = 1024 * 1024
+
+// Pre-serialized static responses — avoids JSON.stringify on every call
+const ROLES_JSON = JSON.stringify(AuthController.ROLES_RESPONSE)
 
 const parseRequestBody = (req) => {
   return new Promise((resolve, reject) => {
@@ -108,6 +112,13 @@ export const createApp = () => {
       if (pathname === '/api/health' && method === 'GET') {
         setCorsHeaders(res, 200)
         res.end(HEALTH_JSON)
+        return
+      }
+
+      // Fast static response — no DB, no auth
+      if (pathname === '/api/auth/roles' && method === 'GET') {
+        setCorsHeaders(res, 200)
+        res.end(ROLES_JSON)
         return
       }
 

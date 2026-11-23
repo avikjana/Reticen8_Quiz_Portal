@@ -99,7 +99,7 @@ export default function Navbar() {
                   to={l.href}
                   className={({ isActive }) =>
                     `relative px-3 py-2 rounded-full text-sm font-semibold transition-colors ${
-                      isActive ? 'text-brand-600 bg-emerald-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                      isActive ? 'text-brand-600 bg-purple-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
                     }`
                   }
                 >

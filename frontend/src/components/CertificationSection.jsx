@@ -23,13 +23,13 @@ export default function CertificationSection() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-14"
         >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
             <Award size={14} />
             <span>Industry Credentials</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
             Validate Your Expertise.{' '}
-            <span className="text-brand-600">Get Certified.</span>
+            <span className="text-slate-900">Get Certified.</span>
           </h2>
           <p className="mt-4 text-base text-slate-500 leading-relaxed font-normal">
             Demonstrate your practical firewall and cybersecurity knowledge through Reticen8 professional certification programs recognised by enterprise employers worldwide.

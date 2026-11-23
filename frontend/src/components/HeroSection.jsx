@@ -73,7 +73,7 @@ function WaveGraphic() {
 }
 
 // Robust Image with beautiful photographic fallback
-function PhotoCard({ src, alt, caption, className, fallbackColor = 'from-emerald-700 to-slate-900' }) {
+function PhotoCard({ src, alt, caption, className, fallbackColor = 'from-purple-700 to-slate-900' }) {
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
 
@@ -99,7 +99,7 @@ function PhotoCard({ src, alt, caption, className, fallbackColor = 'from-emerald
           <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
             <Shield size={18} className="text-white" />
           </div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300">Reticen8</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-purple-300">Reticen8</span>
           <p className="text-base font-bold leading-tight mt-0.5">{caption}</p>
         </div>
       )}
@@ -115,9 +115,9 @@ export default function HeroSection() {
     <section className="relative isolate bg-white pt-8 pb-16 sm:pt-10 lg:pt-14 lg:pb-24 overflow-hidden">
       {/* Soft aurora glow */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-24 w-[28rem] h-[28rem] sm:w-[36rem] sm:h-[36rem] rounded-full bg-emerald-300/30 blur-3xl animate-blob" />
+        <div className="absolute -top-32 -right-24 w-[28rem] h-[28rem] sm:w-[36rem] sm:h-[36rem] rounded-full bg-purple-300/30 blur-3xl animate-blob" />
         <div className="absolute top-40 -left-32 w-[22rem] h-[22rem] sm:w-[30rem] sm:h-[30rem] rounded-full bg-sky-200/40 blur-3xl animate-blob [animation-delay:-6s]" />
-        <div className="absolute bottom-0 right-1/3 w-[18rem] h-[18rem] rounded-full bg-teal-200/30 blur-3xl animate-blob [animation-delay:-12s]" />
+        <div className="absolute bottom-0 right-1/3 w-[18rem] h-[18rem] rounded-full bg-purple-200/30 blur-3xl animate-blob [animation-delay:-12s]" />
         <div className="absolute inset-0 bg-dot-grid [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
       </div>
       {/* Background undulating wave patterns */}
@@ -137,7 +137,7 @@ export default function HeroSection() {
             >
               Master your firewall.
               <br />
-              <span className="text-gradient">Secure your network.</span>
+              <span className="text-slate-900">Secure your network.</span>
             </motion.h1>
 
             <motion.p
@@ -174,7 +174,7 @@ export default function HeroSection() {
               </Link>
               <Link
                 to="/courses"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-slate-800 bg-white/80 backdrop-blur ring-1 ring-slate-200 hover:ring-emerald-300 hover:text-brand-600 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)] active:scale-[0.98] transition-all duration-200"
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-slate-800 bg-white/80 backdrop-blur ring-1 ring-slate-200 hover:ring-purple-300 hover:text-brand-600 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)] active:scale-[0.98] transition-all duration-200"
               >
                 Explore Subjects
               </Link>
@@ -230,7 +230,7 @@ export default function HeroSection() {
                       alt="Cybersecurity Engineer configuring firewall console"
                       caption="Network Security Specialist"
                       className="h-[280px] sm:h-[400px] lg:h-[430px] rounded-3xl sm:rounded-[32px] animate-float"
-                      fallbackColor="from-emerald-700 via-teal-800 to-slate-900"
+                      fallbackColor="from-purple-700 via-purple-800 to-slate-900"
                     />
                   </motion.div>
                 </div>

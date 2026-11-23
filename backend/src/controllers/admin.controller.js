@@ -5,6 +5,7 @@ import db from '../db/index.js'
 import AppError from '../utils/AppError.js'
 import { validate } from '../middlewares/validate.middleware.js'
 import { adminCreateUserSchema } from '../validation/schemas.js'
+import { invalidateAuthCache } from '../middlewares/auth.middleware.js'
 
 export class AdminController {
   static async getOverview(req, res) {
@@ -103,6 +104,7 @@ export class AdminController {
     }
 
     const success = await UserModel.delete(id)
+    if (success) invalidateAuthCache(id)
     return { success, message: success ? 'User removed' : 'User not found' }
   }
 

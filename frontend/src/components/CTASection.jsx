@@ -9,9 +9,9 @@ export default function CTASection() {
 
   return (
     <section ref={ref} className="theme-fixed relative isolate py-16 sm:py-20 lg:py-28 bg-[#0F172A] text-white overflow-hidden" id="cta">
-      {/* Subtle green ambient glow */}
+      {/* Subtle purple ambient glow */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[700px] h-[350px] bg-emerald-500/20 blur-[120px] animate-blob rounded-full pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[700px] h-[350px] bg-purple-500/20 blur-[120px] animate-blob rounded-full pointer-events-none"
         aria-hidden="true"
       />
 
@@ -32,7 +32,7 @@ export default function CTASection() {
           transition={{ duration: 0.5 }}
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider mb-6">
             <ShieldCheck size={16} />
             <span>Accelerate Your Security Career</span>
           </div>
@@ -40,7 +40,7 @@ export default function CTASection() {
           {/* Headline */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15] text-white">
             Build Your Expertise in{' '}
-            <span className="text-emerald-400">Enterprise Cybersecurity.</span>
+            <span className="text-purple-400">Enterprise Cybersecurity.</span>
           </h2>
 
           {/* Description */}
