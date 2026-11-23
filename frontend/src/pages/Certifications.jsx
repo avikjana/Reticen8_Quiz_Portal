@@ -98,27 +98,27 @@ function CertificationsView({ certificationsData }) {
       <Navbar />
 
       {/* Certifications Hero */}
-      <section className="theme-fixed bg-slate-900 text-white pt-10 pb-16 relative overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[600px] max-w-[90vw] h-[300px] bg-emerald-600/10 blur-[140px] rounded-full pointer-events-none" />
+      <section className="bg-white pt-10 pb-16 relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-[600px] max-w-[90vw] h-[300px] bg-[#4b6cf7]/10 blur-[140px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-6">
-            <Link to="/" className="hover:text-emerald-400 transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[#4b6cf7] transition-colors">Home</Link>
             <ChevronRight size={13} />
-            <span className="text-slate-200">Certifications &amp; Credentials</span>
+            <span className="text-slate-700">Certifications &amp; Credentials</span>
           </nav>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#4b6cf7]/10 text-[#4b6cf7] border border-[#4b6cf7]/20 text-xs font-bold uppercase tracking-wider mb-4">
               <Award size={14} />
               <span>Industry-Standard Credentials</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
               Validate Your Firewall Expertise.{' '}
-              <span className="text-emerald-400">Advance Your Career.</span>
+              <span className="text-slate-900">Advance Your Career.</span>
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
+            <p className="mt-4 text-base sm:text-lg text-slate-500 leading-relaxed font-normal">
               Reticen8 professional certifications demonstrate hands-on mastery in enterprise network security, next-generation firewall operations, and zero-trust architecture.
             </p>
           </div>
@@ -235,7 +235,7 @@ function CertificationsView({ certificationsData }) {
                   <div className="pt-2 flex flex-wrap gap-3">
                     <Link
                       to="/courses"
-                      className="px-6 py-2.5 rounded-xl bg-action-600 text-white text-xs font-bold hover:bg-action-700 shadow-xs transition-colors"
+                      className="px-6 py-2.5 rounded-xl bg-[#4b6cf7] text-white text-xs font-bold hover:bg-[#3b5ce6] shadow-xs transition-colors"
                     >
                       Browse Prep Courses
                     </Link>
@@ -277,7 +277,7 @@ function CertificationsView({ certificationsData }) {
                         </div>
                         <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-emerald-500 to-brand-600 rounded-full"
+                            className="h-full bg-gradient-to-r from-[#4b6cf7] to-[#3b5ce6] rounded-full"
                             style={{ width: b.weight }}
                           />
                         </div>
@@ -335,7 +335,7 @@ function CertificationsView({ certificationsData }) {
                     <td className="py-4 px-4 font-semibold">{c.level}</td>
                     <td className="py-4 px-4 font-mono">{c.examDuration}</td>
                     <td className="py-4 px-4 font-mono">{c.questionCount}</td>
-                    <td className="py-4 px-4 font-mono text-emerald-700 font-bold">{c.passingScore}</td>
+                    <td className="py-4 px-4 font-mono text-[#4b6cf7] font-bold">{c.passingScore}</td>
                     <td className="py-4 px-4 font-mono font-bold text-slate-900">{c.voucherCost}</td>
                     <td className="py-4 px-4 text-slate-500">{c.validity}</td>
                   </tr>
@@ -347,15 +347,15 @@ function CertificationsView({ certificationsData }) {
       </section>
 
       {/* Verification Tool Section */}
-      <section className="theme-fixed py-16 bg-slate-900 text-white relative">
+      <section className="py-16 bg-white relative">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+          <div className="w-12 h-12 rounded-2xl bg-[#4b6cf7]/10 text-[#4b6cf7] flex items-center justify-center mx-auto mb-4 border border-[#4b6cf7]/20">
             <ShieldCheck size={26} />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
             Verify a Candidate's Reticen8 Credential
           </h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-slate-500">
             Enter a credential verification serial number to validate authenticity against our global registry.
           </p>
 
@@ -365,12 +365,12 @@ function CertificationsView({ certificationsData }) {
               value={verifyId}
               onChange={(e) => setVerifyId(e.target.value)}
               placeholder="e.g. R8-2026-RCFP-8492"
-              className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
+              className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#4b6cf7] font-mono"
             />
             <button
               type="submit"
               disabled={verifying}
-              className="px-6 py-3 rounded-xl bg-action-500 hover:bg-action-600 ring-1 ring-white/25 text-white text-xs font-bold transition-colors whitespace-nowrap disabled:opacity-60"
+              className="px-6 py-3 rounded-xl bg-[#4b6cf7] hover:bg-[#3b5ce6] ring-1 ring-white/25 text-white text-xs font-bold transition-colors whitespace-nowrap disabled:opacity-60"
             >
               {verifying ? 'Checking…' : 'Verify Credential'}
             </button>
@@ -403,7 +403,7 @@ function CertificationsView({ certificationsData }) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl max-w-xl w-full p-8 shadow-2xl relative border-4 border-emerald-600/30 text-slate-900 outline-none"
+              className="bg-white rounded-3xl max-w-xl w-full p-8 shadow-2xl relative border-4 border-[#4b6cf7]/30 text-slate-900 outline-none"
             >
               <button
                 onClick={() => setShowCertModal(false)}
@@ -415,14 +415,14 @@ function CertificationsView({ certificationsData }) {
               {/* Certificate body with decorative border */}
               <div className="border-2 border-slate-200 rounded-2xl p-6 sm:p-8 bg-gradient-to-b from-slate-50/50 to-white relative overflow-hidden">
                 {/* Decorative corner accents */}
-                <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-emerald-400/40 rounded-tl-2xl" />
-                <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-emerald-400/40 rounded-tr-2xl" />
-                <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-emerald-400/40 rounded-bl-2xl" />
-                <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-emerald-400/40 rounded-br-2xl" />
+                <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-[#4b6cf7]/40 rounded-tl-2xl" />
+                <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-[#4b6cf7]/40 rounded-tr-2xl" />
+                <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-[#4b6cf7]/40 rounded-bl-2xl" />
+                <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-[#4b6cf7]/40 rounded-br-2xl" />
 
                 {/* Header */}
                 <div className="text-center mb-5">
-                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-brand-600 flex items-center justify-center mx-auto mb-3">
+                  <div className="w-14 h-14 rounded-full bg-[#4b6cf7]/10 text-[#4b6cf7] flex items-center justify-center mx-auto mb-3">
                     <ShieldCheck size={28} />
                   </div>
                   {verificationResult.sample ? (
@@ -430,7 +430,7 @@ function CertificationsView({ certificationsData }) {
                       Sample certificate — not a real credential
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold tracking-widest text-brand-600 uppercase bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    <span className="text-[10px] font-bold tracking-widest text-[#4b6cf7] uppercase bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
                       Officially verified credential
                     </span>
                   )}
@@ -469,7 +469,7 @@ function CertificationsView({ certificationsData }) {
                   </div>
                   <div>
                     <span className="text-slate-400 block font-medium text-[10px]">Passing Score</span>
-                    <span className="font-mono font-bold text-emerald-700">{verificationResult.score}</span>
+                    <span className="font-mono font-bold text-[#4b6cf7]">{verificationResult.score}</span>
                   </div>
                   <div>
                     <span className="text-slate-400 block font-medium text-[10px]">Issued Date</span>
@@ -494,11 +494,11 @@ function CertificationsView({ certificationsData }) {
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm italic text-slate-600 font-semibold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                        Rituparna SinghaRoy
+                        Reticen8 Technologies
                       </p>
                       <div className="w-full h-px bg-slate-300 mx-auto" />
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Director</p>
-                      <p className="text-[9px] text-slate-400">Academy & Training</p>
+                      <p className="text-[9px] text-slate-400">Reticen8 Technologies</p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm italic text-slate-600 font-semibold" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
@@ -515,7 +515,7 @@ function CertificationsView({ certificationsData }) {
               <div className="mt-5 flex gap-3">
                 <button
                   onClick={() => setShowCertModal(false)}
-                  className="theme-fixed flex-1 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
+                  className="flex-1 py-3 rounded-xl bg-[#4b6cf7] hover:bg-[#3b5ce6] text-white text-xs font-bold transition-colors"
                 >
                   Close Verification
                 </button>

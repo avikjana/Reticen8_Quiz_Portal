@@ -157,9 +157,9 @@
     --color-brand-100: #dbe4ff;
     --color-brand-600: #4b6cf7;
     --color-brand-700: #3b5ce6;
-    --color-action-500: #2a4494;
-    --color-action-600: #1b2f6e;
-    --color-action-700: #132250;
+    --color-action-500: #5a7af8;
+    --color-action-600: #4b6cf7;
+    --color-action-700: #3b5ce6;
   }
 
   /* "White" surfaces (cards, header, inputs) become dark cards.
@@ -320,9 +320,9 @@
   --color-brand-100: #dbe4ff;
   --color-brand-600: #4b6cf7;
   --color-brand-700: #3b5ce6;
-  --color-action-500: #2a4494;
-  --color-action-600: #1b2f6e;
-  --color-action-700: #132250;
+  --color-action-500: #5a7af8;
+  --color-action-600: #4b6cf7;
+  --color-action-700: #3b5ce6;
 }
 
 :root[data-theme='dark'] {
