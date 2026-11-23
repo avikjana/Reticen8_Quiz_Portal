@@ -111,11 +111,7 @@ export default function Login() {
                     size={16}
                     className={
                       isSelected
-                        ? cat.color === 'purple'
-                          ? 'text-purple-600'
-                          : cat.color === 'emerald'
-                          ? 'text-brand-600'
-                          : 'text-blue-600'
+                        ? 'text-[#4b6cf7]'
                         : 'text-slate-400'
                     }
                   />
@@ -144,8 +140,8 @@ export default function Login() {
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-xs text-emerald-800 font-semibold">
-              <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-2.5 text-xs text-blue-800 font-semibold">
+              <CheckCircle2 size={16} className="text-[#4b6cf7] flex-shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -238,7 +234,7 @@ export default function Login() {
         <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-slate-600">
           <div>
             <span>New to Reticen8 Academy? </span>
-            <Link to="/signup" state={{ from }} className="font-bold text-brand-600 hover:underline">
+            <Link to="/signup" state={{ from }} className="font-bold text-[#4b6cf7] hover:underline">
               Create a free account
             </Link>
           </div>

@@ -84,7 +84,7 @@ export default function SignUp() {
         <div className="p-8 pb-6 border-b border-slate-100">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-emerald-50 text-brand-600">
+              <span className="p-1.5 rounded-lg bg-blue-50 text-[#4b6cf7]">
                 <UserPlus size={18} />
               </span>
               <h1 className="text-xl font-black text-slate-900 tracking-tight">
@@ -94,7 +94,7 @@ export default function SignUp() {
             <Link
               to="/login"
               state={{ from }}
-              className="text-xs font-bold text-brand-600 hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-[#4b6cf7] hover:underline flex items-center gap-1"
             >
               <span>Sign In</span>
               <ArrowRight size={13} />
@@ -140,7 +140,7 @@ export default function SignUp() {
                           ? 'text-purple-600'
                           : cat.id === 'Partner'
                           ? 'text-blue-600'
-                          : 'text-brand-600'
+                          : 'text-[#4b6cf7]'
                         : 'text-slate-400'
                     }`}
                   />
@@ -155,7 +155,7 @@ export default function SignUp() {
         <form onSubmit={handleSubmit} className="p-8 space-y-4">
           {/* Active Category Tag */}
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 text-brand-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-blue-100 text-[#4b6cf7] flex items-center justify-center font-bold">
               <IconComponent size={16} />
             </div>
             <span className="text-xs font-bold text-slate-800">{activeCategory.label}</span>
@@ -169,8 +169,8 @@ export default function SignUp() {
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-xs text-emerald-800 font-semibold">
-              <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-2.5 text-xs text-blue-800 font-semibold">
+              <CheckCircle2 size={16} className="text-[#4b6cf7] flex-shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -186,7 +186,7 @@ export default function SignUp() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Avik Jana"
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#4b6cf7]/20 focus:border-[#4b6cf7]"
               />
             </div>
           </div>
@@ -202,7 +202,7 @@ export default function SignUp() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="avik@enterprise.com"
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#4b6cf7]/20 focus:border-[#4b6cf7]"
               />
             </div>
           </div>
@@ -217,7 +217,7 @@ export default function SignUp() {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 placeholder="e.g. Security Operations Center (SOC)"
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#4b6cf7]/20 focus:border-[#4b6cf7]"
               />
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function SignUp() {
                 placeholder="Create a secure password"
                 minLength={8}
                 autoComplete="new-password"
-                className="w-full h-11 pl-10 pr-11 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
+                className="w-full h-11 pl-10 pr-11 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#4b6cf7]/20 focus:border-[#4b6cf7]"
               />
               <button
                 type="button"
@@ -288,7 +288,7 @@ export default function SignUp() {
         <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-slate-600">
           <div>
             <span>Already have an account? </span>
-            <Link to="/login" state={{ from }} className="font-bold text-brand-600 hover:underline">
+            <Link to="/login" state={{ from }} className="font-bold text-[#4b6cf7] hover:underline">
               Sign In here
             </Link>
           </div>

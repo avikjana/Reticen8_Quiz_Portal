@@ -23,7 +23,7 @@ export default function CertificationSection() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-14"
         >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-[#3b5ce6] text-xs font-bold uppercase tracking-wider mb-3">
             <Award size={14} />
             <span>Industry Credentials</span>
           </div>
@@ -41,7 +41,7 @@ export default function CertificationSection() {
           {certifications.map((c, i) => (
             <div key={c.id} className="flex items-center gap-3">
               <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-lg bg-white border border-slate-200 shadow-2xs">
-                <ShieldCheck size={16} className="text-brand-600" />
+                <ShieldCheck size={16} className="text-[#4b6cf7]" />
                 <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">{c.code}</span>
                 <span className="text-xs text-slate-400">({c.level})</span>
               </div>

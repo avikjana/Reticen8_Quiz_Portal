@@ -11,7 +11,7 @@ const PHOTOS = {
 
 function Photo({ src, className }) {
   return (
-    <div className={`theme-fixed relative overflow-hidden bg-gradient-to-br from-emerald-700 via-teal-800 to-slate-900 shadow-[var(--shadow-lift)] ring-1 ring-slate-900/5 ${className}`}>
+    <div className={`theme-fixed relative overflow-hidden bg-gradient-to-br from-blue-700 via-indigo-800 to-slate-900 shadow-[var(--shadow-lift)] ring-1 ring-slate-900/5 ${className}`}>
       <img
         src={src}
         alt=""
@@ -43,7 +43,7 @@ export default function AuthLayout({
       <main id="main-content" className="relative isolate flex-1 overflow-hidden">
         {/* Background: soft glows + dot grid, like the home hero */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-40 -right-32 w-[34rem] h-[34rem] rounded-full bg-emerald-200/40 blur-3xl" />
+          <div className="absolute -top-40 -right-32 w-[34rem] h-[34rem] rounded-full bg-blue-200/40 blur-3xl" />
           <div className="absolute top-1/3 -left-40 w-[28rem] h-[28rem] rounded-full bg-sky-200/40 blur-3xl" />
           <div className="absolute inset-0 bg-dot-grid [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
         </div>
@@ -60,7 +60,7 @@ export default function AuthLayout({
           <div className="grid lg:grid-cols-12 gap-10 xl:gap-16 items-center">
             {/* Left: info panel (desktop) */}
             <section className="hidden lg:block lg:col-span-6 xl:col-span-7">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/70 text-brand-700 text-xs font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider">
                 <ShieldCheck size={14} />
                 {eyebrow}
               </div>
@@ -69,7 +69,7 @@ export default function AuthLayout({
                   <>
                     {first}.
                     <br />
-                    <span className="text-gradient">{rest.join('. ')}</span>
+                    <span className="text-slate-900">{rest.join('. ')}</span>
                   </>
                 ) : (
                   title
@@ -80,7 +80,7 @@ export default function AuthLayout({
               <ul className="mt-6 space-y-2.5">
                 {points.map((p) => (
                   <li key={p} className="flex items-center gap-2.5 text-sm font-medium text-slate-700">
-                    <CheckCircle2 size={17} className="text-brand-600 flex-shrink-0" />
+                    <CheckCircle2 size={17} className="text-[#4b6cf7] flex-shrink-0" />
                     {p}
                   </li>
                 ))}

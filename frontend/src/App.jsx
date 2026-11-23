@@ -65,7 +65,7 @@ function RouteTitle() {
 function PageLoader() {
   return (
     <div className="min-h-dvh flex items-center justify-center bg-white" role="status" aria-label="Loading">
-      <span className="w-10 h-10 rounded-full border-[3px] border-emerald-100 border-t-brand-600 animate-spin" />
+      <span className="w-10 h-10 rounded-full border-[3px] border-blue-100 border-t-[#4b6cf7] animate-spin" />
     </div>
   )
 }

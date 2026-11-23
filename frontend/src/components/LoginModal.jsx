@@ -138,11 +138,7 @@ export default function LoginModal() {
                     size={16}
                     className={
                       isSelected
-                        ? cat.color === 'purple'
-                          ? 'text-purple-600'
-                          : cat.color === 'emerald'
-                          ? 'text-brand-600'
-                          : 'text-blue-600'
+                        ? 'text-[#4b6cf7]'
                         : 'text-slate-400'
                     }
                   />
@@ -183,8 +179,8 @@ export default function LoginModal() {
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2.5 text-xs text-emerald-800 font-semibold">
-              <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-2.5 text-xs text-blue-800 font-semibold">
+              <CheckCircle2 size={16} className="text-[#4b6cf7] flex-shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -247,7 +243,7 @@ export default function LoginModal() {
           {/* Backend Connection Indicator */}
           <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4b6cf7] animate-pulse" />
               <span>Target: Backend Auth Gateway (Port 5000)</span>
             </span>
             <span className="font-mono text-slate-500">v7.4 API</span>
@@ -296,7 +292,7 @@ export default function LoginModal() {
             <a
               href="/signup"
               onClick={() => closeLoginModal()}
-              className="font-bold text-brand-600 hover:underline"
+              className="font-bold text-[#4b6cf7] hover:underline"
             >
               Sign Up
             </a>

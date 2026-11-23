@@ -65,7 +65,7 @@ export default function ResetPassword() {
           </div>
         ) : done ? (
           <div role="status">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-brand-600 flex items-center justify-center mb-5">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#4b6cf7] flex items-center justify-center mb-5">
               <CheckCircle2 size={24} />
             </div>
             <h2 className="text-xl font-black text-slate-900 mb-2">Password updated</h2>
@@ -97,7 +97,7 @@ export default function ResetPassword() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a secure password"
-                    className="w-full h-11 pl-10 pr-11 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
+                    className="w-full h-11 pl-10 pr-11 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#4b6cf7]/20 focus:border-[#4b6cf7]"
                   />
                   <button
                     type="button"
@@ -124,7 +124,7 @@ export default function ResetPassword() {
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     placeholder="Re-enter your password"
-                    className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600"
+                    className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#4b6cf7]/20 focus:border-[#4b6cf7]"
                   />
                 </div>
               </div>

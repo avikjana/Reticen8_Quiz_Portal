@@ -68,7 +68,7 @@ export default function UserMenu({ role, roleTheme }) {
               }}
               className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
             >
-              <RefreshCw size={13} className="text-brand-600" /> Switch account
+              <RefreshCw size={13} className="text-[#4b6cf7]" /> Switch account
             </button>
           </div>
 
@@ -77,9 +77,9 @@ export default function UserMenu({ role, roleTheme }) {
             <Link
               to={role.dashboardPath}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 p-2 rounded-lg bg-emerald-50/60 hover:bg-emerald-50 text-slate-900 font-bold"
+              className="flex items-center gap-2 p-2 rounded-lg bg-blue-50/60 hover:bg-blue-50 text-slate-900 font-bold"
             >
-              <Shield size={14} className="text-brand-600" />
+              <Shield size={14} className="text-[#4b6cf7]" />
               <span>{role.dashboardLabel}</span>
             </Link>
             <Link
@@ -87,14 +87,14 @@ export default function UserMenu({ role, roleTheme }) {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
             >
-              <BookOpen size={14} className="text-brand-600" /> Course Catalog
+              <BookOpen size={14} className="text-[#4b6cf7]" /> Course Catalog
             </Link>
             <Link
               to="/certifications"
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
             >
-              <Award size={14} className="text-brand-600" /> Certifications &amp; Badges
+              <Award size={14} className="text-[#4b6cf7]" /> Certifications &amp; Badges
             </Link>
           </div>
 
@@ -108,7 +108,7 @@ export default function UserMenu({ role, roleTheme }) {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
             >
-              <LogIn size={13} className="text-brand-600" />
+              <LogIn size={13} className="text-[#4b6cf7]" />
               <span>Login / Switch Account</span>
             </Link>
             <Link
@@ -152,7 +152,7 @@ export default function UserMenu({ role, roleTheme }) {
       to="/login"
       className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
     >
-      <LogIn size={13} className="text-brand-600" />
+      <LogIn size={13} className="text-[#4b6cf7]" />
       <span>Login</span>
     </Link>
     <Link

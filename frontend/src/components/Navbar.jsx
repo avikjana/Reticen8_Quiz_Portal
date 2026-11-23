@@ -99,7 +99,7 @@ export default function Navbar() {
                   to={l.href}
                   className={({ isActive }) =>
                     `relative px-3 py-2 rounded-full text-sm font-semibold transition-colors ${
-                      isActive ? 'text-brand-600 bg-purple-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                      isActive ? 'text-[#4b6cf7] bg-blue-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
                     }`
                   }
                 >
@@ -118,7 +118,7 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search courses…"
-                className="w-full h-10 pl-10 pr-4 rounded-full border border-slate-200 bg-slate-100/60 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 focus:outline-none transition-all"
+                className="w-full h-10 pl-10 pr-4 rounded-full border border-slate-200 bg-slate-100/60 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-[#4b6cf7] focus:ring-2 focus:ring-[#4b6cf7]/20 focus:outline-none transition-all"
               />
             </form>
           </div>

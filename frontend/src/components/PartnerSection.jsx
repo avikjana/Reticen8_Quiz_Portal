@@ -63,7 +63,7 @@ export default function PartnerSection() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-[#3b5ce6] text-xs font-bold uppercase tracking-wider mb-3">
                 <Globe2 size={14} />
                 <span>Global Ecosystem</span>
               </div>
@@ -80,7 +80,7 @@ export default function PartnerSection() {
             <ul className="mt-8 grid sm:grid-cols-2 gap-3.5">
               {benefits.map((b) => (
                 <li key={b} className="flex items-start gap-2.5">
-                  <CheckCircle2 size={17} className="text-brand-600 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 size={17} className="text-[#4b6cf7] mt-0.5 flex-shrink-0" />
                   <span className="text-sm font-medium text-slate-700">{b}</span>
                 </li>
               ))}
@@ -145,7 +145,7 @@ export default function PartnerSection() {
 
               {/* Verified Trust Statement */}
               <div className="p-4 rounded-xl bg-purple-50/70 border border-purple-200/60 flex items-center gap-3">
-                <Sparkles size={18} className="text-brand-600 flex-shrink-0" />
+                <Sparkles size={18} className="text-[#4b6cf7] flex-shrink-0" />
                 <p className="text-xs text-purple-900 leading-relaxed font-medium">
                   Reticen8 partner credentials are cryptographically verifiable and backed by our continuous enterprise syllabus.
                 </p>

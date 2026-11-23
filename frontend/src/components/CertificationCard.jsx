@@ -4,12 +4,12 @@ import { ArrowRight, FileCheck, CheckCircle2, ShieldCheck } from 'lucide-react'
 
 const badgeColors = {
   Associate: {
-    gradient: 'from-emerald-500 to-teal-600',
-    border: 'border-emerald-200',
-    lightBg: 'bg-emerald-50',
-    tagText: 'text-emerald-700',
-    btnHover: 'hover:bg-action-600',
-    accent: '#16A34A',
+    gradient: 'from-blue-500 to-blue-600',
+    border: 'border-blue-200',
+    lightBg: 'bg-blue-50',
+    tagText: 'text-blue-700',
+    btnHover: 'hover:bg-[#4b6cf7]',
+    accent: '#4b6cf7',
   },
   Professional: {
     gradient: 'from-blue-600 to-indigo-700',
@@ -60,10 +60,10 @@ export function CertificationCard({ cert, index }) {
       </div>
 
       {/* Code & Title */}
-      <span className="text-xs font-black tracking-widest text-brand-600 uppercase">
+      <span className="text-xs font-black tracking-widest text-[#4b6cf7] uppercase">
         {cert.code}
       </span>
-      <h3 className="text-lg font-bold text-slate-900 leading-snug mt-1 group-hover:text-brand-600 transition-colors">
+      <h3 className="text-lg font-bold text-slate-900 leading-snug mt-1 group-hover:text-[#4b6cf7] transition-colors">
         {cert.title}
       </h3>
 
@@ -74,7 +74,7 @@ export function CertificationCard({ cert, index }) {
       {/* Exam metadata */}
       <div className="mt-6 pt-5 border-t border-slate-100 space-y-2.5">
         <div className="flex items-start gap-2 text-xs text-slate-600">
-          <CheckCircle2 size={15} className="text-brand-600 mt-0.5 flex-shrink-0" />
+          <CheckCircle2 size={15} className="text-[#4b6cf7] mt-0.5 flex-shrink-0" />
           <span><strong className="text-slate-800">Prerequisites:</strong> {cert.prerequisites}</span>
         </div>
         <div className="flex items-start gap-2 text-xs text-slate-600">

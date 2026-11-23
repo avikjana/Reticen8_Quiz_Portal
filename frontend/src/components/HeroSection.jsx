@@ -174,7 +174,7 @@ export default function HeroSection() {
               </Link>
               <Link
                 to="/courses"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-slate-800 bg-white/80 backdrop-blur ring-1 ring-slate-200 hover:ring-purple-300 hover:text-brand-600 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)] active:scale-[0.98] transition-all duration-200"
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-slate-800 bg-white/80 backdrop-blur ring-1 ring-slate-200 hover:ring-[#4b6cf7]/40 hover:text-[#4b6cf7] hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)] active:scale-[0.98] transition-all duration-200"
               >
                 Explore Subjects
               </Link>
@@ -188,15 +188,15 @@ export default function HeroSection() {
               className="mt-8 pt-6 border-t border-slate-200/70 flex flex-wrap items-center gap-y-2 gap-x-5 sm:gap-x-6 text-xs text-slate-500 font-medium"
             >
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={15} className="text-brand-600" />
+                <CheckCircle2 size={15} className="text-[#4b6cf7]" />
                 Professional Training
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={15} className="text-brand-600" />
+                <CheckCircle2 size={15} className="text-[#4b6cf7]" />
                 Practical Learning
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={15} className="text-brand-600" />
+                <CheckCircle2 size={15} className="text-[#4b6cf7]" />
                 Industry-Focused Certification
               </span>
             </motion.div>

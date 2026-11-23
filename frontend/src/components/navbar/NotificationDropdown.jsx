@@ -37,7 +37,7 @@ export default function NotificationDropdown() {
       notifications.push({
         id: `enr-${e.id}`,
         icon: BookOpen,
-        iconBg: 'bg-emerald-100 text-emerald-600',
+        iconBg: 'bg-blue-100 text-[#4b6cf7]',
         title: 'Course Enrolled',
         message: `You enrolled in "${e.course.title}".`,
         time: formatTimeAgo(e.enrolledAt),
@@ -79,7 +79,7 @@ export default function NotificationDropdown() {
       >
         <Bell size={18} />
         {hasUnread && (
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#4b6cf7] rounded-full ring-2 ring-white" />
         )}
       </button>
 
@@ -153,7 +153,7 @@ export default function NotificationDropdown() {
               <Link
                 to="/courses"
                 onClick={() => setOpen(false)}
-                className="text-xs font-semibold text-brand-600 hover:underline"
+                className="text-xs font-semibold text-[#4b6cf7] hover:underline"
               >
                 Browse all courses →
               </Link>

@@ -77,7 +77,7 @@ export default function MobileDrawer({ open, onClose, roleTheme, searchQuery, se
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search courses, articles..."
-              className="w-full pl-9 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 transition-all"
+              className="w-full pl-9 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:bg-white focus:border-[#4b6cf7] focus:ring-2 focus:ring-[#4b6cf7]/20 transition-all"
             />
           </form>
 
@@ -102,7 +102,7 @@ export default function MobileDrawer({ open, onClose, roleTheme, searchQuery, se
                 <Link
                   to="/signup"
                   onClick={() => onClose()}
-                  className="text-brand-600 font-bold hover:underline"
+                  className="text-[#4b6cf7] font-bold hover:underline"
                 >
                   + Register Account
                 </Link>
@@ -125,7 +125,7 @@ export default function MobileDrawer({ open, onClose, roleTheme, searchQuery, se
                   onClick={() => onClose()}
                   className="py-2.5 px-3 text-center text-xs font-bold text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200 flex items-center justify-center gap-1.5"
                 >
-                  <LogIn size={14} className="text-brand-600" />
+                  <LogIn size={14} className="text-[#4b6cf7]" />
                   <span>Login</span>
                 </Link>
                 <Link
@@ -166,15 +166,15 @@ export default function MobileDrawer({ open, onClose, roleTheme, searchQuery, se
                   onClick={() => onClose()}
                   className={({ isActive }) =>
                     `group flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold transition-colors ${
-                      isActive ? 'bg-emerald-50 text-brand-600' : 'text-slate-700 hover:text-brand-600 hover:bg-emerald-50'
+                      isActive ? 'bg-blue-50 text-[#4b6cf7]' : 'text-slate-700 hover:text-[#4b6cf7] hover:bg-blue-50'
                     }`
                   }
                 >
-                  <span className="w-9 h-9 rounded-lg bg-emerald-50 group-hover:bg-white flex items-center justify-center transition-colors">
-                    <Icon size={18} className="text-brand-600" />
+                  <span className="w-9 h-9 rounded-lg bg-blue-50 group-hover:bg-white flex items-center justify-center transition-colors">
+                    <Icon size={18} className="text-[#4b6cf7]" />
                   </span>
                   <span className="flex-1">{link.label}</span>
-                  <ArrowRight size={14} className="text-slate-300 group-hover:text-brand-600 group-hover:translate-x-0.5 transition-all" />
+                  <ArrowRight size={14} className="text-slate-300 group-hover:text-[#4b6cf7] group-hover:translate-x-0.5 transition-all" />
                 </NavLink>
               )
             })}

@@ -45,14 +45,14 @@ export default function ExploreMenu() {
         onClick={() => setOpen(!open)}
         className={`flex items-center gap-2 px-3.5 py-2 rounded-full border text-sm font-semibold transition-all ${
           open
-            ? 'border-emerald-300 bg-emerald-50 text-brand-600'
+            ? 'border-blue-300 bg-blue-50 text-[#4b6cf7]'
             : 'border-slate-200 bg-white/70 text-slate-700 hover:border-slate-300 hover:bg-white hover:shadow-[var(--shadow-soft)]'
         }`}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls="explore-menu"
       >
-        <LayoutGrid size={16} className="text-brand-600" />
+        <LayoutGrid size={16} className="text-[#4b6cf7]" />
         <span>Explore</span>
         <ChevronDown
           size={14}
@@ -86,9 +86,9 @@ export default function ExploreMenu() {
                           onClick={() => setOpen(false)}
                           className="group/item block p-2 rounded-xl hover:bg-slate-50 transition-colors"
                         >
-                          <div className="text-sm font-semibold text-slate-800 group-hover/item:text-brand-600 flex items-center justify-between">
+                          <div className="text-sm font-semibold text-slate-800 group-hover/item:text-[#4b6cf7] flex items-center justify-between">
                             <span>{item.name}</span>
-                            <ArrowRight size={12} className="opacity-0 group-hover/item:opacity-100 -translate-x-1 group-hover/item:translate-x-0 transition-all text-brand-600" />
+                            <ArrowRight size={12} className="opacity-0 group-hover/item:opacity-100 -translate-x-1 group-hover/item:translate-x-0 transition-all text-[#4b6cf7]" />
                           </div>
                           <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
                             {item.desc}
@@ -106,7 +106,7 @@ export default function ExploreMenu() {
               <Link
                 to="/certifications"
                 onClick={() => setOpen(false)}
-                className="text-brand-600 font-semibold hover:underline flex items-center gap-1"
+                className="text-[#4b6cf7] font-semibold hover:underline flex items-center gap-1"
               >
                 View Credentials &amp; Blueprints →
               </Link>

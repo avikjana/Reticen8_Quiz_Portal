@@ -75,7 +75,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('policy')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'policy'
-                      ? 'border-brand-600 text-purple-400'
+                      ? 'border-[#4b6cf7] text-purple-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -85,7 +85,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('threats')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'threats'
-                      ? 'border-brand-600 text-purple-400'
+                      ? 'border-[#4b6cf7] text-purple-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -95,7 +95,7 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('topology')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'topology'
-                      ? 'border-brand-600 text-purple-400'
+                      ? 'border-[#4b6cf7] text-purple-400'
                       : 'border-transparent text-slate-400 hover:text-slate-300'
                   }`}
                 >
@@ -194,7 +194,7 @@ export default function PracticalLearning() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
             >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100/60 text-[#3b5ce6] text-xs font-bold uppercase tracking-wider mb-3">
                 <FlaskConical size={14} />
                 <span>Hands-On Virtual Labs</span>
               </div>
