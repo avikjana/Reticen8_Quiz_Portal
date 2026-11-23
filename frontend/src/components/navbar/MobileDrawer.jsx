@@ -131,7 +131,7 @@ export default function MobileDrawer({ open, onClose, roleTheme, searchQuery, se
                 <Link
                   to="/signup"
                   onClick={() => onClose()}
-                  className="py-2.5 px-3 text-center text-xs font-bold text-white bg-action-600 rounded-xl hover:bg-action-700 flex items-center justify-center gap-1.5 shadow-2xs"
+                  className="py-2.5 px-3 text-center text-xs font-bold text-white bg-[#4b6cf7] rounded-xl hover:bg-[#3b5ce6] flex items-center justify-center gap-1.5 shadow-2xs"
                 >
                   <span>Sign Up</span>
                   <ArrowRight size={13} />

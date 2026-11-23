@@ -74,15 +74,15 @@ export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="theme-fixed bg-[#0B1120] text-slate-400 border-t border-slate-800/80">
+    <footer className="bg-white text-slate-500 border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
 
           {/* Col 1: Brand & Bio */}
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
-            <Logo tone="light" className="mb-4" />
+            <Logo className="mb-4" />
 
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm mb-6">
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm mb-6">
               Reticen8 Academy provides enterprise-grade cybersecurity education, hands-on firewall laboratory training, and industry credentials for modern network defenders.
             </p>
 
@@ -97,7 +97,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={item.label}
-                    className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-brand-600 hover:text-white flex items-center justify-center text-slate-400 transition-colors"
+                    className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-[#4b6cf7] hover:text-white flex items-center justify-center text-slate-400 transition-colors"
                   >
                     <Icon size={16} />
                   </a>
@@ -109,7 +109,7 @@ export default function Footer() {
           {/* Columns 2-5: Link Categories */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">
                 {category}
               </h4>
               <ul className="space-y-2.5 text-xs sm:text-sm">
@@ -117,7 +117,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link
                       to={link.href}
-                      className="hover:text-purple-400 transition-colors"
+                      className="hover:text-[#4b6cf7] transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -130,13 +130,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom Legal Bar */}
-        <div className="mt-14 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <p>© {year} Reticen8 Technologies Inc. All rights reserved.</p>
+        <div className="mt-14 pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <p>&copy; {year} Reticen8 Technologies Inc. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-6">
-            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-            <Link to="/cookies" className="hover:text-white transition-colors">Cookie Settings</Link>
-            <Link to="/security" className="hover:text-white transition-colors">Security Disclosures</Link>
+            <Link to="/privacy" className="hover:text-slate-900 transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-slate-900 transition-colors">Terms of Service</Link>
+            <Link to="/cookies" className="hover:text-slate-900 transition-colors">Cookie Settings</Link>
+            <Link to="/security" className="hover:text-slate-900 transition-colors">Security Disclosures</Link>
           </div>
         </div>
       </div>

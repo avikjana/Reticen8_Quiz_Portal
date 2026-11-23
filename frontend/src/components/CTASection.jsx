@@ -8,18 +8,18 @@ export default function CTASection() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="theme-fixed relative isolate py-16 sm:py-20 lg:py-28 bg-[#0F172A] text-white overflow-hidden" id="cta">
-      {/* Subtle purple ambient glow */}
+    <section ref={ref} className="relative isolate py-16 sm:py-20 lg:py-28 bg-white overflow-hidden" id="cta">
+      {/* Subtle ambient glow */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[700px] h-[350px] bg-purple-500/20 blur-[120px] animate-blob rounded-full pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[700px] h-[350px] bg-[#4b6cf7]/10 blur-[120px] animate-blob rounded-full pointer-events-none"
         aria-hidden="true"
       />
 
       {/* Subtle grid pattern */}
       <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{
-          backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)',
           backgroundSize: '24px 24px',
         }}
         aria-hidden="true"
@@ -32,19 +32,19 @@ export default function CTASection() {
           transition={{ duration: 0.5 }}
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider mb-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#4b6cf7]/10 border border-[#4b6cf7]/20 text-[#4b6cf7] text-xs font-bold uppercase tracking-wider mb-6">
             <ShieldCheck size={16} />
             <span>Accelerate Your Security Career</span>
           </div>
 
           {/* Headline */}
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15] text-white">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15] text-slate-900">
             Build Your Expertise in{' '}
-            <span className="text-purple-400">Enterprise Cybersecurity.</span>
+            <span className="text-slate-900">Enterprise Cybersecurity.</span>
           </h2>
 
           {/* Description */}
-          <p className="mt-5 text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto font-normal">
+          <p className="mt-5 text-base sm:text-lg text-slate-500 leading-relaxed max-w-2xl mx-auto font-normal">
             Start your Reticen8 learning journey and develop the skills to secure modern enterprise networks with industry-recognized certifications.
           </p>
 
@@ -52,14 +52,14 @@ export default function CTASection() {
           <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4">
             <Link
               to="/register"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white bg-action-500 hover:bg-action-600 ring-1 ring-white/25 hover:-translate-y-0.5 active:scale-[0.98] shadow-lg shadow-blue-950/30 transition-all group"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white bg-[#4b6cf7] hover:bg-[#3b5ce6] hover:-translate-y-0.5 active:scale-[0.98] shadow-lg shadow-[#4b6cf7]/30 transition-all group"
             >
               <span>Get Started Today</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
               to="/courses"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-semibold text-slate-200 bg-white/5 border border-white/15 hover:bg-white/10 hover:border-white/25 active:scale-[0.98] transition-all"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98] transition-all"
             >
               Browse Course Catalog
             </Link>

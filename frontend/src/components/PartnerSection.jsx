@@ -90,7 +90,7 @@ export default function PartnerSection() {
             <div className="mt-10 flex flex-wrap items-center gap-3.5">
               <Link
                 to="/partners"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-white bg-action-600 hover:bg-action-700 shadow-md shadow-blue-950/30 transition-all group"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-white bg-[#4b6cf7] hover:bg-[#3b5ce6] shadow-md shadow-[#4b6cf7]/30 transition-all group"
               >
                 <Building2 size={16} />
                 <span>Partner Training</span>

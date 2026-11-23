@@ -244,7 +244,7 @@ export default function PracticalLearning() {
             >
               <Link
                 to="/labs"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-action-600 hover:bg-action-700 shadow-md shadow-blue-950/30 transition-all group"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-[#4b6cf7] hover:bg-[#3b5ce6] shadow-md shadow-[#4b6cf7]/30 transition-all group"
               >
                 <span>Explore Practical Training</span>
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

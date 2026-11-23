@@ -167,7 +167,7 @@ export default function HeroSection() {
             >
               <Link
                 to="/register"
-                className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-action-600 to-action-500 hover:from-action-700 hover:to-action-600 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-[var(--shadow-glow)] transition-all duration-200"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-[#4b6cf7] hover:bg-[#3b5ce6] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-lg shadow-[#4b6cf7]/30 transition-all duration-200"
               >
                 <span>Start Learning</span>
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

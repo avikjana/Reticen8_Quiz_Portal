@@ -57,7 +57,7 @@ export default function LearningPaths() {
         >
           <Link
             to="/courses"
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-full text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:border-brand-600 hover:text-brand-600 hover:shadow-md transition-all"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full text-sm font-semibold text-white bg-[#4b6cf7] hover:bg-[#3b5ce6] shadow-md shadow-[#4b6cf7]/30 transition-all"
           >
             <span>View All Courses &amp; Modules</span>
             <ArrowRight size={15} />

@@ -157,7 +157,7 @@ export default function UserMenu({ role, roleTheme }) {
     </Link>
     <Link
       to="/signup"
-      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-action-600 hover:bg-action-700 text-white text-xs font-bold transition-all shadow-[var(--shadow-glow)] hover:-translate-y-px"
+      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#4b6cf7] hover:bg-[#3b5ce6] text-white text-xs font-bold transition-all shadow-lg shadow-[#4b6cf7]/30 hover:-translate-y-px"
     >
       <span>Sign Up</span>
       <ArrowRight size={12} />

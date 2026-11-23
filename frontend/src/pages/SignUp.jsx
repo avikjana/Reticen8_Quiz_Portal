@@ -13,7 +13,7 @@ import {
   UserPlus
 } from 'lucide-react'
 import { SIGNUP_CATEGORIES } from '../config/roles'
-import { useAuth, describeGatedPage } from '../context/AuthContext'
+import { useAuth, pathAfterAuth, describeGatedPage } from '../context/AuthContext'
 import AuthLayout from '../components/Auth/AuthLayout'
 import GoogleSignInButton, { OrDivider } from '../components/Auth/GoogleSignInButton'
 

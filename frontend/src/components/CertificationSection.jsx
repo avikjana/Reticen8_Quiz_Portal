@@ -74,7 +74,7 @@ export default function CertificationSection() {
         >
           <Link
             to="/certifications"
-            className="theme-fixed inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-[#101828] hover:bg-slate-800 shadow-md transition-all"
+            className="theme-fixed inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white bg-[#4b6cf7] hover:bg-[#3b5ce6] shadow-md shadow-[#4b6cf7]/30 transition-all"
           >
             <span>Explore All Exam Guides &amp; Blueprints</span>
             <ArrowRight size={15} />
