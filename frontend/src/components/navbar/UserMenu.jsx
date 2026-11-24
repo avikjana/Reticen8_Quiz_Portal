@@ -97,6 +97,13 @@ export default function UserMenu({ role, roleTheme }) {
               <Award size={14} className="text-[#4b6cf7]" /> Certifications &amp; Badges
             </Link>
             <Link
+              to="/my-certificates"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+            >
+              <Award size={14} className="text-amber-500" /> My Certificates
+            </Link>
+            <Link
               to="/security"
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"

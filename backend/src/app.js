@@ -10,6 +10,7 @@ import handleCertificationRoutes from './routes/certification.routes.js'
 import handleEnrollmentRoutes from './routes/enrollment.routes.js'
 import handleChatRoutes from './routes/chat.routes.js'
 import handleQuizRoutes from './routes/quiz.routes.js'
+import handleCertificateRoutes from './routes/certificate.routes.js'
 import errorHandler from './middlewares/error.middleware.js'
 import AppError from './utils/AppError.js'
 import AuthController from './controllers/auth.controller.js'
@@ -74,6 +75,7 @@ const ROUTE_TABLE = [
   { prefix: '/api/courses', handler: handleCourseRoutes },
   { prefix: '/api/certifications', handler: handleCertificationRoutes },
   { prefix: '/api/enrollments', handler: handleEnrollmentRoutes },
+  { prefix: '/api/certificates', handler: handleCertificateRoutes },
   { prefix: '/api/chat', handler: handleChatRoutes },
   { prefix: '/api/admin/quiz', handler: handleQuizRoutes },
   { prefix: '/api/quiz', handler: handleQuizRoutes },

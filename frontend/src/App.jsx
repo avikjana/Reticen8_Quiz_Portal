@@ -26,6 +26,8 @@ const AdminQuizAttempts = lazy(() => import('./pages/Admin/AdminQuizAttempts'))
 const CustomerDashboard = lazy(() => import('./pages/Customer/CustomerDashboard'))
 const PartnerDashboard = lazy(() => import('./pages/Partner/PartnerDashboard'))
 const SecuritySettings = lazy(() => import('./pages/SecuritySettings'))
+const MyCertificates = lazy(() => import('./pages/MyCertificates'))
+const CertificateView = lazy(() => import('./pages/CertificateView'))
 
 // Helper component to auto-scroll to top on route change
 function ScrollToTop() {
@@ -55,6 +57,7 @@ const ROUTE_TITLES = {
   '/customer': 'Customer Dashboard',
   '/partner': 'Partner Portal',
   '/security': 'Security Settings',
+  '/my-certificates': 'My Certificates',
   '/help': 'Help & Support',
 }
 const SELF_TITLED = ['/courses/', '/certifications', '/learn/']
@@ -171,6 +174,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Certificate routes */}
+          <Route path="/my-certificates" element={<ProtectedRoute><MyCertificates /></ProtectedRoute>} />
+          <Route path="/certificate/:id" element={<ProtectedRoute><CertificateView /></ProtectedRoute>} />
 
           {/* Fallback */}
           <Route path="*" element={<Home />} />

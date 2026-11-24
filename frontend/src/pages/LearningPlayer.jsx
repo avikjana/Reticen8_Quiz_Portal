@@ -203,21 +203,33 @@ function BonusCelebration({ bonusType, onDone }) {
               : 'Great work! All chapters in this module are done.'}
           </motion.p>
 
-          <motion.button
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
-            onClick={onDone}
-            className={`px-6 py-2.5 rounded-xl text-xs font-bold text-white transition-colors ${
-              isCourse
-                ? 'bg-yellow-500 hover:bg-yellow-600'
-                : isBonus
-                ? 'bg-purple-600 hover:bg-purple-700'
-                : 'bg-emerald-600 hover:bg-emerald-700'
-            }`}
+            className="flex flex-col items-center gap-2"
           >
-            {isCourse ? 'Celebrate!' : 'Continue Learning'}
-          </motion.button>
+            <button
+              onClick={onDone}
+              className={`px-6 py-2.5 rounded-xl text-xs font-bold text-white transition-colors ${
+                isCourse
+                  ? 'bg-yellow-500 hover:bg-yellow-600'
+                  : isBonus
+                  ? 'bg-purple-600 hover:bg-purple-700'
+                  : 'bg-emerald-600 hover:bg-emerald-700'
+              }`}
+            >
+              {isCourse ? 'Celebrate!' : 'Continue Learning'}
+            </button>
+            {isCourse && (
+              <Link
+                to="/my-certificates"
+                className="text-xs font-semibold text-amber-600 hover:text-amber-800 underline underline-offset-2"
+              >
+                View My Certificates →
+              </Link>
+            )}
+          </motion.div>
         </motion.div>
       </motion.div>
     </motion.div>
@@ -498,6 +510,7 @@ function LearningView({ course }) {
 
       if (newProgress.allDone) {
         setCelebration('course')
+        api.post(`/enrollments/complete/${course.id}`).catch(() => {})
       } else if (newProgress.completedModules % 2 === 0 && newProgress.completedModules > 0) {
         setCelebration('bonus')
       } else {

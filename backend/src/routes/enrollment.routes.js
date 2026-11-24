@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import EnrollmentModel from '../models/enrollment.model.js'
 import CourseModel from '../models/course.model.js'
+import CertificationModel from '../models/certification.model.js'
 import db from '../db/index.js'
 import { authenticate } from '../middlewares/auth.middleware.js'
 import AppError from '../utils/AppError.js'
@@ -98,6 +99,113 @@ export const handleEnrollmentRoutes = async (req, res, pathname, method) => {
         course,
         enrollment,
       },
+    }
+  }
+
+  // POST /api/enrollments/complete/:courseId — mark course completed & issue certificate
+  const completeMatch = pathname.match(/^\/api\/enrollments\/complete\/(.+)$/)
+  if (completeMatch && method === 'POST') {
+    const courseId = decodeURIComponent(completeMatch[1])
+
+    const enrollment = await EnrollmentModel.findByUserAndCourse(req.user.id, courseId)
+    if (!enrollment || enrollment.status === 'dropped') {
+      throw new AppError('You are not enrolled in this course.', 403)
+    }
+
+    // If already completed, return existing certificate
+    if (enrollment.status === 'completed') {
+      const existing = await db.findOne('certificates', { userId: req.user.id, courseId })
+      if (existing) return { success: true, message: 'Course already completed.', data: existing }
+    }
+
+    const course = await CourseModel.findById(courseId)
+    if (!course) throw new AppError('Course not found.', 404)
+
+    // Verify all quiz modules are passed
+    const quizModuleIndices = []
+    if (course.curriculum?.length) {
+      course.curriculum.forEach((mod, i) => {
+        const hasQuiz = (mod.chapters || []).some(ch => ch.type === 'quiz')
+        if (hasQuiz) quizModuleIndices.push(i)
+      })
+    }
+
+    if (quizModuleIndices.length > 0) {
+      const quizCol = db.db.collection('quizAttempts')
+      const passedQuizzes = await quizCol.find({
+        userId: req.user.id,
+        courseId,
+        passed: true,
+      }).toArray()
+
+      const passedModules = new Set(passedQuizzes.map(q => q.moduleIndex))
+      const failed = quizModuleIndices.filter(i => !passedModules.has(i))
+      if (failed.length > 0) {
+        throw new AppError(
+          `You must pass all quizzes before completing this course. Missing: module(s) ${failed.map(i => i + 1).join(', ')}.`,
+          400
+        )
+      }
+    }
+
+    // Mark enrollment as completed
+    await EnrollmentModel.markCompleted(req.user.id, courseId)
+
+    // Look up certification details
+    const certCode = course.certificationCode || course.courseCode || 'GEN'
+    let certTitle = course.certificationTitle || course.title
+    if (course.certificationCode) {
+      const cert = await CertificationModel.findById(course.certificationCode)
+      if (cert) certTitle = cert.title
+    }
+
+    // Generate credential ID: R8-YYYY-CODE-XXXX
+    const year = new Date().getFullYear()
+    const rand = String(Math.floor(1000 + Math.random() * 9000))
+    const credentialId = `R8-${year}-${certCode}-${rand}`
+
+    const now = new Date()
+    const issueDate = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    const expDate = new Date(now)
+    expDate.setFullYear(expDate.getFullYear() + 3)
+    const expirationDate = expDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+
+    const certificate = {
+      id: `cert-${crypto.randomUUID()}`,
+      credentialId,
+      userId: req.user.id,
+      userName: req.user.name || 'Student',
+      userEmail: req.user.email,
+      courseId,
+      courseTitle: course.title,
+      certificationCode: certCode,
+      certificationTitle: certTitle,
+      issueDate,
+      expirationDate,
+      status: 'ACTIVE_VERIFIED',
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+    }
+
+    await db.insert('certificates', certificate)
+
+    // Also insert into credentials collection for public verification
+    await db.insert('credentials', {
+      credentialId,
+      status: 'ACTIVE_VERIFIED',
+      candidateName: req.user.name || 'Student',
+      certificationCode: certCode,
+      certificationTitle: certTitle,
+      issueDate,
+      expirationDate,
+      score: 'PASSED',
+      proctoredCenter: 'Reticen8 Academy Online',
+    })
+
+    return {
+      success: true,
+      message: `Congratulations! You have completed "${course.title}" and earned your certificate.`,
+      data: certificate,
     }
   }
 

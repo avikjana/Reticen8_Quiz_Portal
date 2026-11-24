@@ -63,6 +63,15 @@ export class EnrollmentModel {
     return e != null && e.status !== STATUS.DROPPED
   }
 
+  static async markCompleted(userId, courseId) {
+    const enrollment = await EnrollmentModel.findByUserAndCourse(userId, courseId)
+    if (!enrollment || enrollment.status !== STATUS.ACTIVE) return null
+    return await db.update('enrollments', enrollment.id, {
+      status: STATUS.COMPLETED,
+      completedAt: new Date().toISOString(),
+    })
+  }
+
   static async getAll() {
     return await db.read('enrollments')
   }
