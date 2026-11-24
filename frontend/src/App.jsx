@@ -15,6 +15,7 @@ const Login = lazy(() => import('./pages/Login'))
 const SignUp = lazy(() => import('./pages/SignUp'))
 const ForgotPassword = lazy(() => import('./components/Auth/ForgotPassword'))
 const ResetPassword = lazy(() => import('./components/Auth/ResetPassword'))
+const Help = lazy(() => import('./pages/Help'))
 
 // Role-Based Portals
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'))
@@ -24,6 +25,7 @@ const AdminChat = lazy(() => import('./pages/Admin/AdminChat'))
 const AdminQuizAttempts = lazy(() => import('./pages/Admin/AdminQuizAttempts'))
 const CustomerDashboard = lazy(() => import('./pages/Customer/CustomerDashboard'))
 const PartnerDashboard = lazy(() => import('./pages/Partner/PartnerDashboard'))
+const SecuritySettings = lazy(() => import('./pages/SecuritySettings'))
 
 // Helper component to auto-scroll to top on route change
 function ScrollToTop() {
@@ -52,6 +54,8 @@ const ROUTE_TITLES = {
   '/admin/courses': 'Manage Courses',
   '/customer': 'Customer Dashboard',
   '/partner': 'Partner Portal',
+  '/security': 'Security Settings',
+  '/help': 'Help & Support',
 }
 const SELF_TITLED = ['/courses/', '/certifications', '/learn/']
 
@@ -93,6 +97,7 @@ function App() {
           <Route path="/register" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/help" element={<Help />} />
 
           {/* Administrator Routes */}
           <Route
@@ -153,6 +158,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <PartnerDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Security Settings (all authenticated users) */}
+          <Route
+            path="/security"
+            element={
+              <ProtectedRoute>
+                <SecuritySettings />
               </ProtectedRoute>
             }
           />

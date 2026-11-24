@@ -56,3 +56,21 @@ export const adminCreateUserSchema = z.object({
   roleTitle: optionalText,
   department: optionalText,
 })
+
+// --- MFA schemas ---
+
+const totpCode = z.string().regex(/^\d{6}$/, 'Code must be exactly 6 digits.')
+
+export const mfaVerifySetupSchema = z.object({
+  code: totpCode,
+})
+
+export const mfaVerifyLoginSchema = z.object({
+  mfaToken: z.string({ required_error: 'MFA token is required.' }).min(1),
+  code: z.string({ required_error: 'Verification code is required.' }).min(1),
+})
+
+export const mfaDisableSchema = z.object({
+  password: z.string({ required_error: 'Password is required to disable MFA.' }).min(1),
+  code: totpCode.optional(),
+})

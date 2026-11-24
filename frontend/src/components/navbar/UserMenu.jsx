@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { HelpCircle, ChevronDown, Shield, BookOpen, Award, ArrowRight, LogIn, Users, LogOut, RefreshCw } from 'lucide-react'
+import { HelpCircle, ChevronDown, Shield, ShieldCheck, BookOpen, Award, ArrowRight, LogIn, Users, LogOut, RefreshCw } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import useDismissable from '../../hooks/useDismissable'
 
@@ -95,6 +95,13 @@ export default function UserMenu({ role, roleTheme }) {
               className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
             >
               <Award size={14} className="text-[#4b6cf7]" /> Certifications &amp; Badges
+            </Link>
+            <Link
+              to="/security"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 text-slate-700 font-medium"
+            >
+              <ShieldCheck size={14} className="text-emerald-600" /> Security Settings
             </Link>
           </div>
 

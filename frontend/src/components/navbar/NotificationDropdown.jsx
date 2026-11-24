@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, BookOpen, GraduationCap, ShieldCheck, X } from 'lucide-react'
@@ -57,7 +57,12 @@ export default function NotificationDropdown() {
     link: '/certifications',
   })
 
-  const hasUnread = enrolled.length > 0
+  const [seen, setSeen] = useState(false)
+  const hasUnread = enrolled.length > 0 && !seen
+
+  useEffect(() => {
+    if (open) setSeen(true)
+  }, [open])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Escape') {

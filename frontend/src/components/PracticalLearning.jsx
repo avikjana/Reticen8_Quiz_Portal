@@ -41,7 +41,7 @@ export default function PracticalLearning() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-slate-50" id="practical-learning">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 bg-white" id="practical-learning">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
@@ -51,32 +51,32 @@ export default function PracticalLearning() {
               initial={{ opacity: 0, x: -20 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="theme-fixed bg-[#0B1120] rounded-2xl shadow-2xl border border-slate-800 overflow-hidden"
+              className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden"
             >
               {/* Window Header */}
-              <div className="flex items-center justify-between px-5 py-3.5 bg-[#101828] border-b border-slate-800">
+              <div className="flex items-center justify-between px-5 py-3.5 bg-slate-50 border-b border-slate-200">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-purple-500/80" />
-                  <span className="ml-3 text-xs font-mono text-slate-400">
+                  <span className="w-3 h-3 rounded-full bg-rose-400" />
+                  <span className="w-3 h-3 rounded-full bg-amber-400" />
+                  <span className="w-3 h-3 rounded-full bg-green-400" />
+                  <span className="ml-3 text-xs font-mono text-slate-500">
                     reticen8-lab-host ~ session #4829
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-mono text-purple-400 bg-purple-950/60 px-2.5 py-1 rounded-full border border-purple-800/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                <div className="flex items-center gap-2 text-xs font-mono text-[#4b6cf7] bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#4b6cf7] animate-pulse" />
                   <span>NGFW ONLINE</span>
                 </div>
               </div>
 
               {/* Console Tabs */}
-              <div className="flex border-b border-slate-800 bg-[#0F172A] px-4 text-xs font-mono">
+              <div className="flex border-b border-slate-200 bg-slate-50 px-4 text-xs font-mono">
                 <button
                   onClick={() => setActiveTab('policy')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'policy'
-                      ? 'border-[#4b6cf7] text-purple-400'
-                      : 'border-transparent text-slate-400 hover:text-slate-300'
+                      ? 'border-[#4b6cf7] text-[#4b6cf7]'
+                      : 'border-transparent text-slate-400 hover:text-slate-600'
                   }`}
                 >
                   Firewall Rules
@@ -85,8 +85,8 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('threats')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'threats'
-                      ? 'border-[#4b6cf7] text-purple-400'
-                      : 'border-transparent text-slate-400 hover:text-slate-300'
+                      ? 'border-[#4b6cf7] text-[#4b6cf7]'
+                      : 'border-transparent text-slate-400 hover:text-slate-600'
                   }`}
                 >
                   Threat Detection
@@ -95,8 +95,8 @@ export default function PracticalLearning() {
                   onClick={() => setActiveTab('topology')}
                   className={`px-4 py-2.5 font-medium border-b-2 transition-colors ${
                     activeTab === 'topology'
-                      ? 'border-[#4b6cf7] text-purple-400'
-                      : 'border-transparent text-slate-400 hover:text-slate-300'
+                      ? 'border-[#4b6cf7] text-[#4b6cf7]'
+                      : 'border-transparent text-slate-400 hover:text-slate-600'
                   }`}
                 >
                   VPN Tunnels
@@ -104,57 +104,57 @@ export default function PracticalLearning() {
               </div>
 
               {/* Console Content */}
-              <div className="p-6 font-mono text-xs leading-relaxed text-slate-300 min-h-[300px]">
+              <div className="p-6 font-mono text-xs leading-relaxed text-slate-600 min-h-[300px]">
                 {activeTab === 'policy' && (
                   <div className="space-y-2">
-                    <p className="text-slate-500"># Active Security Policies — Reticen8 NGFW v7.4</p>
-                    <div className="p-3 bg-slate-900/80 rounded-lg border border-slate-800 space-y-1.5">
-                      <div className="flex justify-between text-slate-400 font-semibold border-b border-slate-800 pb-1">
+                    <p className="text-slate-400"># Active Security Policies — Reticen8 NGFW v7.4</p>
+                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1.5">
+                      <div className="flex justify-between text-slate-500 font-semibold border-b border-slate-200 pb-1">
                         <span>RULE NAME</span>
                         <span>ACTION</span>
                         <span>APP-FILTER</span>
                       </div>
-                      <div className="flex justify-between text-purple-400">
+                      <div className="flex justify-between text-[#4b6cf7]">
                         <span>101 WAN-to-LAN-Web</span>
-                        <span className="text-purple-400 font-bold">ALLOW</span>
+                        <span className="text-[#4b6cf7] font-bold">ALLOW</span>
                         <span>HTTPS / TLS 1.3</span>
                       </div>
-                      <div className="flex justify-between text-rose-400">
+                      <div className="flex justify-between text-rose-600">
                         <span>102 Threat-Block-C2</span>
-                        <span className="text-rose-400 font-bold">DENY</span>
+                        <span className="text-rose-600 font-bold">DENY</span>
                         <span>Botnet / Malware</span>
                       </div>
-                      <div className="flex justify-between text-sky-400">
+                      <div className="flex justify-between text-sky-600">
                         <span>103 Branch-IPsec-VPN</span>
-                        <span className="text-sky-400 font-bold">TUNNEL</span>
+                        <span className="text-sky-600 font-bold">TUNNEL</span>
                         <span>AES-256-GCM</span>
                       </div>
                     </div>
 
-                    <div className="pt-3 text-purple-400">
+                    <div className="pt-3 text-[#4b6cf7]">
                       <p>$ r8-cli firewall rule verify --rule 101</p>
-                      <p className="text-slate-400 mt-1">✓ State table inspected: 1,482 active connections</p>
-                      <p className="text-slate-400">✓ IPS inspection enabled on ingress interface ge-0/0/0</p>
-                      <p className="text-purple-300 font-bold mt-2">✓ Task Completed: Policy deployed without downtime.</p>
+                      <p className="text-slate-500 mt-1">✓ State table inspected: 1,482 active connections</p>
+                      <p className="text-slate-500">✓ IPS inspection enabled on ingress interface ge-0/0/0</p>
+                      <p className="text-[#3b5ce6] font-bold mt-2">✓ Task Completed: Policy deployed without downtime.</p>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'threats' && (
                   <div className="space-y-3">
-                    <p className="text-slate-500"># Live IPS Stream &amp; Intrusion Prevention Telemetry</p>
+                    <p className="text-slate-400"># Live IPS Stream &amp; Intrusion Prevention Telemetry</p>
                     <div className="space-y-2">
-                      <div className="p-2.5 rounded bg-rose-950/30 border border-rose-900/50 flex justify-between items-center text-rose-300">
+                      <div className="p-2.5 rounded bg-rose-50 border border-rose-200 flex justify-between items-center text-rose-700">
                         <span>[BLOCKED] SQL Injection payload on port 443</span>
-                        <span className="text-[10px] text-rose-400">0.02ms</span>
+                        <span className="text-[10px] text-rose-500">0.02ms</span>
                       </div>
-                      <div className="p-2.5 rounded bg-rose-950/30 border border-rose-900/50 flex justify-between items-center text-rose-300">
+                      <div className="p-2.5 rounded bg-rose-50 border border-rose-200 flex justify-between items-center text-rose-700">
                         <span>[BLOCKED] Brute force SSH attempt from 198.51.100.42</span>
-                        <span className="text-[10px] text-rose-400">0.05ms</span>
+                        <span className="text-[10px] text-rose-500">0.05ms</span>
                       </div>
-                      <div className="p-2.5 rounded bg-purple-950/30 border border-purple-900/50 flex justify-between items-center text-purple-300">
+                      <div className="p-2.5 rounded bg-blue-50 border border-blue-200 flex justify-between items-center text-[#4b6cf7]">
                         <span>[CLEARED] Encrypted zero-trust traffic verified</span>
-                        <span className="text-[10px] text-purple-400">TLS 1.3</span>
+                        <span className="text-[10px] text-[#4b6cf7]">TLS 1.3</span>
                       </div>
                     </div>
                   </div>
@@ -162,17 +162,17 @@ export default function PracticalLearning() {
 
                 {activeTab === 'topology' && (
                   <div className="space-y-3">
-                    <p className="text-slate-500"># Site-to-Site IPsec &amp; Multi-Cloud Tunnel Health</p>
+                    <p className="text-slate-400"># Site-to-Site IPsec &amp; Multi-Cloud Tunnel Health</p>
                     <div className="grid grid-cols-2 gap-3 pt-2">
-                      <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                        <span className="text-slate-400 text-[11px] block">HEADQUARTERS</span>
-                        <span className="text-purple-400 font-bold text-sm">UP (1 Gbps)</span>
-                        <span className="text-[10px] text-slate-500 block mt-1">Latency: 4.2ms</span>
+                      <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <span className="text-slate-500 text-[11px] block">HEADQUARTERS</span>
+                        <span className="text-[#4b6cf7] font-bold text-sm">UP (1 Gbps)</span>
+                        <span className="text-[10px] text-slate-400 block mt-1">Latency: 4.2ms</span>
                       </div>
-                      <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                        <span className="text-slate-400 text-[11px] block">CLOUD VPC (AWS)</span>
-                        <span className="text-purple-400 font-bold text-sm">UP (500 Mbps)</span>
-                        <span className="text-[10px] text-slate-500 block mt-1">Latency: 11.8ms</span>
+                      <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <span className="text-slate-500 text-[11px] block">CLOUD VPC (AWS)</span>
+                        <span className="text-[#4b6cf7] font-bold text-sm">UP (500 Mbps)</span>
+                        <span className="text-[10px] text-slate-400 block mt-1">Latency: 11.8ms</span>
                       </div>
                     </div>
                   </div>
@@ -180,9 +180,9 @@ export default function PracticalLearning() {
               </div>
 
               {/* Console Footer Stats */}
-              <div className="px-6 py-3.5 bg-[#090D16] border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+              <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
                 <span>Lab Progress: 7 / 10 Tasks</span>
-                <span className="text-purple-400 font-bold">Score: 94%</span>
+                <span className="text-[#4b6cf7] font-bold">Score: 94%</span>
               </div>
             </motion.div>
           </div>

@@ -12,14 +12,20 @@ import {
   googleSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  mfaVerifySetupSchema,
+  mfaVerifyLoginSchema,
+  mfaDisableSchema,
 } from '../validation/schemas.js'
 import ResetTokenModel from '../models/resetToken.model.js'
 import { sendPasswordResetEmail } from '../utils/email.js'
+import { generateSecret, generateBackupCodes, totpVerify, buildOtpauthUri } from '../utils/totp.js'
 
 const clientBaseUrl = () => (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',')[0].trim()
 
-// Only fetch the fields login needs — avoids pulling large/unused fields from MongoDB
-const LOGIN_PROJECTION = { id: 1, email: 1, role: 1, passwordHash: 1, status: 1, name: 1, picture: 1, avatar: 1, permissions: 1, roleTitle: 1, department: 1, authProviders: 1, googleId: 1, createdAt: 1, updatedAt: 1 }
+const LOGIN_PROJECTION = { id: 1, email: 1, role: 1, passwordHash: 1, status: 1, name: 1, picture: 1, avatar: 1, permissions: 1, roleTitle: 1, department: 1, authProviders: 1, googleId: 1, mfaEnabled: 1, mfaSecret: 1, mfaBackupCodes: 1, createdAt: 1, updatedAt: 1 }
+
+// Short-lived token for the MFA verification step (5 minutes)
+const MFA_TOKEN_TTL = 5 * 60
 
 const issueSession = (user, message) => {
   const safeUser = UserModel.sanitize(user)
@@ -33,10 +39,8 @@ const issueSession = (user, message) => {
 
 export class AuthController {
   static async login(req) {
-    // email is trimmed + lowercased by the schema
     const { email: cleanEmail, password, role } = validate(loginSchema, req.body)
 
-    // Per 15 min: 30 attempts per IP and 10 per email (slows password guessing)
     const ip = clientIp(req)
     rateLimit(`login:ip:${ip}`, { limit: 30 })
     rateLimit(`login:email:${cleanEmail}`, { limit: 10 })
@@ -63,8 +67,6 @@ export class AuthController {
       throw new AppError('This account has been disabled. Contact an administrator.', 403)
     }
 
-    // Role check only after the password is verified, so it can't be used to
-    // probe which role an email belongs to.
     if (role && user.role.toLowerCase() !== String(role).toLowerCase()) {
       throw new AppError(
         `This account is registered as "${user.role}". Please choose the ${user.role} tab to sign in.`,
@@ -73,6 +75,19 @@ export class AuthController {
     }
 
     resetRateLimit(`login:email:${cleanEmail}`)
+
+    // If MFA is enabled, don't issue a full session yet — return a short-lived
+    // mfaToken so the frontend can prompt for the TOTP code.
+    if (user.mfaEnabled) {
+      const mfaToken = signToken({ sub: user.id, role: user.role, mfa: 'pending' }, MFA_TOKEN_TTL)
+      return {
+        success: true,
+        mfaRequired: true,
+        mfaToken,
+        message: 'MFA verification required. Please enter your authenticator code.',
+      }
+    }
+
     return issueSession(user, `Authenticated successfully as ${user.role}`)
   }
 
@@ -132,7 +147,187 @@ export class AuthController {
       throw new AppError('This account has been disabled. Contact an administrator.', 403)
     }
 
+    if (user.mfaEnabled) {
+      const mfaToken = signToken({ sub: user.id, role: user.role, mfa: 'pending' }, MFA_TOKEN_TTL)
+      return {
+        success: true,
+        mfaRequired: true,
+        mfaToken,
+        message: 'MFA verification required. Please enter your authenticator code.',
+      }
+    }
+
     return issueSession(user, `Signed in with Google as ${user.role}`)
+  }
+
+  // POST /api/auth/mfa/verify — complete login after MFA challenge
+  static async mfaVerifyLogin(req) {
+    const { mfaToken, code } = validate(mfaVerifyLoginSchema, req.body)
+
+    const ip = clientIp(req)
+    rateLimit(`mfa:ip:${ip}`, { limit: 20 })
+
+    const payload = verifyToken(mfaToken)
+    if (!payload || payload.mfa !== 'pending') {
+      throw new AppError('MFA session has expired. Please log in again.', 401)
+    }
+
+    rateLimit(`mfa:user:${payload.sub}`, { limit: 10 })
+
+    const user = await UserModel.findById(payload.sub, LOGIN_PROJECTION)
+    if (!user || !user.mfaEnabled || !user.mfaSecret) {
+      throw new AppError('MFA is not configured for this account.', 400)
+    }
+
+    // Try TOTP code first, then backup codes
+    if (totpVerify(user.mfaSecret, code)) {
+      return issueSession(user, `Authenticated successfully as ${user.role}`)
+    }
+
+    // Check backup codes (case-insensitive, single-use)
+    const normalCode = code.toUpperCase().trim()
+    const backupCodes = user.mfaBackupCodes || []
+    const idx = backupCodes.indexOf(normalCode)
+    if (idx !== -1) {
+      const remaining = [...backupCodes]
+      remaining.splice(idx, 1)
+      await UserModel.update(user.id, { mfaBackupCodes: remaining })
+      invalidateAuthCache(user.id)
+      const result = issueSession(user, `Authenticated with backup code as ${user.role}`)
+      result.backupCodeUsed = true
+      result.backupCodesRemaining = remaining.length
+      return result
+    }
+
+    throw new AppError('Invalid verification code. Please try again.', 401)
+  }
+
+  // POST /api/auth/mfa/setup — generate secret + QR URI (requires auth)
+  static async mfaSetup(req) {
+    if (!req.user) throw new AppError('Authentication required.', 401)
+
+    const user = await UserModel.findById(req.user.id, { mfaEnabled: 1, email: 1, id: 1 })
+    if (user.mfaEnabled) {
+      throw new AppError('MFA is already enabled on this account. Disable it first to reconfigure.', 400)
+    }
+
+    const secret = generateSecret()
+    const otpauthUri = buildOtpauthUri(user.email, secret)
+
+    // Store the secret temporarily — it becomes permanent after verify-setup
+    await UserModel.update(user.id, { mfaPendingSecret: secret })
+    invalidateAuthCache(user.id)
+
+    return {
+      success: true,
+      secret,
+      otpauthUri,
+      message: 'Scan the QR code with your authenticator app, then verify with a code.',
+    }
+  }
+
+  // POST /api/auth/mfa/verify-setup — confirm the TOTP code and activate MFA
+  static async mfaVerifySetup(req) {
+    if (!req.user) throw new AppError('Authentication required.', 401)
+
+    const { code } = validate(mfaVerifySetupSchema, req.body)
+
+    const user = await UserModel.findById(req.user.id, { mfaPendingSecret: 1, mfaEnabled: 1, id: 1 })
+    if (!user.mfaPendingSecret) {
+      throw new AppError('No MFA setup in progress. Call /mfa/setup first.', 400)
+    }
+    if (user.mfaEnabled) {
+      throw new AppError('MFA is already enabled.', 400)
+    }
+
+    if (!totpVerify(user.mfaPendingSecret, code)) {
+      throw new AppError('Invalid code. Make sure your authenticator app clock is synced and try again.', 400)
+    }
+
+    const backupCodes = generateBackupCodes()
+    await UserModel.update(user.id, {
+      mfaEnabled: true,
+      mfaSecret: user.mfaPendingSecret,
+      mfaBackupCodes: backupCodes,
+      mfaPendingSecret: null,
+    })
+    invalidateAuthCache(user.id)
+
+    return {
+      success: true,
+      message: 'MFA has been enabled. Save your backup codes in a safe place.',
+      backupCodes,
+    }
+  }
+
+  // POST /api/auth/mfa/disable — turn off MFA (requires password + optional TOTP)
+  static async mfaDisable(req) {
+    if (!req.user) throw new AppError('Authentication required.', 401)
+
+    const { password, code } = validate(mfaDisableSchema, req.body)
+
+    const user = await UserModel.findById(req.user.id, { passwordHash: 1, mfaEnabled: 1, mfaSecret: 1, id: 1 })
+    if (!user.mfaEnabled) {
+      throw new AppError('MFA is not enabled on this account.', 400)
+    }
+
+    // Verify password
+    if (user.passwordHash && !(await verifyPassword(password, user.passwordHash))) {
+      throw new AppError('Incorrect password.', 401)
+    }
+
+    // If a TOTP code was provided, verify it too
+    if (code && !totpVerify(user.mfaSecret, code)) {
+      throw new AppError('Invalid authenticator code.', 401)
+    }
+
+    await UserModel.update(user.id, {
+      mfaEnabled: false,
+      mfaSecret: null,
+      mfaBackupCodes: [],
+      mfaPendingSecret: null,
+    })
+    invalidateAuthCache(user.id)
+
+    return { success: true, message: 'MFA has been disabled.' }
+  }
+
+  // GET /api/auth/mfa/status — check if MFA is enabled (requires auth)
+  static async mfaStatus(req) {
+    if (!req.user) throw new AppError('Authentication required.', 401)
+
+    const user = await UserModel.findById(req.user.id, { mfaEnabled: 1, mfaBackupCodes: 1, id: 1 })
+    return {
+      success: true,
+      mfaEnabled: !!user.mfaEnabled,
+      backupCodesRemaining: (user.mfaBackupCodes || []).length,
+    }
+  }
+
+  // POST /api/auth/mfa/backup-codes — regenerate backup codes (requires auth + TOTP)
+  static async mfaRegenerateBackupCodes(req) {
+    if (!req.user) throw new AppError('Authentication required.', 401)
+
+    const { code } = validate(mfaVerifySetupSchema, req.body)
+
+    const user = await UserModel.findById(req.user.id, { mfaEnabled: 1, mfaSecret: 1, id: 1 })
+    if (!user.mfaEnabled || !user.mfaSecret) {
+      throw new AppError('MFA is not enabled on this account.', 400)
+    }
+
+    if (!totpVerify(user.mfaSecret, code)) {
+      throw new AppError('Invalid authenticator code.', 401)
+    }
+
+    const backupCodes = generateBackupCodes()
+    await UserModel.update(user.id, { mfaBackupCodes: backupCodes })
+    invalidateAuthCache(user.id)
+
+    return {
+      success: true,
+      message: 'New backup codes generated. Previous codes are now invalid.',
+      backupCodes,
+    }
   }
 
   // POST /api/auth/forgot-password { email }

@@ -35,15 +35,15 @@ function loadGoogleScript() {
  *  - onError:   (message) => void
  *  - text:      'signin_with' | 'signup_with' | 'continue_with'
  */
-export default function GoogleSignInButton({ role = 'Customer', onSuccess, onError, text = 'continue_with' }) {
+export default function GoogleSignInButton({ role = 'Customer', onSuccess, onError, onMfaRequired, text = 'continue_with' }) {
   const { loginWithGoogle } = useAuth()
   const containerRef = useRef(null)
   const [busy, setBusy] = useState(false)
   const [loadError, setLoadError] = useState('')
 
   // Keep the latest props available to Google's callback without re-initialising
-  const latest = useRef({ role, onSuccess, onError, loginWithGoogle })
-  latest.current = { role, onSuccess, onError, loginWithGoogle }
+  const latest = useRef({ role, onSuccess, onError, onMfaRequired, loginWithGoogle })
+  latest.current = { role, onSuccess, onError, onMfaRequired, loginWithGoogle }
 
   useEffect(() => {
     if (!CLIENT_ID) return
@@ -60,6 +60,7 @@ export default function GoogleSignInButton({ role = 'Customer', onSuccess, onErr
             const result = await latest.current.loginWithGoogle({ credential, role: latest.current.role })
             setBusy(false)
             if (result.success) latest.current.onSuccess?.(result.user)
+            else if (result.mfaRequired) latest.current.onMfaRequired?.(result.mfaToken)
             else latest.current.onError?.(result.error)
           },
         })

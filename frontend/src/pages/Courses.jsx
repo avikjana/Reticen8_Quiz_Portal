@@ -251,17 +251,17 @@ export default function Courses() {
               </div>
 
               {/* Certifications Shortcut Banner */}
-              <div className="theme-fixed hidden lg:block p-4 rounded-2xl bg-gradient-to-br from-emerald-900 to-slate-900 text-white">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <div className="hidden lg:block p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-2 text-[#4b6cf7] text-xs font-bold uppercase tracking-wider mb-1">
                   <Award size={15} />
                   <span>Exam Blueprints</span>
                 </div>
-                <p className="text-xs text-slate-200 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                   Looking to take an official proctored examination? View the certification ladder.
                 </p>
                 <Link
                   to="/certifications"
-                  className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-emerald-300 hover:text-white"
+                  className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#4b6cf7] hover:text-[#3b5ce6]"
                 >
                   <span>Certifications Portal</span>
                   <ArrowRight size={12} />
@@ -346,10 +346,10 @@ export default function Courses() {
                           {course.category}
                         </span>
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                          course.difficulty === 'Beginner' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                          course.difficulty === 'Beginner' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
                           course.difficulty === 'Intermediate' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
-                          course.difficulty === 'Advanced' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                          'bg-purple-50 text-purple-700 border border-purple-200'
+                          course.difficulty === 'Advanced' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                          'bg-blue-50 text-blue-700 border border-blue-200'
                         }`}>
                           {course.difficulty}
                         </span>
@@ -367,12 +367,14 @@ export default function Courses() {
                       {/* Instructor & Rating */}
                       <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                         <div className="flex items-center gap-2">
-                          <img
-                            src={course.instructor.avatar}
-                            alt={course.instructor.name}
-                            className="w-6 h-6 rounded-full object-cover"
-                          />
-                          <span className="font-medium text-slate-700">{course.instructor.name}</span>
+                          {course.instructor?.avatar && (
+                            <img
+                              src={course.instructor.avatar}
+                              alt={course.instructor.name}
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                          )}
+                          <span className="font-medium text-slate-700">{course.instructor?.name || 'Reticen8 Academy Faculty'}</span>
                         </div>
                         <div className="flex items-center gap-1 font-bold text-amber-600">
                           <Star size={13} className="fill-amber-500 text-amber-500" />
@@ -424,10 +426,10 @@ export default function Courses() {
                         <span className="text-xs font-bold text-slate-500 uppercase">{course.category}</span>
                         <span className="text-slate-300">•</span>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                          course.difficulty === 'Beginner' ? 'bg-emerald-50 text-emerald-700' :
+                          course.difficulty === 'Beginner' ? 'bg-blue-50 text-blue-700' :
                           course.difficulty === 'Intermediate' ? 'bg-blue-50 text-blue-700' :
-                          course.difficulty === 'Advanced' ? 'bg-amber-50 text-amber-700' :
-                          'bg-purple-50 text-purple-700'
+                          course.difficulty === 'Advanced' ? 'bg-blue-50 text-blue-700' :
+                          'bg-blue-50 text-blue-700'
                         }`}>
                           {course.difficulty}
                         </span>
@@ -450,7 +452,7 @@ export default function Courses() {
                         <span>•</span>
                         <span className="flex items-center gap-1"><Clock size={13} /> {course.duration}</span>
                         <span>•</span>
-                        <span className="text-slate-700 font-semibold">Taught by {course.instructor.name}</span>
+                        <span className="text-slate-700 font-semibold">Taught by {course.instructor?.name || 'Reticen8 Academy Faculty'}</span>
                       </div>
                     </div>
 

@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext'
 import { usePageTitle } from '../hooks/usePageTitle'
 import useFocusTrap from '../hooks/useFocusTrap'
 import { ErrorState, PageSpinner } from '../components/ui/DataState'
+import reticen8Logo from '../assets/reticen8-logo.png'
 
 // Loads the members-only certification guide, then renders the page
 export default function Certifications() {
@@ -422,9 +423,7 @@ function CertificationsView({ certificationsData }) {
 
                 {/* Header */}
                 <div className="text-center mb-5">
-                  <div className="w-14 h-14 rounded-full bg-[#4b6cf7]/10 text-[#4b6cf7] flex items-center justify-center mx-auto mb-3">
-                    <ShieldCheck size={28} />
-                  </div>
+                  <img src={reticen8Logo} alt="Reticen8" className="h-14 mx-auto mb-3 object-contain" />
                   {verificationResult.sample ? (
                     <span className="text-[10px] font-bold tracking-widest text-amber-700 uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
                       Sample certificate — not a real credential

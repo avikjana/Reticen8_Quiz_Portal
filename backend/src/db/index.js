@@ -21,6 +21,7 @@ const COLLECTIONS = {
   enrollments: 'id',
   feedback: 'id',
   chatMessages: 'id',
+  certificates: 'id',
 }
 
 // Collections whose data rarely changes — cache for longer
@@ -36,6 +37,7 @@ const CACHE_TTL = {
   feedback: SHORT_CACHE_MS,
   chatMessages: 2_000,
   quizAttempts: SHORT_CACHE_MS,
+  certificates: SHORT_CACHE_MS,
   resetTokens: 0,
 }
 
@@ -219,7 +221,7 @@ class MongoDB {
 
   async findById(collection, id, projection) {
     if (!COLLECTIONS[collection]) return null
-    const cacheKey = `${collection}:id:${id}${projection ? ':p' : ''}`
+    const cacheKey = `${collection}:id:${id}${projection ? ':p:' + Object.keys(projection).sort().join(',') : ''}`
     const ttl = this.#ttl(collection)
     if (ttl > 0) {
       const cached = this._cache.get(cacheKey, ttl)

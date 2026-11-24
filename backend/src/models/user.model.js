@@ -60,6 +60,9 @@ export class UserModel {
       department: userData.department || 'Cybersecurity Academy',
       avatar: (userData.name ? userData.name[0] : 'U').toUpperCase(),
       permissions: userData.permissions || DEFAULT_PERMISSIONS[role],
+      mfaEnabled: false,
+      mfaSecret: null,
+      mfaBackupCodes: [],
       status: 'ACTIVE',
       createdAt: now,
       updatedAt: now,
@@ -78,7 +81,7 @@ export class UserModel {
 
   static sanitize(user) {
     if (!user) return null
-    const { password, passwordHash, ...safeUser } = user
+    const { password, passwordHash, mfaSecret, mfaBackupCodes, ...safeUser } = user
     return safeUser
   }
 

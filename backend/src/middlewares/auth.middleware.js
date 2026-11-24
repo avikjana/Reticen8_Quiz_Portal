@@ -55,7 +55,7 @@ export const getBearerToken = (req) => {
   return header.startsWith('Bearer ') ? header.slice(7).trim() : null
 }
 
-const AUTH_PROJECTION = { id: 1, name: 1, email: 1, role: 1, status: 1, picture: 1, avatar: 1, permissions: 1, roleTitle: 1, department: 1, authProviders: 1, googleId: 1, createdAt: 1, updatedAt: 1 }
+const AUTH_PROJECTION = { id: 1, name: 1, email: 1, role: 1, status: 1, picture: 1, avatar: 1, permissions: 1, roleTitle: 1, department: 1, authProviders: 1, googleId: 1, mfaEnabled: 1, createdAt: 1, updatedAt: 1 }
 
 export const authenticate = async (req, res, next) => {
   const token = getBearerToken(req)

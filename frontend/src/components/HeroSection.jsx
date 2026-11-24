@@ -120,8 +120,6 @@ export default function HeroSection() {
         <div className="absolute bottom-0 right-1/3 w-[18rem] h-[18rem] rounded-full bg-purple-200/30 blur-3xl animate-blob [animation-delay:-12s]" />
         <div className="absolute inset-0 bg-dot-grid [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
       </div>
-      {/* Background undulating wave patterns */}
-      <BackgroundWaves />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 2-Column Hero: Clean Typography Left, Asymmetric Images Right */}
@@ -269,10 +267,6 @@ export default function HeroSection() {
                 </div>
               </div>
 
-              {/* Decorative wave graphic at bottom-right (matching Cisco's blue wave badge) */}
-              <div className="absolute -bottom-6 -left-6 hidden sm:block">
-                <WaveGraphic />
-              </div>
             </div>
           </div>
 

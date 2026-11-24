@@ -75,6 +75,7 @@ const ROUTE_TABLE = [
   { prefix: '/api/certifications', handler: handleCertificationRoutes },
   { prefix: '/api/enrollments', handler: handleEnrollmentRoutes },
   { prefix: '/api/chat', handler: handleChatRoutes },
+  { prefix: '/api/admin/quiz', handler: handleQuizRoutes },
   { prefix: '/api/quiz', handler: handleQuizRoutes },
 ]
 

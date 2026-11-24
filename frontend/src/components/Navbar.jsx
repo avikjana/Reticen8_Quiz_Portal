@@ -154,13 +154,14 @@ export default function Navbar() {
             </button>
 
             {/* Help */}
-            <button
+            <NavLink
+              to="/help"
               className="hidden sm:inline-flex p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors"
               title="Help & Support"
               aria-label="Help and support"
             >
               <HelpCircle size={18} />
-            </button>
+            </NavLink>
 
             {/* Notifications */}
             <NotificationDropdown />

@@ -35,6 +35,43 @@ export const handleAuthRoutes = async (req, res, pathname, method) => {
     return await AuthController.logout(req, res)
   }
 
+  // --- MFA routes ---
+
+  // Complete login with TOTP code (no auth — uses short-lived mfaToken)
+  if (pathname === '/api/auth/mfa/verify' && method === 'POST') {
+    return await AuthController.mfaVerifyLogin(req, res)
+  }
+
+  // Begin MFA setup (requires auth)
+  if (pathname === '/api/auth/mfa/setup' && method === 'POST') {
+    await authenticate(req, res)
+    return await AuthController.mfaSetup(req, res)
+  }
+
+  // Confirm MFA setup with a TOTP code (requires auth)
+  if (pathname === '/api/auth/mfa/verify-setup' && method === 'POST') {
+    await authenticate(req, res)
+    return await AuthController.mfaVerifySetup(req, res)
+  }
+
+  // Disable MFA (requires auth + password)
+  if (pathname === '/api/auth/mfa/disable' && method === 'POST') {
+    await authenticate(req, res)
+    return await AuthController.mfaDisable(req, res)
+  }
+
+  // Check MFA status (requires auth)
+  if (pathname === '/api/auth/mfa/status' && method === 'GET') {
+    await authenticate(req, res)
+    return await AuthController.mfaStatus(req, res)
+  }
+
+  // Regenerate backup codes (requires auth + TOTP)
+  if (pathname === '/api/auth/mfa/backup-codes' && method === 'POST') {
+    await authenticate(req, res)
+    return await AuthController.mfaRegenerateBackupCodes(req, res)
+  }
+
   return null
 }
 

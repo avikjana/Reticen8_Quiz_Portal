@@ -100,6 +100,10 @@ export function AuthProvider({ children }) {
   const run = async (fn) => {
     try {
       const data = await fn()
+      // MFA challenge — password was correct but a TOTP code is still needed
+      if (data?.success && data.mfaRequired) {
+        return { success: false, mfaRequired: true, mfaToken: data.mfaToken, message: data.message }
+      }
       if (data?.success && data.token && data.user) return startSession(data)
       return { success: false, error: data?.error || 'Authentication failed' }
     } catch (err) {
@@ -114,6 +118,8 @@ export function AuthProvider({ children }) {
   }
 
   const login = ({ email, password, role }) => run(() => authService.login({ email, password, role }))
+
+  const verifyMfa = ({ mfaToken, code }) => run(() => authService.mfaVerify({ mfaToken, code }))
 
   const register = async (userData) => {
     try {
@@ -158,6 +164,7 @@ export function AuthProvider({ children }) {
         token,
         isAuthenticated: !!user && !!token,
         login,
+        verifyMfa,
         register,
         loginWithGoogle,
         logout,
